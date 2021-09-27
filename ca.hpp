@@ -203,7 +203,7 @@ public:
   }
 
   //
-  void push_back(T const& v)
+  void push_back(T const& v) noexcept(std::is_nothrow_copy_assignable_v<T>)
   {
     if (full())
     {
@@ -223,7 +223,7 @@ public:
     ++sz_;
   }
 
-  void push_back(T&& v) noexcept
+  void push_back(T&& v) noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     if (full())
     {
@@ -244,7 +244,7 @@ public:
   }
 
   //
-  void push_front(T const& v)
+  void push_front(T const& v) noexcept(std::is_nothrow_copy_assignable_v<T>)
   {
     if (auto const f(first_); full())
     {
@@ -266,7 +266,7 @@ public:
     }
   }
 
-  void push_front(T&& v) noexcept
+  void push_front(T&& v) noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     if (auto const f(first_); full())
     {
