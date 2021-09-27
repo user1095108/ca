@@ -16,7 +16,7 @@ class caiterator
 {
   using inverse_const_t = std::conditional_t<
     std::is_const_v<CA>,
-    caiterator<std::remove_const_t<T>, CA>,
+    caiterator<std::remove_const_t<T>, std::remove_const_t<CA>>,
     caiterator<T const, CA const>
   >;
 
@@ -62,7 +62,7 @@ public:
       std::is_same_v<std::remove_cvref_t<decltype(o)>, inverse_const_t>
     )
   {
-    return n_ == o.node();
+    return n_ == o.n_;
   }
 
   bool operator!=(auto&& o) const noexcept

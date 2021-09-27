@@ -158,7 +158,6 @@ public:
     if (auto const tmp(std::next(i)); end != tmp)
     {
       j = iterator(this, &*a_ + (tmp.node() - &*a_));
-      assert(j.node() == tmp.node());
 
       do
       {
@@ -167,8 +166,8 @@ public:
       }
       while (end != j);
 
-      --sz_;
       last_ = prev(last_);
+      --sz_;
     }
 
     return r;
