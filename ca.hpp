@@ -317,16 +317,18 @@ inline auto operator<=>(circular_array<V, N> const& lhs,
   );
 }
 
-template <typename V, std::size_t N>
-constexpr auto erase(circular_array<V, N>& c, auto const& k)
+template <typename T, std::size_t N>
+constexpr auto erase(circular_array<T, N>& c, auto const& k) noexcept(
+  std::is_nothrow_move_assignable_v<T>)
 {
   return erase_if(c, [&](auto&& v) noexcept {return std::equal_to()(v, k);});
 }
 
-template <typename V, std::size_t N>
-constexpr auto erase_if(circular_array<V, N>& c, auto pred)
+template <typename T, std::size_t N>
+constexpr auto erase_if(circular_array<T, N>& c, auto pred) noexcept(
+  std::is_nothrow_move_assignable_v<T>)
 {
-  typename circular_array<V, N>::size_type r{};
+  typename circular_array<T, N>::size_type r{};
 
   auto const end(c.end());
 
