@@ -118,7 +118,7 @@ public:
   void pop_back() noexcept
   {
     assert(sz_);
-    if (--sz_; sz_)
+    if (--sz_)
     {
       last_ = prev(last_);
     }
@@ -127,7 +127,7 @@ public:
   void pop_front() noexcept
   {
     assert(sz_);
-    if (--sz_; sz_)
+    if (--sz_)
     {
       first_ = next(first_);
     }
@@ -136,91 +136,83 @@ public:
   //
   void push_back(T const& v)
   {
-    if (auto const l(last_); full())
+    if (full())
     {
-      *l = v;
+      pop_front();
+    }
+
+    if (empty())
+    {
+      assert(first_ == last_);
+      *last_ = v;
     }
     else
     {
-      if (empty())
-      {
-        assert(first_ == last_);
-        *l = v;
-      }
-      else
-      {
-        *(last_ = next(last_)) = v;
-      }
-
-      ++sz_;
+      *(last_ = next(last_)) = v;
     }
+
+    ++sz_;
   }
 
   void push_back(T&& v) noexcept
   {
-    if (auto const l(last_); full())
+    if (full())
     {
-      *l = std::move(v);
+      pop_front();
+    }
+
+    if (empty())
+    {
+      assert(first_ == last_);
+      *last_ = std::move(v);
     }
     else
     {
-      if (empty())
-      {
-        assert(first_ == last_);
-        *l = std::move(v);
-      }
-      else
-      {
-        *(last_ = next(last_)) = std::move(v);
-      }
-
-      ++sz_;
+      *(last_ = next(last_)) = std::move(v);
     }
+
+    ++sz_;
   }
 
   //
   void push_front(T const& v)
   {
-    if (auto const f(first_); full())
+    if (full())
     {
-      *f = v;
+      pop_front();
+    }
+
+    if (empty())
+    {
+      assert(first_ == last_);
+      *first_ = v;
     }
     else
     {
-      if (empty())
-      {
-        assert(first_ == last_);
-        *f = v;
-      }
-      else
-      {
-        *(first_ = prev(first_)) = v;
-      }
-
-      ++sz_;
+      *(first_ = prev(first_)) = v;
     }
+
+    ++sz_;
   }
 
   void push_front(T&& v) noexcept
   {
-    if (auto const f(first_); full())
+    if (full())
     {
-      *f = std::move(v);
+      pop_front();
+    }
+
+    if (empty())
+    {
+      assert(first_ == last_);
+      *first_ = std::move(v);
     }
     else
     {
-      if (empty())
-      {
-        assert(first_ == last_);
-        *f = std::move(v);
-      }
-      else
-      {
-        *(first_ = prev(first_)) = std::move(v);
-      }
-
-      ++sz_;
+      *(first_ = prev(first_)) = std::move(v);
     }
+
+    ++sz_;
   }
 };
 
