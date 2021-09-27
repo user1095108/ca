@@ -173,6 +173,15 @@ public:
     return r;
   }
 
+  iterator erase(const_iterator a, const_iterator const b)
+  {
+    iterator i(b);
+
+    for (; a != b; i = erase(a), a = i);
+
+    return i;
+  }
+
   //
   void pop_back() noexcept
   {
