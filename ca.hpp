@@ -173,7 +173,8 @@ public:
     return r;
   }
 
-  iterator erase(const_iterator a, const_iterator const b)
+  iterator erase(const_iterator a, const_iterator const b) noexcept(
+    noexcept(erase(a)))
   {
     iterator i(b);
 
