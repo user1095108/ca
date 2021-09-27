@@ -55,8 +55,31 @@ class circular_array
 public:
   circular_array() noexcept { first_ = last_ = &*a_; }
 
-  circular_array(circular_array const&) = default;
-  circular_array(circular_array&&) = default;
+  circular_array(circular_array const& o) { *this = o; }
+  circular_array(circular_array&& o) noexcept { *this = std::move(o); }
+
+  //
+  circular_array& operator=(circular_array const& o)
+  {
+    std::copy(o.cbegin(), o.cend(), a_);
+
+    first_ = a_ + (o.first - o.a_); last_ = a_ + (o.last_ - o.a_);
+    sz_ = o.sz_;
+
+    return *this;
+  }
+
+  circular_array& operator=(circular_array&& o) noexcept
+  {
+    std::move(o.begin(), o.end(), a_);
+
+    first_ = a_ + (o.first - o.a_); last_ = a_ + (o.last_ - o.a_);
+    sz_ = o.sz_;
+
+    o.first_ = o.last_ = {}; o.sz_ = {};
+
+    return *this;
+  }
 
   // iterators
   iterator begin() noexcept { return {this, size() ? first_ : nullptr}; }
