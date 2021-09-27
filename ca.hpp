@@ -2,6 +2,8 @@
 # define CA_CA_HPP
 # pragma once
 
+#include <utility>
+
 #include "caiterator.hpp"
 
 namespace ca
@@ -51,18 +53,27 @@ class circular_array
   }
 
 public:
-  circular_array() = default;
+  circular_array() noexcept { first_ = last_ = &*a_; }
+
   circular_array(circular_array const&) = default;
   circular_array(circular_array&&) = default;
 
   // iterators
-  iterator begin() noexcept { return {this, first_}; }
+  iterator begin() noexcept { return {this, size() ? first_ : nullptr}; }
   iterator end() noexcept { return {this, {}}; }
 
-  const_iterator begin() const noexcept { return {this, first_}; }
+  const_iterator begin() const noexcept
+  {
+    return {this, size() ? first_ : nullptr};
+  }
+
   const_iterator end() const noexcept { return {this, {}}; }
 
-  const_iterator cbegin() const noexcept { return {this, first_}; }
+  const_iterator cbegin() const noexcept
+  {
+    return {this, size() ? first_ : nullptr};
+  }
+
   const_iterator cend() const noexcept { return {this, {}}; }
 
   // reverse iterators
@@ -73,7 +84,7 @@ public:
 
   reverse_iterator rend() noexcept
   {
-    return reverse_iterator{iterator(this, first_)};
+    return reverse_iterator{iterator(this, size() ? first_ : nullptr)};
   }
 
   // const reverse iterators
@@ -84,7 +95,9 @@ public:
 
   const_reverse_iterator crend() const noexcept
   {
-    return const_reverse_iterator{const_iterator{this, first_}};
+    return const_reverse_iterator{
+      const_iterator{this, size() ? first_ : nullptr}
+    };
   }
 
   //
@@ -95,8 +108,30 @@ public:
   std::size_t size() const noexcept { return sz_; }
 
   //
-  void pop_back() noexcept { last_ = prev(last_); --sz_; }
-  void pop_front() noexcept { first_ = next(first_); --sz_; }
+  auto& back() noexcept { assert(sz_); return *last_; }
+  auto& back() const noexcept { assert(sz_); return std::as_const(*last_); }
+
+  auto& front() noexcept {  assert(sz_); return *first_; }
+  auto& front() const noexcept { assert(sz_); return std::as_const(*first_); }
+
+  //
+  void pop_back() noexcept
+  {
+    assert(sz_);
+    if (--sz_; sz_)
+    {
+      last_ = prev(last_);
+    }
+  }
+
+  void pop_front() noexcept
+  {
+    assert(sz_);
+    if (--sz_; sz_)
+    {
+      first_ = next(first_);
+    }
+  }
 
   //
   void push_back(T const& v)
@@ -108,7 +143,8 @@ public:
 
     if (empty())
     {
-      *(first_ = last_ = &*a_) = v;
+      assert(first_ == last_);
+      *last_ = v;
     }
     else
     {
@@ -127,7 +163,8 @@ public:
 
     if (empty())
     {
-      *(first_ = last_ = &*a_) = std::move(v);
+      assert(first_ == last_);
+      *last_ = std::move(v);
     }
     else
     {
@@ -147,7 +184,8 @@ public:
 
     if (empty())
     {
-      *(first_ = last_ = &*a_) = v;
+      assert(first_ == last_);
+      *first_ = v;
     }
     else
     {
@@ -166,7 +204,8 @@ public:
 
     if (empty())
     {
-      *(first_ = last_ = &*a_) = std::move(v);
+      assert(first_ == last_);
+      *first_ = std::move(v);
     }
     else
     {

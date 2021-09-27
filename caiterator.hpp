@@ -2,6 +2,8 @@
 # define CA_ITERATOR_HPP
 # pragma once
 
+#include <cassert>
+
 #include <iterator>
 
 #include <type_traits>
@@ -35,8 +37,8 @@ public:
   caiterator() = default;
 
   caiterator(CA* ca, T* const n) noexcept:
-    ca_(ca),
-    n_(n)
+    n_(n),
+    ca_(ca)
   {
   }
 
@@ -45,8 +47,8 @@ public:
 
   // iterator -> const_iterator conversion
   caiterator(inverse_const_t const& o) noexcept requires(std::is_const_v<CA>):
-    ca_(o.ca_),
-    n_(o.n_)
+    n_(o.n_),
+    ca_(o.ca_)
   {
   }
 
@@ -71,14 +73,13 @@ public:
   // increment, decrement
   auto& operator++() noexcept
   {
-    auto const n(ca_->next(n_));
-
-    return n_ = n == ca_->first_ ? nullptr : n, *this;
+    return n_ = n_ == ca_->last_ ? nullptr : ca_->next(n_), *this;
   }
 
   auto& operator--() noexcept
   {
-    return n_ = !n_ ? ca_->last_ : ca_->prev(n_), *this;
+    return n_ = !n_ ? ca_->last_ :
+      n_ == ca_->first_ ? nullptr : ca_->prev(n_), *this;
   }
 
   auto operator++(int) noexcept { auto r(*this); return ++*this, r; }
