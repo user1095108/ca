@@ -151,11 +151,9 @@ public:
   iterator erase(const_iterator i) noexcept(
     std::is_nothrow_move_assignable_v<T>)
   {
+    iterator r(this, &*a_ + (i.node() - &*a_)), j;
+
     auto const end(this->end());
-
-    iterator r(this, &*a_ + (i.node() - &*a_));
-
-    iterator j;
 
     if (auto const tmp(std::next(i)); end != tmp)
     {
