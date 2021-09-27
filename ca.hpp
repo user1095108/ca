@@ -55,14 +55,20 @@ class circular_array
 public:
   circular_array() noexcept { first_ = last_ = &*a_; }
 
-  circular_array(circular_array const& o) { *this = o; }
+  //
+  circular_array(circular_array const& o) noexcept(noexcept(*this = o))
+  {
+    *this = o;
+  }
+
   circular_array(circular_array&& o) noexcept(noexcept(*this = std::move(o)))
   {
     *this = std::move(o);
   }
 
   //
-  circular_array& operator=(circular_array const& o)
+  circular_array& operator=(circular_array const& o) noexcept(
+    std::is_nothrow_copy_assignable_v<T>)
   {
     std::copy(o.cbegin(), o.cend(), a_);
 
@@ -72,7 +78,8 @@ public:
     return *this;
   }
 
-  circular_array& operator=(circular_array&& o) noexcept
+  circular_array& operator=(circular_array&& o) noexcept(
+    std::is_nothrow_move_assignable_v<T>)
   {
     std::move(o.begin(), o.end(), a_);
 
@@ -139,6 +146,35 @@ public:
 
   auto& front() noexcept {  assert(sz_); return *first_; }
   auto& front() const noexcept { assert(sz_); return std::as_const(*first_); }
+
+  //
+  iterator erase(const_iterator i) noexcept(
+    std::is_nothrow_move_assignable_v<T>)
+  {
+    auto const end(this->end());
+
+    iterator r(this, &*a_ + (i.node() - &*a_));
+
+    iterator j;
+
+    if (auto const tmp(std::next(i)); end != tmp)
+    {
+      j = iterator(this, &*a_ + (tmp.node() - &*a_));
+      assert(j.node() == tmp.node());
+
+      do
+      {
+        *std::prev(j) = std::move(*j);
+        j = std::next(j);
+      }
+      while (end != j);
+
+      --sz_;
+      last_ = prev(last_);
+    }
+
+    return r;
+  }
 
   //
   void pop_back() noexcept
