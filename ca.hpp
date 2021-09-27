@@ -136,83 +136,91 @@ public:
   //
   void push_back(T const& v)
   {
-    if (full())
+    if (auto const l(last_); full())
     {
-      pop_front();
-    }
-
-    if (empty())
-    {
-      assert(first_ == last_);
-      *last_ = v;
+      *l = v;
     }
     else
     {
-      *(last_ = next(last_)) = v;
-    }
+      if (empty())
+      {
+        assert(first_ == last_);
+        *l = v;
+      }
+      else
+      {
+        *(last_ = next(last_)) = v;
+      }
 
-    ++sz_;
+      ++sz_;
+    }
   }
 
   void push_back(T&& v) noexcept
   {
-    if (full())
+    if (auto const l(last_); full())
     {
-      pop_front();
-    }
-
-    if (empty())
-    {
-      assert(first_ == last_);
-      *last_ = std::move(v);
+      *l = std::move(v);
     }
     else
     {
-      *(last_ = next(last_)) = std::move(v);
-    }
+      if (empty())
+      {
+        assert(first_ == last_);
+        *l = std::move(v);
+      }
+      else
+      {
+        *(last_ = next(last_)) = std::move(v);
+      }
 
-    ++sz_;
+      ++sz_;
+    }
   }
 
   //
   void push_front(T const& v)
   {
-    if (full())
+    if (auto const f(first_); full())
     {
-      pop_front();
-    }
-
-    if (empty())
-    {
-      assert(first_ == last_);
-      *first_ = v;
+      *f = v;
     }
     else
     {
-      *(first_ = prev(first_)) = v;
-    }
+      if (empty())
+      {
+        assert(first_ == last_);
+        *f = v;
+      }
+      else
+      {
+        *(first_ = prev(first_)) = v;
+      }
 
-    ++sz_;
+      ++sz_;
+    }
   }
 
   void push_front(T&& v) noexcept
   {
-    if (full())
+    if (auto const f(first_); full())
     {
-      pop_front();
-    }
-
-    if (empty())
-    {
-      assert(first_ == last_);
-      *first_ = std::move(v);
+      *f = std::move(v);
     }
     else
     {
-      *(first_ = prev(first_)) = std::move(v);
-    }
+      if (empty())
+      {
+        assert(first_ == last_);
+        *f = std::move(v);
+      }
+      else
+      {
+        *(first_ = prev(first_)) = std::move(v);
+      }
 
-    ++sz_;
+      ++sz_;
+    }
   }
 };
 
