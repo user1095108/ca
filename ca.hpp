@@ -307,6 +307,27 @@ inline auto operator<=>(circular_array<V, N> const& lhs,
   );
 }
 
+template <typename V, std::size_t N>
+constexpr auto erase(circular_array<V, N>& c, auto const& k)
+{
+  return erase_if(c, [&](auto&& v) noexcept {return std::equal_to()(v, k);});
+}
+
+template <typename V, std::size_t N>
+constexpr auto erase_if(circular_array<V, N>& c, auto pred)
+{
+  typename circular_array<V, N>::size_type r{};
+
+  auto const end(c.end());
+
+  for (auto i(c.begin()); end != i;)
+  {
+    i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
+  }
+
+  return r;
+}
+
 }
 
 #endif // CA_CA_HPP
