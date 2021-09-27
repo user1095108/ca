@@ -56,7 +56,10 @@ public:
   circular_array() noexcept { first_ = last_ = &*a_; }
 
   circular_array(circular_array const& o) { *this = o; }
-  circular_array(circular_array&& o) noexcept { *this = std::move(o); }
+  circular_array(circular_array&& o) noexcept(noexcept(*this = std::move(o)))
+  {
+    *this = std::move(o);
+  }
 
   //
   circular_array& operator=(circular_array const& o)
