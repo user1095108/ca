@@ -141,14 +141,14 @@ public:
       pop_front();
     }
 
-    if (empty())
+    if (auto const l(last_); empty())
     {
       assert(first_ == last_);
-      *last_ = v;
+      *l = v;
     }
     else
     {
-      *(last_ = next(last_)) = v;
+      *(last_ = next(l)) = v;
     }
 
     ++sz_;
@@ -161,14 +161,14 @@ public:
       pop_front();
     }
 
-    if (empty())
+    if (auto const l(last_); empty())
     {
       assert(first_ == last_);
-      *last_ = std::move(v);
+      *l = std::move(v);
     }
     else
     {
-      *(last_ = next(last_)) = std::move(v);
+      *(last_ = next(l)) = std::move(v);
     }
 
     ++sz_;
@@ -177,42 +177,46 @@ public:
   //
   void push_front(T const& v)
   {
-    if (full())
+    if (auto const f(first_); full())
     {
-      pop_front();
-    }
-
-    if (empty())
-    {
-      assert(first_ == last_);
-      *first_ = v;
+      *f = v;
     }
     else
     {
-      *(first_ = prev(first_)) = v;
-    }
+      if (empty())
+      {
+        assert(first_ == last_);
+        *f = v;
+      }
+      else
+      {
+        *(first_ = prev(f)) = v;
+      }
 
-    ++sz_;
+      ++sz_;
+    }
   }
 
   void push_front(T&& v) noexcept
   {
-    if (full())
+    if (auto const f(first_); full())
     {
-      pop_front();
-    }
-
-    if (empty())
-    {
-      assert(first_ == last_);
-      *first_ = std::move(v);
+      *f = std::move(v);
     }
     else
     {
-      *(first_ = prev(first_)) = std::move(v);
-    }
+      if (empty())
+      {
+        assert(first_ == last_);
+        *f = std::move(v);
+      }
+      else
+      {
+        *(first_ = prev(f)) = std::move(v);
+      }
 
-    ++sz_;
+      ++sz_;
+    }
   }
 };
 
