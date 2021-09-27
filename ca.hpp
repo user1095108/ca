@@ -301,16 +301,16 @@ public:
     circular_array const&) = default;
 };
 
-template <typename V, std::size_t N>
-inline bool operator==(circular_array<V, N> const& lhs,
-  circular_array<V, N> const& rhs) noexcept 
+template <typename T, std::size_t N>
+inline bool operator==(circular_array<T, N> const& lhs,
+  circular_array<T, N> const& rhs) noexcept 
 {
   return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
-template <typename V, std::size_t N>
-inline auto operator<=>(circular_array<V, N> const& lhs,
-  circular_array<V, N> const& rhs) noexcept
+template <typename T, std::size_t N>
+inline auto operator<=>(circular_array<T, N> const& lhs,
+  circular_array<T, N> const& rhs) noexcept
 {
   return std::lexicographical_compare_three_way(
     lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
