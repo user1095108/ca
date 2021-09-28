@@ -212,7 +212,6 @@ public:
     auto const l(last_);
 
     empty() ? *l = v : *(last_ = next(l)) = v;
-
     ++sz_;
   }
 
@@ -226,7 +225,6 @@ public:
     auto const l(last_);
 
     empty() ? *l = std::move(v) : *(last_ = next(l)) = std::move(v);
-
     ++sz_;
   }
 
@@ -240,7 +238,6 @@ public:
     else
     {
       empty() ? *f = v : *(first_ = prev(f)) = v;
-
       ++sz_;
     }
   }
@@ -254,7 +251,6 @@ public:
     else
     {
       empty() ? *f = std::move(v) : *(first_ = prev(f)) = std::move(v);
-
       ++sz_;
     }
   }
