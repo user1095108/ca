@@ -162,9 +162,8 @@ public:
       do
       {
         *std::prev(j) = std::move(*j);
-        j = std::next(j);
       }
-      while (end != j);
+      while (end != (j = std::next(j)));
 
       last_ = prev(last_);
       --sz_;
