@@ -12,6 +12,8 @@ namespace ca
 template <typename T, std::size_t N>
 class circular_array
 {
+  static_assert(N);
+
   friend class caiterator<T, circular_array>;
   friend class caiterator<T const, circular_array const>;
 
