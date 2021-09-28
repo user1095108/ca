@@ -210,15 +210,9 @@ public:
       pop_front();
     }
 
-    if (auto const l(last_); empty())
-    {
-      assert(first_ == last_);
-      *l = v;
-    }
-    else
-    {
-      *(last_ = next(l)) = v;
-    }
+    auto const l(last_);
+
+    empty() ? *l = v : *(last_ = next(l)) = v;
 
     ++sz_;
   }
@@ -230,15 +224,9 @@ public:
       pop_front();
     }
 
-    if (auto const l(last_); empty())
-    {
-      assert(first_ == last_);
-      *l = std::move(v);
-    }
-    else
-    {
-      *(last_ = next(l)) = std::move(v);
-    }
+    auto const l(last_);
+
+    empty() ? *l = std::move(v) : *(last_ = next(l)) = std::move(v);
 
     ++sz_;
   }
