@@ -252,15 +252,7 @@ public:
     }
     else
     {
-      if (empty())
-      {
-        assert(first_ == last_);
-        *f = v;
-      }
-      else
-      {
-        *(first_ = prev(f)) = v;
-      }
+      empty() ? *f = v : *(first_ = prev(f)) = v;
 
       ++sz_;
     }
@@ -274,15 +266,7 @@ public:
     }
     else
     {
-      if (empty())
-      {
-        assert(first_ == last_);
-        *f = std::move(v);
-      }
-      else
-      {
-        *(first_ = prev(f)) = std::move(v);
-      }
+      empty() ? *f = std::move(v) : *(first_ = prev(f)) = std::move(v);
 
       ++sz_;
     }
