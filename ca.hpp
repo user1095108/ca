@@ -208,6 +208,7 @@ public:
   {
     if (full())
     {
+      assert(next(last_) == first_);
       pop_front();
     }
 
@@ -221,6 +222,7 @@ public:
   {
     if (full())
     {
+      assert(next(last_) == first_);
       pop_front();
     }
 
@@ -235,6 +237,7 @@ public:
   {
     if (auto const f(first_); full())
     {
+      assert(next(last_) == first_);
       *f = v;
     }
     else
@@ -248,6 +251,7 @@ public:
   {
     if (auto const f(first_); full())
     {
+      assert(next(last_) == first_);
       *f = std::move(v);
     }
     else
