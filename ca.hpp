@@ -187,18 +187,20 @@ public:
   //
   void pop_back() noexcept
   {
-    assert(sz_ && (first_ != last_));
+    assert(sz_);
     if (--sz_)
     {
+      assert(first_ != last_);
       last_ = prev(last_);
     }
   }
 
   void pop_front() noexcept
   {
-    assert(sz_ && (first_ != last_));
+    assert(sz_);
     if (--sz_)
     {
+      assert(first_ != last_);
       first_ = next(first_);
     }
   }
