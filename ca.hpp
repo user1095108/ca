@@ -187,7 +187,7 @@ public:
   //
   void pop_back() noexcept
   {
-    assert(sz_);
+    assert(sz_ && (first_ != last_));
     if (--sz_)
     {
       last_ = prev(last_);
@@ -196,7 +196,7 @@ public:
 
   void pop_front() noexcept
   {
-    assert(sz_);
+    assert(sz_ && (first_ != last_));
     if (--sz_)
     {
       first_ = next(first_);
