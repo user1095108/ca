@@ -139,8 +139,9 @@ public:
   void clear() noexcept { first_ = last_; sz_ = {}; }
   bool empty() const noexcept { return !size(); }
   bool full() const noexcept { return N == size(); }
+  auto max_size() const noexcept { return ~std::size_t(); }
 
-  std::size_t size() const noexcept { return sz_; }
+  auto size() const noexcept { return sz_; }
 
   //
   auto& back() noexcept { assert(sz_); return *last_; }
