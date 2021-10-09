@@ -37,7 +37,7 @@ int main()
     }
   );
 
-  std::cout << std::distance(ca.cbegin(), ca.cend()) << " : " << ca.size() << std::endl;
+  std::cout << std::distance(ca.cbegin(), ca.cend()) << " : " << ca.size() << " " << ca[0] << std::endl;
 
   return 0;
 }

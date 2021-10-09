@@ -144,8 +144,15 @@ public:
   auto size() const noexcept { return sz_; }
 
   //
-  auto& operator[](size_type const i) noexcept { return a_[i]; }
-  auto& operator[](size_type const i) const noexcept { return a_[i]; }
+  auto& operator[](size_type const i) noexcept
+  {
+    return *(first_ + (first_ - a_) + i);
+  }
+
+  auto& operator[](size_type const i) const noexcept
+  {
+    return *(first_ + (first_ - a_) + i);
+  }
 
   //
   auto& back() noexcept { assert(sz_); return *last_; }
