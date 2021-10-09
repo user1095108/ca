@@ -146,12 +146,12 @@ public:
   //
   auto& operator[](size_type const i) noexcept
   {
-    return *(first_ + (first_ - a_) + i);
+    return *std::next(begin(), i);
   }
 
   auto& operator[](size_type const i) const noexcept
   {
-    return *(first_ + (first_ - a_) + i);
+    return *std::next(begin(), i);
   }
 
   //
