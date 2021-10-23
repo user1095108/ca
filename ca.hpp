@@ -286,6 +286,9 @@ public:
       ++sz_;
     }
   }
+
+  //
+  void reverse() noexcept { std::swap(first_, last_); }
 };
 
 template <typename T, std::size_t N>
