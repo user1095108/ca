@@ -39,14 +39,14 @@ class circular_array
     return p == &a_[N - 1] ? &*a_ : p + 1;
   }
 
-  auto prev(auto const p) noexcept
-  {
-    return p == &*a_ ? &a_[N - 1] : p - 1;
-  }
-
   auto next(auto const p) const noexcept
   {
     return p == &a_[N - 1] ? &*a_ : p + 1;
+  }
+
+  auto prev(auto const p) noexcept
+  {
+    return p == &*a_ ? &a_[N - 1] : p - 1;
   }
 
   auto prev(auto const p) const noexcept
@@ -289,6 +289,29 @@ public:
 
   //
   void reverse() noexcept { std::swap(first_, last_); }
+
+  void sort() { sort(std::less<value_type>()); }
+
+  void sort(auto cmp)
+  {
+    auto const s([&](auto&& s,
+      auto const begin, auto const end, auto const sz) -> void
+      {
+        if (sz > 1)
+        {
+          auto const hsz(sz / 2);
+          auto const m(std::next(begin, hsz));
+
+          s(s, begin, m, hsz);
+          s(s, m, end, sz - hsz);
+
+          std::inplace_merge(begin, m, end, cmp);
+        }
+      }
+    );
+
+    s(s, begin(), end(), size());
+  }
 };
 
 template <typename T, std::size_t N>
