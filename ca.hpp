@@ -93,6 +93,18 @@ public:
     return *this;
   }
 
+  //
+  friend bool operator!=(circular_array const&,
+    circular_array const&) = default;
+  friend bool operator<(circular_array const&,
+    circular_array const&) = default;
+  friend bool operator<=(circular_array const&,
+    circular_array const&) = default;
+  friend bool operator>(circular_array const&,
+    circular_array const&) = default;
+  friend bool operator>=(circular_array const&,
+    circular_array const&) = default;
+
   // iterators
   iterator begin() noexcept { return {this, size() ? first_ : nullptr}; }
   iterator end() noexcept { return {this, {}}; }
@@ -274,18 +286,6 @@ public:
       ++sz_;
     }
   }
-
-  //
-  friend bool operator!=(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator<(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator<=(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator>(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator>=(circular_array const&,
-    circular_array const&) = default;
 };
 
 template <typename T, std::size_t N>
