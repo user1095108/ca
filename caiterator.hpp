@@ -71,8 +71,8 @@ public:
       n_ == ca_->first_ ? nullptr : ca_->prev(n_), *this;
   }
 
-  auto operator++(int) noexcept { auto const r(*this); return ++*this, r; }
-  auto operator--(int) noexcept { auto const r(*this); return --*this, r; }
+  auto operator++(int) noexcept { auto const r(*this); ++*this; return r; }
+  auto operator--(int) noexcept { auto const r(*this); --*this; return r; }
 
   // member access
   auto operator->() const noexcept { return n_; }
