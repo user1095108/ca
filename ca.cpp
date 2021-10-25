@@ -11,6 +11,8 @@ int main()
   ca.push_back(3);
   ca.push_front(4);
 
+  ca.sort();
+
   std::for_each(
     ca.cbegin(),
     ca.cend(),
