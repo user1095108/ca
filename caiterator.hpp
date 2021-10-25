@@ -77,7 +77,11 @@ public:
   auto& operator*() const noexcept { return *n_; }
 
   //
-  std::size_t index() const noexcept { return n_ - ca_->a_; }
+  auto addr() const noexcept
+  {
+    return const_cast<std::remove_const_t<T>*>(n_);
+  }
+
   auto node() const noexcept { return n_; }
 };
 

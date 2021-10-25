@@ -177,13 +177,13 @@ public:
   iterator erase(const_iterator i) noexcept(
     std::is_nothrow_move_assignable_v<T>)
   {
-    iterator r(this, &a_[i.index()]);
+    iterator r(this, i.addr());
 
     auto const end(this->end());
 
     if (auto const tmp(std::next(i)); end != tmp)
     {
-      iterator j(this, &a_[tmp.index()]);
+      iterator j(this, tmp.addr());
 
       do
       {
