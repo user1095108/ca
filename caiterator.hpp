@@ -22,8 +22,8 @@ class caiterator
 
   friend inverse_const_t;
 
-  T* n_{};
-  CA* ca_{};
+  T* n_;
+  CA* ca_;
 
 public:
   using iterator_category = std::bidirectional_iterator_tag;
@@ -34,8 +34,6 @@ public:
   using reference = value_type&;
 
 public:
-  caiterator() = default;
-
   caiterator(CA* ca, T* const n) noexcept:
     n_(n),
     ca_(ca)
