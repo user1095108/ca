@@ -56,19 +56,8 @@ public:
   caiterator& operator=(caiterator const&) = default;
   caiterator& operator=(caiterator&&) = default;
 
-  bool operator==(auto const& o) const noexcept
-    requires(
-      std::is_same_v<std::remove_cvref_t<decltype(o)>, caiterator> ||
-      std::is_same_v<std::remove_cvref_t<decltype(o)>, inverse_const_t>
-    )
-  {
-    return n_ == o.n_;
-  }
-
-  bool operator!=(auto&& o) const noexcept
-  {
-    return !(*this == std::forward<decltype(o)>(o));
-  }
+  bool operator==(caiterator const& o) const noexcept { return n_ == o.n_; }
+  bool operator!=(caiterator const&) const noexcept = default;
 
   // increment, decrement
   auto& operator++() noexcept
