@@ -55,7 +55,7 @@ public:
   caiterator& operator=(caiterator&&) = default;
 
   bool operator==(caiterator const& o) const noexcept { return n_ == o.n_; }
-  bool operator!=(caiterator const&) = default;
+  bool operator!=(caiterator const&) const = default;
 
   // increment, decrement
   auto& operator++() noexcept
