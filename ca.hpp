@@ -177,15 +177,19 @@ public:
   iterator erase(const_iterator const i) noexcept(
     std::is_nothrow_move_assignable_v<T>)
   {
+    assert(size());
     for (iterator j(this, std::next(i).node()); j.node(); j = std::next(j))
     {
       *std::prev(j) = std::move(*j);
     }
 
+    //
+    iterator const r(this, i.node() == last_ ? nullptr : i.node());
+
     last_ = prev(last_);
     --sz_;
 
-    return {this, i.node()};
+    return r;
   }
 
   iterator erase(const_iterator a, const_iterator const b) noexcept(
