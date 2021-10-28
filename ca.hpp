@@ -179,9 +179,7 @@ public:
   {
     iterator r(this, i.addr());
 
-    auto const end(this->end());
-
-    if (auto const tmp(std::next(i)); end != tmp)
+    if (auto const tmp(std::next(i)); tmp.node())
     {
       iterator j(this, tmp.addr());
 
@@ -343,9 +341,7 @@ constexpr auto erase_if(circular_array<T, N>& c, auto pred) noexcept(
 {
   typename circular_array<T, N>::size_type r{};
 
-  auto const end(c.end());
-
-  for (auto i(c.begin()); end != i;)
+  for (auto i(c.begin()); i.node();)
   {
     i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
   }
