@@ -186,12 +186,10 @@ public:
     }
 
     //
-    iterator const r(this, i.node() == last_ ? nullptr : i.node());
-
     last_ = prev(last_);
     --sz_;
 
-    return r;
+    return {this, i.node() > last_ ? nullptr : i.node()};
   }
 
   iterator erase(const_iterator a, const_iterator const b) noexcept(
