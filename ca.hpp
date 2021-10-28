@@ -182,9 +182,9 @@ public:
 
     if (auto n(i.node()); first_ == n)
     {
-      first_ = next(first_);
+      first_ = n = next(first_);
 
-      return {this, first_};
+      return {this, n};
     }
     else
     {
