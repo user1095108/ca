@@ -207,7 +207,7 @@ public:
     }
     else
     {
-      return end();
+      return {this, nullptr};
     }
   }
 
