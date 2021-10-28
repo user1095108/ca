@@ -182,7 +182,7 @@ public:
     {
       auto const nb(i.node());
 
-      if (auto n(nb); n - first_ <= last_ - n)
+      if (auto n(nb); nb - first_ <= last_ - nb)
       {
         for (auto pn(prev(n)); first_ != n; pn = prev(n))
         {

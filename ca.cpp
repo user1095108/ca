@@ -25,7 +25,7 @@ int main()
   ca.push_back(5);
   ca.push_back(10);
 
-  ca.erase(ca.cbegin());
+  ca.erase(std::next(ca.cbegin()));
 
   std::cout << "size: " << ca.size() << std::endl;
   std::cout << "full: " << ca.full() << std::endl;
