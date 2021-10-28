@@ -180,11 +180,17 @@ public:
     assert(sz_);
     if (--sz_)
     {
-      if (auto n(i.node()); first_ == n)
+      if (auto n(i.node()); n - first_ <= last_ - n)
       {
-        first_ = n = next(n);
+        for (auto pn(prev(n)); first_ != n; pn = prev(n))
+        {
+          *n = std::move(*pn);
+          n = pn;
+        }
 
-        return {this, n};
+        first_ = next(first_);
+
+        return {this, first_};
       }
       else
       {
