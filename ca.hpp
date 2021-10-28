@@ -265,8 +265,9 @@ public:
 
     auto const l(last_);
 
-    empty() ? *l = std::move(v) : *(last_ = next(l)) =
-      std::forward<decltype(v)>(v);
+    empty() ?
+      *l = std::move(v) :
+      *(last_ = next(l)) = std::forward<decltype(v)>(v);
     ++sz_;
   }
 
@@ -280,8 +281,9 @@ public:
     }
     else
     {
-      empty() ? *f = std::move(v) : *(first_ = prev(f)) =
-        std::forward<decltype(v)>(v);
+      empty() ?
+        *f = std::move(v) :
+        *(first_ = prev(f)) = std::forward<decltype(v)>(v);
       ++sz_;
     }
   }
