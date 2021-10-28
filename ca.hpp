@@ -205,6 +205,10 @@ public:
         return {this, i.node() > last_ ? nullptr : i.node()};
       }
     }
+    else
+    {
+      return end();
+    }
   }
 
   iterator erase(const_iterator a, const_iterator const b) noexcept(
