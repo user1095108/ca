@@ -178,9 +178,11 @@ public:
     std::is_nothrow_move_assignable_v<T>)
   {
     assert(size());
-    for (iterator j(this, std::next(i).node()); j.node(); j = std::next(j))
+    for (iterator j(this, i.node()), k(std::next(j)); k.node();
+      k = std::next(k))
     {
-      *std::prev(j) = std::move(*j);
+      *j = std::move(*k);
+      j = k;
     }
 
     //
