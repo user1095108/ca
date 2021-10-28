@@ -180,7 +180,9 @@ public:
     assert(sz_);
     if (--sz_)
     {
-      if (auto n(i.node()); n - first_ <= last_ - n)
+      auto const nb(i.node());
+
+      if (auto n(nb); n - first_ <= last_ - n)
       {
         for (auto pn(prev(n)); first_ != n; pn = prev(n))
         {
@@ -190,7 +192,7 @@ public:
 
         first_ = next(first_);
 
-        return {this, next(i.node())};
+        return {this, next(nb)};
       }
       else
       {
@@ -202,7 +204,7 @@ public:
 
         last_ = prev(last_);
 
-        return {this, i.node() > last_ ? nullptr : i.node()};
+        return {this, nb > last_ ? nullptr : nb};
       }
     }
     else
