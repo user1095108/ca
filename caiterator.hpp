@@ -77,12 +77,10 @@ public:
   auto& operator*() const noexcept { return *n_; }
 
   //
-  auto addr() const noexcept
+  auto node() const noexcept
   {
     return const_cast<std::remove_const_t<T>*>(n_);
   }
-
-  auto node() const noexcept { return n_; }
 };
 
 }
