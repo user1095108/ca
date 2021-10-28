@@ -254,7 +254,8 @@ public:
   }
 
   //
-  void push_back(T const& v) noexcept(std::is_nothrow_copy_assignable_v<T>)
+  void push_back(auto&& v) noexcept(
+    noexcept(*last_ = std::forward<decltype(v)>(v)))
   {
     if (full())
     {
@@ -262,52 +263,26 @@ public:
       pop_front();
     }
 
+    ++sz_;
     auto const l(last_);
 
-    empty() ? *l = v : *(last_ = next(l)) = v;
-    ++sz_;
+    empty() ? *l = std::move(v) : *(last_ = next(l)) =
+      std::forward<decltype(v)>(v);
   }
 
-  void push_back(T&& v) noexcept(std::is_nothrow_move_assignable_v<T>)
-  {
-    if (full())
-    {
-      assert(next(last_) == first_);
-      pop_front();
-    }
-
-    auto const l(last_);
-
-    empty() ? *l = std::move(v) : *(last_ = next(l)) = std::move(v);
-    ++sz_;
-  }
-
-  //
-  void push_front(T const& v) noexcept(std::is_nothrow_copy_assignable_v<T>)
+  void push_front(auto&& v) noexcept(
+    noexcept(*first_ = std::forward<decltype(v)>(v)))
   {
     if (auto const f(first_); full())
     {
       assert(next(last_) == first_);
-      *f = v;
+      *f = std::forward<decltype(v)>(v);
     }
     else
     {
-      empty() ? *f = v : *(first_ = prev(f)) = v;
       ++sz_;
-    }
-  }
-
-  void push_front(T&& v) noexcept(std::is_nothrow_move_assignable_v<T>)
-  {
-    if (auto const f(first_); full())
-    {
-      assert(next(last_) == first_);
-      *f = std::move(v);
-    }
-    else
-    {
-      empty() ? *f = std::move(v) : *(first_ = prev(f)) = std::move(v);
-      ++sz_;
+      empty() ? *f = std::move(v) : *(first_ = prev(f)) =
+        std::forward<decltype(v)>(v);
     }
   }
 
