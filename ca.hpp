@@ -174,26 +174,18 @@ public:
   auto& front() const noexcept { assert(sz_); return std::as_const(*first_); }
 
   //
-  iterator erase(const_iterator i) noexcept(
+  iterator erase(const_iterator const i) noexcept(
     std::is_nothrow_move_assignable_v<T>)
   {
-    iterator r(this, i.node());
-
-    if (auto const tmp(std::next(i)); tmp.node())
+    for (iterator j(this, std::next(i).node()); j.node(); j = std::next(j))
     {
-      iterator j(this, tmp.node());
-
-      do
-      {
-        *std::prev(j) = std::move(*j);
-      }
-      while ((j = std::next(j)).node());
-
-      last_ = prev(last_);
-      --sz_;
+      *std::prev(j) = std::move(*j);
     }
 
-    return r;
+    last_ = prev(last_);
+    --sz_;
+
+    return {this, i.node()};
   }
 
   iterator erase(const_iterator a, const_iterator const b) noexcept(
