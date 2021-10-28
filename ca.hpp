@@ -263,11 +263,11 @@ public:
       pop_front();
     }
 
-    ++sz_;
     auto const l(last_);
 
     empty() ? *l = std::move(v) : *(last_ = next(l)) =
       std::forward<decltype(v)>(v);
+    ++sz_;
   }
 
   void push_front(auto&& v) noexcept(
@@ -280,9 +280,9 @@ public:
     }
     else
     {
-      ++sz_;
       empty() ? *f = std::move(v) : *(first_ = prev(f)) =
         std::forward<decltype(v)>(v);
+      ++sz_;
     }
   }
 
