@@ -190,7 +190,7 @@ public:
 
         first_ = next(first_);
 
-        return {this, first_};
+        return {this, next(i.node())};
       }
       else
       {
