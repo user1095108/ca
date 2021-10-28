@@ -177,7 +177,7 @@ public:
   iterator erase(const_iterator const i) noexcept(
     std::is_nothrow_move_assignable_v<T>)
   {
-    assert(size());
+    assert(sz_);
     if (--sz_)
     {
       if (auto n(i.node()); first_ == n)
