@@ -221,6 +221,15 @@ public:
     return i;
   }
 
+  iterator erase(std::initializer_list<const_iterator> const il)
+  {
+    iterator r;
+
+    std::for_each(il.begin(), il.end(), [&](auto const i) { r = erase(i); });
+
+    return r;
+  }
+
   //
   void pop_back() noexcept
   {
