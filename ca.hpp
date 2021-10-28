@@ -178,25 +178,26 @@ public:
     std::is_nothrow_move_assignable_v<T>)
   {
     assert(size());
-    --sz_;
-
-    if (auto n(i.node()); first_ == n)
+    if (--sz_)
     {
-      first_ = n = next(n);
-
-      return {this, n};
-    }
-    else
-    {
-      for (auto nn(next(n)); last_ != n; nn = next(n))
+      if (auto n(i.node()); first_ == n)
       {
-        *n = std::move(*nn);
-        n = nn;
+        first_ = n = next(n);
+
+        return {this, n};
       }
+      else
+      {
+        for (auto nn(next(n)); last_ != n; nn = next(n))
+        {
+          *n = std::move(*nn);
+          n = nn;
+        }
 
-      last_ = prev(last_);
+        last_ = prev(last_);
 
-      return {this, i.node() > last_ ? nullptr : i.node()};
+        return {this, i.node() > last_ ? nullptr : i.node()};
+      }
     }
   }
 
