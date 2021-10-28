@@ -187,7 +187,7 @@ public:
       {
         *std::prev(j) = std::move(*j);
       }
-      while (end != (j = std::next(j)));
+      while ((j = std::next(j)).node());
 
       last_ = prev(last_);
       --sz_;
