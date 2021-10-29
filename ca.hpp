@@ -59,11 +59,13 @@ public:
 
   //
   circular_array(circular_array const& o) noexcept(noexcept(*this = o))
+    requires(std::is_copy_assignable_v<T>)
   {
     *this = o;
   }
 
   circular_array(circular_array&& o) noexcept(noexcept(*this = std::move(o)))
+    requires(std::is_move_assignable_v<T>)
   {
     *this = std::move(o);
   }
