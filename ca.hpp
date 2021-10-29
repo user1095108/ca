@@ -58,22 +58,24 @@ public:
   circular_array() noexcept { first_ = last_ = &*a_; }
 
   //
-  circular_array(circular_array const& o) noexcept(noexcept(*this = o))
+  circular_array(circular_array const& o)
+    noexcept(noexcept(*this = o))
     requires(std::is_copy_assignable_v<T>)
   {
     *this = o;
   }
 
-  circular_array(circular_array&& o) noexcept(noexcept(*this = std::move(o)))
+  circular_array(circular_array&& o)
+    noexcept(noexcept(*this = std::move(o)))
     requires(std::is_move_assignable_v<T>)
   {
     *this = std::move(o);
   }
 
   //
-  circular_array& operator=(circular_array const& o) noexcept(
-    std::is_nothrow_copy_assignable_v<T>) requires(
-    std::is_copy_assignable_v<T>)
+  circular_array& operator=(circular_array const& o)
+    noexcept(std::is_nothrow_copy_assignable_v<T>)
+    requires(std::is_copy_assignable_v<T>)
   {
     std::copy(o.cbegin(), o.cend(), a_);
 
@@ -83,9 +85,9 @@ public:
     return *this;
   }
 
-  circular_array& operator=(circular_array&& o) noexcept(
-    std::is_nothrow_move_assignable_v<T>) requires(
-    std::is_move_assignable_v<T>)
+  circular_array& operator=(circular_array&& o)
+    noexcept(std::is_nothrow_move_assignable_v<T>)
+    requires(std::is_move_assignable_v<T>)
   {
     std::move(o.begin(), o.end(), a_);
 
