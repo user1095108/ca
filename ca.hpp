@@ -180,8 +180,8 @@ public:
   auto& front() const noexcept { assert(sz_); return std::as_const(*first_); }
 
   //
-  iterator erase(const_iterator const i) noexcept(
-    std::is_nothrow_move_assignable_v<T>)
+  iterator erase(const_iterator const i)
+    noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     assert(sz_);
     if (--sz_)
@@ -219,8 +219,8 @@ public:
     }
   }
 
-  iterator erase(const_iterator a, const_iterator const b) noexcept(
-    noexcept(erase(a)))
+  iterator erase(const_iterator a, const_iterator const b)
+    noexcept(noexcept(erase(a)))
   {
     iterator i(b);
 
@@ -229,7 +229,8 @@ public:
     return i;
   }
 
-  iterator erase(std::initializer_list<const_iterator> const il)
+  iterator erase(std::initializer_list<const_iterator> il)
+    noexcept(noexcept(erase(cbegin())))
   {
     iterator r;
 
@@ -260,8 +261,8 @@ public:
   }
 
   //
-  void push_back(auto&& v) noexcept(
-    noexcept(*last_ = std::forward<decltype(v)>(v)))
+  void push_back(auto&& v)
+    noexcept(noexcept(*last_ = std::forward<decltype(v)>(v)))
   {
     if (full())
     {
@@ -277,8 +278,8 @@ public:
     ++sz_;
   }
 
-  void push_front(auto&& v) noexcept(
-    noexcept(*first_ = std::forward<decltype(v)>(v)))
+  void push_front(auto&& v)
+    noexcept(noexcept(*first_ = std::forward<decltype(v)>(v)))
   {
     if (auto const f(first_); full())
     {
