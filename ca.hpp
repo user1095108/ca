@@ -339,15 +339,15 @@ constexpr auto operator<=>(circular_array<T, N> const& lhs,
 }
 
 template <typename T, std::size_t N>
-constexpr auto erase(circular_array<T, N>& c, auto const& k) noexcept(
-  std::is_nothrow_move_assignable_v<T>)
+constexpr auto erase(circular_array<T, N>& c, auto const& k)
+  noexcept(std::is_nothrow_move_assignable_v<T>)
 {
   return erase_if(c, [&](auto&& v) noexcept {return std::equal_to()(v, k);});
 }
 
 template <typename T, std::size_t N>
-constexpr auto erase_if(circular_array<T, N>& c, auto pred) noexcept(
-  std::is_nothrow_move_assignable_v<T>)
+constexpr auto erase_if(circular_array<T, N>& c, auto pred)
+  noexcept(std::is_nothrow_move_assignable_v<T>)
 {
   typename circular_array<T, N>::size_type r{};
 
