@@ -262,7 +262,7 @@ public:
 
   //
   void push_back(auto&& v)
-    noexcept(noexcept(*last_ = std::forward<decltype(v)>(v)))
+    noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
     if (full())
     {
@@ -279,7 +279,7 @@ public:
   }
 
   void push_front(auto&& v)
-    noexcept(noexcept(*first_ = std::forward<decltype(v)>(v)))
+    noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
     if (auto const f(first_); full())
     {
