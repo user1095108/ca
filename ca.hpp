@@ -17,6 +17,7 @@ class circular_array
   friend class caiterator<T, circular_array>;
   friend class caiterator<T const, circular_array const>;
 
+public:
   using value_type = T;
 
   using difference_type = std::ptrdiff_t;
@@ -29,6 +30,7 @@ class circular_array
   using iterator = caiterator<T, circular_array>;
   using reverse_iterator = std::reverse_iterator<iterator>;
 
+private:
   T* first_, *last_;
   std::size_t sz_{};
 
