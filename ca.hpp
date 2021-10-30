@@ -72,7 +72,7 @@ public:
     *this = std::move(o);
   }
 
-  //
+  // self-assign neglected
   circular_array& operator=(circular_array const& o)
     noexcept(std::is_nothrow_copy_assignable_v<T>)
     requires(std::is_copy_assignable_v<T>)
