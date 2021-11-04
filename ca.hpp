@@ -318,23 +318,21 @@ public:
 
     s(s, begin(), end(), size());
   }
+
+  friend bool operator==(circular_array const& lhs,
+    circular_array const& rhs) noexcept
+  {
+    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  }
+
+  friend auto operator<=>(circular_array const& lhs,
+    circular_array const& rhs) noexcept
+  {
+    return std::lexicographical_compare_three_way(
+      lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
+    );
+  }
 };
-
-template <typename T, std::size_t N>
-constexpr bool operator==(circular_array<T, N> const& lhs,
-  circular_array<T, N> const& rhs) noexcept
-{
-  return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-}
-
-template <typename T, std::size_t N>
-constexpr auto operator<=>(circular_array<T, N> const& lhs,
-  circular_array<T, N> const& rhs) noexcept
-{
-  return std::lexicographical_compare_three_way(
-    lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
-  );
-}
 
 template <typename T, std::size_t N>
 constexpr auto erase(circular_array<T, N>& c, auto const& k)
