@@ -2,8 +2,6 @@
 # define CA_ITERATOR_HPP
 # pragma once
 
-#include <cassert>
-
 #include <iterator>
 
 #include <type_traits>

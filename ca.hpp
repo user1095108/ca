@@ -175,17 +175,16 @@ public:
   }
 
   //
-  auto& back() noexcept { assert(sz_); return *last_; }
-  auto& back() const noexcept { assert(sz_); return std::as_const(*last_); }
+  auto& back() noexcept { return *last_; }
+  auto& back() const noexcept { return std::as_const(*last_); }
 
-  auto& front() noexcept {  assert(sz_); return *first_; }
-  auto& front() const noexcept { assert(sz_); return std::as_const(*first_); }
+  auto& front() noexcept {  return *first_; }
+  auto& front() const noexcept { return std::as_const(*first_); }
 
   //
   iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
-    assert(sz_);
     if (--sz_)
     {
       auto const nb(i.node());
@@ -244,20 +243,16 @@ public:
   //
   void pop_back() noexcept
   {
-    assert(sz_);
     if (--sz_)
     {
-      assert(first_ != last_);
       last_ = prev(last_);
     }
   }
 
   void pop_front() noexcept
   {
-    assert(sz_);
     if (--sz_)
     {
-      assert(first_ != last_);
       first_ = next(first_);
     }
   }
@@ -268,7 +263,6 @@ public:
   {
     if (full())
     {
-      assert(next(last_) == first_);
       pop_front();
     }
 
@@ -283,7 +277,6 @@ public:
   {
     if (auto const f(first_); full())
     {
-      assert(next(last_) == first_);
       *f = std::forward<decltype(v)>(v);
     }
     else
