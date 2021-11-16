@@ -34,6 +34,8 @@ public:
   using reference = value_type&;
 
 public:
+  caiterator() = default;
+
   caiterator(CA* ca, T* const n) noexcept:
     n_(n),
     ca_(ca)
