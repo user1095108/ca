@@ -301,25 +301,6 @@ public:
   }
 
   //
-  friend auto erase(circular_array& c, auto const& k)
-    noexcept(std::is_nothrow_move_assignable_v<T>)
-  {
-    return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
-  }
-
-  friend auto erase_if(circular_array& c, auto pred)
-    noexcept(std::is_nothrow_move_assignable_v<T>)
-  {
-    size_type r{};
-
-    for (auto i(c.begin()); i.node();)
-    {
-      i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
-    }
-
-    return r;
-  }
-
   void reverse() noexcept { std::swap(first_, last_); }
 
   void sort() { sort(std::less<value_type>()); }
@@ -343,6 +324,26 @@ public:
     );
 
     s(s, begin(), end(), size());
+  }
+
+  //
+  friend auto erase(circular_array& c, auto const& k)
+    noexcept(std::is_nothrow_move_assignable_v<T>)
+  {
+    return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
+  }
+
+  friend auto erase_if(circular_array& c, auto pred)
+    noexcept(std::is_nothrow_move_assignable_v<T>)
+  {
+    size_type r{};
+
+    for (auto i(c.begin()); i.node();)
+    {
+      i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
+    }
+
+    return r;
   }
 };
 
