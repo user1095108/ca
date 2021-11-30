@@ -102,6 +102,20 @@ public:
   }
 
   //
+  friend bool operator==(circular_array const& lhs,
+    circular_array const& rhs) noexcept
+  {
+    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  }
+
+  friend auto operator<=>(circular_array const& lhs,
+    circular_array const& rhs) noexcept
+  {
+    return std::lexicographical_compare_three_way(
+      lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
+    );
+  }
+
   friend bool operator!=(circular_array const&,
     circular_array const&) = default;
   friend bool operator<(circular_array const&,
@@ -287,6 +301,25 @@ public:
   }
 
   //
+  friend auto erase(circular_array& c, auto const& k)
+    noexcept(std::is_nothrow_move_assignable_v<T>)
+  {
+    return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
+  }
+
+  friend auto erase_if(circular_array& c, auto pred)
+    noexcept(std::is_nothrow_move_assignable_v<T>)
+  {
+    size_type r{};
+
+    for (auto i(c.begin()); i.node();)
+    {
+      i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
+    }
+
+    return r;
+  }
+
   void reverse() noexcept { std::swap(first_, last_); }
 
   void sort() { sort(std::less<value_type>()); }
@@ -311,42 +344,7 @@ public:
 
     s(s, begin(), end(), size());
   }
-
-  friend bool operator==(circular_array const& lhs,
-    circular_array const& rhs) noexcept
-  {
-    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-  }
-
-  friend auto operator<=>(circular_array const& lhs,
-    circular_array const& rhs) noexcept
-  {
-    return std::lexicographical_compare_three_way(
-      lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
-    );
-  }
 };
-
-template <typename T, std::size_t N>
-constexpr auto erase(circular_array<T, N>& c, auto const& k)
-  noexcept(std::is_nothrow_move_assignable_v<T>)
-{
-  return erase_if(c, [&](auto&& v) noexcept {return std::equal_to()(v, k);});
-}
-
-template <typename T, std::size_t N>
-constexpr auto erase_if(circular_array<T, N>& c, auto pred)
-  noexcept(std::is_nothrow_move_assignable_v<T>)
-{
-  typename circular_array<T, N>::size_type r{};
-
-  for (auto i(c.begin()); i.node();)
-  {
-    i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
-  }
-
-  return r;
-}
 
 }
 
