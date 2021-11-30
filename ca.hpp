@@ -56,6 +56,22 @@ private:
     return p == &*a_ ? &a_[N - 1] : p - 1;
   }
 
+  //
+  static void sort(auto const b, decltype(b) e, size_type const sz,
+    auto&& cmp)
+  {
+    if (sz > 1)
+    {
+      auto const hsz(sz / 2);
+      auto const m(std::next(b, hsz));
+
+      sort(b, m, hsz, std::forward<decltype(cmp)>(cmp));
+      sort(m, e, sz - hsz, std::forward<decltype(cmp)>(cmp));
+
+      std::inplace_merge(b, m, e, cmp);
+    }
+  }
+
 public:
   circular_array() noexcept { first_ = last_ = &*a_; }
 
@@ -304,27 +320,7 @@ public:
   void reverse() noexcept { std::swap(first_, last_); }
 
   void sort() { sort(std::less<value_type>()); }
-
-  void sort(auto cmp)
-  {
-    auto const s([&](auto&& s,
-      auto const begin, auto const end, auto const sz) -> void
-      {
-        if (sz > 1)
-        {
-          auto const hsz(sz / 2);
-          auto const m(std::next(begin, hsz));
-
-          s(s, begin, m, hsz);
-          s(s, m, end, sz - hsz);
-
-          std::inplace_merge(begin, m, end, cmp);
-        }
-      }
-    );
-
-    s(s, begin(), end(), size());
-  }
+  void sort(auto cmp) { sort(begin(), end(), size(), cmp); }
 
   //
   friend auto erase(circular_array& c, auto const& k)
@@ -344,6 +340,16 @@ public:
     }
 
     return r;
+  }
+
+  friend void sort(iterator const b, decltype(b) e)
+  {
+    sort(b, e, std::distance(b, e), std::less<value_type>());
+  }
+
+  friend void sort(iterator const b, decltype(b) e, auto cmp)
+  {
+    sort(b, e, std::distance(b, e), cmp);
   }
 };
 
