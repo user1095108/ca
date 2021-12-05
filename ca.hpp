@@ -10,12 +10,12 @@ namespace ca
 {
 
 template <typename T, std::size_t N>
-class circular_array
+class array
 {
   static_assert(N);
 
-  friend class caiterator<T, circular_array>;
-  friend class caiterator<T const, circular_array const>;
+  friend class caiterator<T, array>;
+  friend class caiterator<T const, array const>;
 
 public:
   using value_type = T;
@@ -25,9 +25,9 @@ public:
   using reference = value_type&;
   using const_reference = value_type const&;
 
-  using const_iterator = caiterator<T const, circular_array const>;
+  using const_iterator = caiterator<T const, array const>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-  using iterator = caiterator<T, circular_array>;
+  using iterator = caiterator<T, array>;
   using reverse_iterator = std::reverse_iterator<iterator>;
 
 private:
@@ -73,17 +73,17 @@ private:
   }
 
 public:
-  circular_array() noexcept { first_ = last_ = &*a_; }
+  array() noexcept { first_ = last_ = &*a_; }
 
   //
-  circular_array(circular_array const& o)
+  array(array const& o)
     noexcept(noexcept(*this = o))
     requires(std::is_copy_assignable_v<T>)
   {
     *this = o;
   }
 
-  circular_array(circular_array&& o)
+  array(array&& o)
     noexcept(noexcept(*this = std::move(o)))
     requires(std::is_move_assignable_v<T>)
   {
@@ -91,7 +91,7 @@ public:
   }
 
   // self-assign neglected
-  circular_array& operator=(circular_array const& o)
+  array& operator=(array const& o)
     noexcept(std::is_nothrow_copy_assignable_v<T>)
     requires(std::is_copy_assignable_v<T>)
   {
@@ -103,7 +103,7 @@ public:
     return *this;
   }
 
-  circular_array& operator=(circular_array&& o)
+  array& operator=(array&& o)
     noexcept(std::is_nothrow_move_assignable_v<T>)
     requires(std::is_move_assignable_v<T>)
   {
@@ -118,30 +118,23 @@ public:
   }
 
   //
-  friend bool operator==(circular_array const& lhs,
-    circular_array const& rhs) noexcept
+  friend bool operator==(array const& lhs, array const& rhs) noexcept
   {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
   }
 
-  friend auto operator<=>(circular_array const& lhs,
-    circular_array const& rhs) noexcept
+  friend auto operator<=>(array const& lhs, array const& rhs) noexcept
   {
     return std::lexicographical_compare_three_way(
       lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
     );
   }
 
-  friend bool operator!=(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator<(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator<=(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator>(circular_array const&,
-    circular_array const&) = default;
-  friend bool operator>=(circular_array const&,
-    circular_array const&) = default;
+  friend bool operator!=(array const&, array const&) = default;
+  friend bool operator<(array const&, array const&) = default;
+  friend bool operator<=(array const&, array const&) = default;
+  friend bool operator>(array const&, array const&) = default;
+  friend bool operator>=(array const&, array const&) = default;
 
   // iterators
   iterator begin() noexcept { return {this, size() ? first_ : nullptr}; }
@@ -325,13 +318,13 @@ public:
   }
 
   //
-  friend auto erase(circular_array& c, auto const& k)
+  friend auto erase(array& c, auto const& k)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
   }
 
-  friend auto erase_if(circular_array& c, auto pred)
+  friend auto erase_if(array& c, auto pred)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     size_type r{};
