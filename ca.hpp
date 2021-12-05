@@ -349,7 +349,7 @@ public:
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
-    sort(b, e, std::distance(b, e), std::less<value_type>());
+    sort(b, e, std::distance(b, e), cmp);
   }
 };
 
