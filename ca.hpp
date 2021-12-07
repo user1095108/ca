@@ -312,10 +312,12 @@ public:
   //
   void reverse() noexcept { std::swap(first_, last_); }
 
-  void sort(auto cmp = std::less<value_type>())
+  void sort(auto&& cmp)
   {
-    sort(begin(), end(), size(), cmp);
+    sort(begin(), end(), size(), std::forward<decltype(cmp)>(cmp));
   }
+
+  void sort() { sort(std::less<value_type>()); }
 
   //
   friend auto erase(array& c, auto const& k)
@@ -337,12 +339,18 @@ public:
     return r;
   }
 
-  friend void sort(auto const b, decltype(b) e,
-    auto cmp = std::less<value_type>())
+  friend void sort(auto const b, decltype(b) e, auto&& cmp)
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
-    sort(b, e, std::distance(b, e), cmp);
+    sort(b, e, std::distance(b, e), std::forward<decltype(cmp)>(cmp));
+  }
+
+  friend void sort(auto const b, decltype(b) e)
+    requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
+      std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
+  {
+    sort(b, e, std::less<value_type>());
   }
 };
 
