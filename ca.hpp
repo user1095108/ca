@@ -324,12 +324,12 @@ public:
   //
   void reverse() noexcept { std::swap(first_, last_); }
 
+  void sort() { sort(std::less<value_type>()); }
+
   void sort(auto&& cmp)
   {
     sort(begin(), end(), size(), std::forward<decltype(cmp)>(cmp));
   }
-
-  void sort() { sort(std::less<value_type>()); }
 
   //
   friend auto erase(array& c, auto const& k)
