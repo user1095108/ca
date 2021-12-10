@@ -38,22 +38,34 @@ private:
 
   auto next(auto const p) noexcept
   {
-    return p == &a_[N - 1] ? &*a_ : p + 1;
+    if constexpr(N & (N - 1))
+      return p == &a_[N - 1] ? &*a_ : p + 1;
+    else
+      return &a_[(p - &*a_ + 1) & (N - 1)];
   }
 
   auto next(auto const p) const noexcept
   {
-    return p == &a_[N - 1] ? &*a_ : p + 1;
+    if constexpr(N & (N - 1))
+      return p == &a_[N - 1] ? &*a_ : p + 1;
+    else
+      return &a_[(p - &*a_ + 1) & (N - 1)];
   }
 
   auto prev(auto const p) noexcept
   {
-    return p == &*a_ ? &a_[N - 1] : p - 1;
+    if constexpr(N & (N - 1))
+      return p == &*a_ ? &a_[N - 1] : p - 1;
+    else
+      return &a_[(p - &*a_ - 1) & (N - 1)];
   }
 
   auto prev(auto const p) const noexcept
   {
-    return p == &*a_ ? &a_[N - 1] : p - 1;
+    if constexpr(N & (N - 1))
+      return p == &*a_ ? &a_[N - 1] : p - 1;
+    else
+      return &a_[(p - &*a_ - 1) & (N - 1)];
   }
 
   //
