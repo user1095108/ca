@@ -109,7 +109,7 @@ public:
   {
     std::copy(o.cbegin(), o.cend(), a_);
 
-    first_ = a_ + (o.first - o.a_); last_ = a_ + (o.last_ - o.a_);
+    first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
     sz_ = o.sz_;
 
     return *this;
@@ -121,7 +121,7 @@ public:
   {
     std::move(o.begin(), o.end(), a_);
 
-    first_ = a_ + (o.first - o.a_); last_ = a_ + (o.last_ - o.a_);
+    first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
     sz_ = o.sz_;
 
     o.first_ = o.last_ = {}; o.sz_ = {};
@@ -226,9 +226,10 @@ public:
 
       if (auto n(nb); nb - first_ <= last_ - nb)
       {
-        for (decltype(n) pn; first_ != n;)
+        for (; first_ != n;)
         {
-          *n = std::move(*(pn = prev(n)));
+          auto const pn(prev(n));
+          *n = std::move(*pn);
           n = pn;
         }
 
@@ -238,9 +239,10 @@ public:
       }
       else
       {
-        for (decltype(n) nn; last_ != n;)
+        for (; last_ != n;)
         {
-          *n = std::move(*(nn = next(n)));
+          auto const nn(next(n));
+          *n = std::move(*nn);
           n = nn;
         }
 
