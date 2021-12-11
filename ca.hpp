@@ -31,7 +31,7 @@ public:
   using reverse_iterator = std::reverse_iterator<iterator>;
 
 private:
-  T* first_, *last_;
+  T* first_{&*a_}, *last_{&*a_};
   std::size_t sz_{};
 
   T a_[N];
@@ -85,7 +85,7 @@ private:
   }
 
 public:
-  array() noexcept { first_ = last_ = &*a_; }
+  array() = default;
 
   //
   array(array const& o)
