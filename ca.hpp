@@ -251,7 +251,7 @@ public:
     }
     else
     {
-      return {this, nullptr};
+      return {this, {}};
     }
   }
 
