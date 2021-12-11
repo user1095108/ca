@@ -226,9 +226,9 @@ public:
 
       if (auto n(nb); nb - first_ <= last_ - nb)
       {
-        for (auto pn(prev(n)); first_ != n; pn = prev(n))
+        for (decltype(n) pn; first_ != n;)
         {
-          *n = std::move(*pn);
+          *n = std::move(*(pn = prev(n)));
           n = pn;
         }
 
@@ -238,9 +238,9 @@ public:
       }
       else
       {
-        for (auto nn(next(n)); last_ != n; nn = next(n))
+        for (decltype(n) nn; last_ != n;)
         {
-          *n = std::move(*nn);
+          *n = std::move(*(nn = next(n)));
           n = nn;
         }
 
