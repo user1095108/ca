@@ -295,6 +295,32 @@ public:
   }
 
   //
+  void push(const_iterator const i, auto&& v)
+    noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
+  {
+    if (full())
+    {
+      pop_back();
+    }
+
+    auto const nb(i.node());
+
+    if (size())
+    {
+      last_ = next(last_);
+
+      for (auto n(last_); nb != n;)
+      {
+        auto const pn(prev(n));
+        *n = std::move(*pn);
+        n = pn;
+      }
+    }
+
+    *nb = std::forward<decltype(v)>(v);
+    ++sz_;
+  }
+
   void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
@@ -304,7 +330,6 @@ public:
     }
 
     auto const l(last_);
-
     *(empty() ? l : last_ = next(l)) = std::forward<decltype(v)>(v);
     ++sz_;
   }
