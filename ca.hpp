@@ -279,21 +279,8 @@ public:
   }
 
   //
-  void pop_back() noexcept
-  {
-    if (--sz_)
-    {
-      last_ = prev(last_);
-    }
-  }
-
-  void pop_front() noexcept
-  {
-    if (--sz_)
-    {
-      first_ = next(first_);
-    }
-  }
+  void pop_back() noexcept { if (--sz_) { last_ = prev(last_); } }
+  void pop_front() noexcept { if (--sz_) { first_ = next(first_); } }
 
   //
   void push(const_iterator const i, auto&& v)
@@ -304,10 +291,11 @@ public:
       pop_front();
     }
 
-    auto const nb(i.node());
+    T* nb;
 
     if (size())
     {
+      nb = i.node();
       auto const f(first_ = prev(first_));
 
       for (auto n(nb); f != n;)
@@ -316,6 +304,10 @@ public:
         *n = std::move(*pn);
         n = pn;
       }
+    }
+    else
+    {
+      nb = first_;
     }
 
     *nb = std::forward<decltype(v)>(v);
