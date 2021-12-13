@@ -300,16 +300,16 @@ public:
   {
     if (full())
     {
-      pop_back();
+      pop_front();
     }
 
     auto const nb(i.node());
 
     if (size())
     {
-      last_ = next(last_);
+      first_ = prev(first_);
 
-      for (auto n(last_); nb != n;)
+      for (auto n(nb); first_ != n;)
       {
         auto const pn(prev(n));
         *n = std::move(*pn);
@@ -330,6 +330,7 @@ public:
     }
 
     auto const l(last_);
+
     *(empty() ? l : last_ = next(l)) = std::forward<decltype(v)>(v);
     ++sz_;
   }
