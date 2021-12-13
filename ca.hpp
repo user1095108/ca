@@ -226,7 +226,9 @@ public:
 
       if (auto n(nb); nb - first_ <= last_ - nb)
       {
-        for (; first_ != n;)
+        auto const f(first_);
+
+        for (; f != n;)
         {
           auto const pn(prev(n));
           *n = std::move(*pn);
@@ -239,16 +241,18 @@ public:
       }
       else
       {
-        for (; last_ != n;)
+        auto l(last_);
+
+        for (; l != n;)
         {
           auto const nn(next(n));
           *n = std::move(*nn);
           n = nn;
         }
 
-        last_ = prev(last_);
+        last_ = l = prev(l);
 
-        return {this, nb > last_ ? nullptr : nb};
+        return {this, nb > l ? nullptr : nb};
       }
     }
     else
@@ -307,9 +311,9 @@ public:
 
     if (size())
     {
-      first_ = prev(first_);
+      auto const f(first_ = prev(first_));
 
-      for (auto n(nb); first_ != n;)
+      for (auto n(nb); f != n;)
       {
         auto const pn(prev(n));
         *n = std::move(*pn);
