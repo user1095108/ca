@@ -226,9 +226,7 @@ public:
 
       if (auto n(nb); nb - first_ <= last_ - nb)
       {
-        auto const f(first_);
-
-        for (; f != n;)
+        for (auto const f(first_); f != n;)
         {
           auto const pn(prev(n));
           *n = std::move(*pn);
@@ -241,7 +239,7 @@ public:
       }
       else
       {
-        auto l(last_);
+        auto const l(last_);
 
         for (; l != n;)
         {
@@ -250,9 +248,9 @@ public:
           n = nn;
         }
 
-        last_ = l = prev(l);
+        last_ = prev(l);
 
-        return {this, nb > l ? nullptr : nb};
+        return {this, nb == l ? nullptr : nb};
       }
     }
     else
