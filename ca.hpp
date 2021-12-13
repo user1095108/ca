@@ -195,7 +195,6 @@ public:
   bool empty() const noexcept { return !size(); }
   bool full() const noexcept { return N == size(); }
   auto max_size() const noexcept { return ~std::size_t(); }
-
   auto size() const noexcept { return sz_; }
 
   //
