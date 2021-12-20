@@ -212,7 +212,7 @@ public:
   auto& back() noexcept { return *last_; }
   auto& back() const noexcept { return std::as_const(*last_); }
 
-  auto& front() noexcept {  return *first_; }
+  auto& front() noexcept { return *first_; }
   auto& front() const noexcept { return std::as_const(*first_); }
 
   //
