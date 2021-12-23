@@ -36,36 +36,28 @@ private:
 
   T a_[N];
 
-  auto next(auto const p) noexcept
+  template <difference_type I = 1>
+  auto next(auto const p) noexcept requires ((I == 1) || (I == -1))
   {
     if constexpr(N & (N - 1))
-      return p == &a_[N - 1] ? &*a_ : p + 1;
+      if constexpr(1 == I)
+        return p == &a_[N - 1] ? &*a_ : p + 1;
+      else
+        return p == &*a_ ? &a_[N - 1] : p - 1;
     else
-      return &a_[(p - &*a_ + 1) & (N - 1)];
+      return &a_[(p - &*a_ + I) & (N - 1)];
   }
 
-  auto next(auto const p) const noexcept
+  template <difference_type I = 1>
+  auto next(auto const p) const noexcept requires ((I == 1) || (I == -1))
   {
     if constexpr(N & (N - 1))
-      return p == &a_[N - 1] ? &*a_ : p + 1;
+      if constexpr(1 == I)
+        return p == &a_[N - 1] ? &*a_ : p + 1;
+      else
+        return p == &*a_ ? &a_[N - 1] : p - 1;
     else
-      return &a_[(p - &*a_ + 1) & (N - 1)];
-  }
-
-  auto prev(auto const p) noexcept
-  {
-    if constexpr(N & (N - 1))
-      return p == &*a_ ? &a_[N - 1] : p - 1;
-    else
-      return &a_[(p - &*a_ - 1) & (N - 1)];
-  }
-
-  auto prev(auto const p) const noexcept
-  {
-    if constexpr(N & (N - 1))
-      return p == &*a_ ? &a_[N - 1] : p - 1;
-    else
-      return &a_[(p - &*a_ - 1) & (N - 1)];
+      return &a_[(p - &*a_ + I) & (N - 1)];
   }
 
   //
@@ -227,14 +219,14 @@ public:
       {
         for (auto const f(first_); f != n;)
         {
-          auto const pn(prev(n));
+          auto const pn(next<-1>(n));
           *n = std::move(*pn);
           n = pn;
         }
 
-        first_ = next(first_);
+        first_ = next<1>(first_);
 
-        return {this, next(nb)};
+        return {this, next<1>(nb)};
       }
       else
       {
@@ -242,12 +234,12 @@ public:
 
         for (; l != n;)
         {
-          auto const nn(next(n));
+          auto const nn(next<1>(n));
           *n = std::move(*nn);
           n = nn;
         }
 
-        last_ = prev(l);
+        last_ = next<-1>(l);
 
         return {this, nb == l ? nullptr : nb};
       }
@@ -279,8 +271,8 @@ public:
   }
 
   //
-  void pop_back() noexcept { if (--sz_) { last_ = prev(last_); } }
-  void pop_front() noexcept { if (--sz_) { first_ = next(first_); } }
+  void pop_back() noexcept { if (--sz_) { last_ = next<-1>(last_); } }
+  void pop_front() noexcept { if (--sz_) { first_ = next<1>(first_); } }
 
   //
   void push(const_iterator const i, auto&& v)
@@ -296,11 +288,11 @@ public:
     if (size())
     {
       nb = i.node();
-      auto const f(first_ = prev(first_));
+      auto const f(first_ = next<-1>(first_));
 
       for (auto n(nb); f != n;)
       {
-        auto const pn(prev(n));
+        auto const pn(next<-1>(n));
         *n = std::move(*pn);
         n = pn;
       }
@@ -324,7 +316,7 @@ public:
 
     auto const l(last_);
 
-    *(empty() ? l : last_ = next(l)) = std::forward<decltype(v)>(v);
+    *(empty() ? l : last_ = next<1>(l)) = std::forward<decltype(v)>(v);
     ++sz_;
   }
 
@@ -337,7 +329,7 @@ public:
     }
     else
     {
-      *(empty() ? f : first_ = prev(f)) = std::forward<decltype(v)>(v);
+      *(empty() ? f : first_ = next<-1>(f)) = std::forward<decltype(v)>(v);
       ++sz_;
     }
   }
