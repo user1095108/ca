@@ -36,26 +36,24 @@ private:
 
   T a_[N];
 
-  template <difference_type I = 1>
+  template <difference_type I>
   auto next(auto const p) noexcept requires ((I == 1) || (I == -1))
   {
-    if constexpr(N & (N - 1))
-      if constexpr(1 == I)
-        return p == &a_[N - 1] ? &*a_ : p + 1;
-      else
-        return p == &*a_ ? &a_[N - 1] : p - 1;
+    if constexpr((N & (N - 1)) && (1 == I))
+      return p == &a_[N - 1] ? &*a_ : p + 1;
+    else if constexpr((N & (N - 1)) && (-1 == I))
+      return p == &*a_ ? &a_[N - 1] : p - 1;
     else
       return &a_[(p - &*a_ + I) & (N - 1)];
   }
 
-  template <difference_type I = 1>
+  template <difference_type I>
   auto next(auto const p) const noexcept requires ((I == 1) || (I == -1))
   {
-    if constexpr(N & (N - 1))
-      if constexpr(1 == I)
-        return p == &a_[N - 1] ? &*a_ : p + 1;
-      else
-        return p == &*a_ ? &a_[N - 1] : p - 1;
+    if constexpr((N & (N - 1)) && (1 == I))
+      return p == &a_[N - 1] ? &*a_ : p + 1;
+    else if constexpr((N & (N - 1)) && (-1 == I))
+      return p == &*a_ ? &a_[N - 1] : p - 1;
     else
       return &a_[(p - &*a_ + I) & (N - 1)];
   }
