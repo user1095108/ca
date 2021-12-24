@@ -37,7 +37,7 @@ private:
   T a_[N];
 
   template <difference_type I>
-  auto next(auto const p) noexcept requires ((I == 1) || (I == -1))
+  auto next(auto const p) noexcept requires ((1 == I) || (-1 == I))
   {
     if constexpr((N & (N - 1)) && (1 == I))
       return p == &a_[N - 1] ? &*a_ : p + 1;
@@ -48,7 +48,7 @@ private:
   }
 
   template <difference_type I>
-  auto next(auto const p) const noexcept requires ((I == 1) || (I == -1))
+  auto next(auto const p) const noexcept requires ((1 == I) || (-1 == I))
   {
     if constexpr((N & (N - 1)) && (1 == I))
       return p == &a_[N - 1] ? &*a_ : p + 1;
