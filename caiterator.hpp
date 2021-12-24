@@ -80,10 +80,7 @@ public:
   auto& operator*() const noexcept { return *n_; }
 
   //
-  auto node() const noexcept
-  {
-    return const_cast<std::remove_const_t<T>*>(n_);
-  }
+  auto n() const noexcept { return const_cast<std::remove_const_t<T>*>(n_); }
 };
 
 }

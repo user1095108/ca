@@ -211,7 +211,7 @@ public:
   {
     if (--sz_)
     {
-      auto const nb(i.node());
+      auto const nb(i.n());
 
       if (auto n(nb); nb - first_ <= last_ - nb)
       {
@@ -285,7 +285,7 @@ public:
 
     if (size())
     {
-      nb = i.node();
+      nb = i.n();
       auto const f(first_ = next<-1>(first_));
 
       for (auto n(nb); f != n;)
@@ -354,7 +354,7 @@ public:
   {
     size_type r{};
 
-    for (auto i(c.begin()); i.node();)
+    for (auto i(c.begin()); i.n();)
     {
       i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
     }
