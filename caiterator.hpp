@@ -34,7 +34,7 @@ public:
 public:
   caiterator() = default;
 
-  caiterator(CA* ca, T* const n) noexcept:
+  caiterator(CA* const ca, T* const n) noexcept:
     n_(n),
     ca_(ca)
   {
