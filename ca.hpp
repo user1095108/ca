@@ -85,16 +85,20 @@ private:
 
 public:
   array()
-    noexcept(((MEMBER == M) && std::is_nothrow_constructible_v<array_t>) ||
-      ((NEW == M) && noexcept(new array_t)))
+    noexcept(
+      ((MEMBER == M) && std::is_nothrow_default_constructible_v<array_t>) ||
+      ((NEW == M) && noexcept(new array_t))
+    )
   {
     if constexpr(NEW == M) a_ = new T[N];
     first_ = last_ = a_;
   }
 
   ~array()
-    noexcept(((MEMBER == M) && std::is_nothrow_constructible_v<array_t>) ||
-      ((NEW == M) && noexcept(new array_t)))
+    noexcept(
+      ((MEMBER == M) && std::is_nothrow_default_constructible_v<array_t>) ||
+      ((NEW == M) && noexcept(new array_t))
+    )
   {
     if constexpr(NEW == M) delete [] a_;
   }
