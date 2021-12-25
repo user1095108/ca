@@ -10,7 +10,9 @@
 namespace ca
 {
 
-template <typename T, std::size_t N>
+enum Method { MEMBER, NEW };
+
+template <typename T, std::size_t N, enum Method M = MEMBER>
 class array
 {
   static_assert(N);
@@ -32,10 +34,14 @@ public:
   using reverse_iterator = std::reverse_iterator<iterator>;
 
 private:
-  T* first_{&*a_}, *last_{&*a_};
+  T* first_, *last_;
   std::size_t sz_{};
 
-  T a_[N];
+  std::conditional_t<
+    MEMBER == M,
+    T[N],
+    std::conditional_t<NEW == M, T*, void>
+  > a_;
 
   template <difference_type I>
   auto next(auto const p) noexcept requires ((1 == I) || (-1 == I))
@@ -76,7 +82,20 @@ private:
   }
 
 public:
-  array() = default;
+  array()
+  {
+    if constexpr(NEW == M)
+    {
+      a_ = new T[N];
+    }
+
+    first_ = last_ = a_;
+  }
+
+  ~array() noexcept(MEMBER == M)
+  {
+    if constexpr(NEW == M) delete [] a_;
+  }
 
   //
   array(array const& o)
@@ -110,8 +129,21 @@ public:
     noexcept(std::is_nothrow_move_assignable_v<T>)
     requires(std::is_move_assignable_v<T>)
   {
-    first_ = o.first_; last_ = o.last_; sz_ = o.sz_;
-    o.first_ = o.last_ = {}; o.sz_ = {};
+    if constexpr(MEMBER == M)
+    {
+      std::move(o.begin(), o.end(), a_);
+      first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
+    }
+    else
+    {
+      swap(o);
+    }
+
+    sz_ = o.sz_;
+
+    //
+    o.first_ = o.last_;
+    o.sz_ = {};
 
     return *this;
   }
@@ -339,6 +371,14 @@ public:
     sort(begin(), end(), size(), std::forward<decltype(cmp)>(cmp));
   }
 
+  void swap(array& o) noexcept
+    requires(NEW == M)
+  {
+    std::swap(first_, o.first_);
+    std::swap(last_, o.last_);
+    std::swap(sz_, o.sz_);
+  }
+
   //
   friend auto erase(array& c, auto const& k)
     noexcept(std::is_nothrow_move_assignable_v<T>)
@@ -371,6 +411,12 @@ public:
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
     sort(b, e, std::distance(b, e), std::forward<decltype(cmp)>(cmp));
+  }
+
+  friend void swap(array& lhs, decltype(lhs) rhs) noexcept
+    requires(NEW == M)
+  {
+    lhs.swap(rhs);
   }
 };
 
