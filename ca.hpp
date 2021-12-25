@@ -136,7 +136,7 @@ public:
     }
     else
     {
-      first_ = o.first_; last_ = o.last_; a_ = o.a_;
+      swap(o.a_);
     }
 
     sz_ = o.sz_;
