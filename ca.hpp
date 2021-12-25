@@ -82,7 +82,7 @@ private:
   }
 
 public:
-  array()
+  array() noexcept(MEMBER == M)
   {
     if constexpr(NEW == M)
     {
@@ -92,10 +92,7 @@ public:
     first_ = last_ = a_;
   }
 
-  ~array() noexcept(MEMBER == M)
-  {
-    if constexpr(NEW == M) delete [] a_;
-  }
+  ~array() noexcept(MEMBER == M) { if constexpr(NEW == M) delete [] a_; }
 
   //
   array(array const& o)
@@ -142,8 +139,8 @@ public:
     sz_ = o.sz_;
 
     //
-    o.first_ = o.last_;
     o.sz_ = {};
+    o.first_ = o.last_;
 
     return *this;
   }
