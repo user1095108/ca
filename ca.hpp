@@ -249,7 +249,7 @@ public:
       iterator const j(this, i.n());
       auto const nxt(std::next(j));
 
-      if (std::distance(cbegin(), i) <= std::distance(i, {this, last_}))
+      if (std::distance(begin(), j) <= std::distance(nxt, end()))
       {
         std::move_backward(begin(), j, nxt);
         first_ = next<1>(first_);
@@ -312,7 +312,7 @@ public:
       {
         iterator const j(this, i.n());
 
-        if (std::distance(cbegin(), i) < std::distance(i, cend()))
+        if (std::distance(begin(), j) <= std::distance(j, end()))
         {
           auto const f(first_);
           first_ = next<-1>(f);
@@ -320,11 +320,9 @@ public:
           n = std::move(iterator(this, f), j, begin()).n();
           break;
         }
-        else if (last_ = next<1>(last_); i.n())
+        else if (last_ = next<1>(last_); j.n())
         {
-          n = i.n();
-
-          std::move_backward(j, {this, last_}, end());
+          n = std::move_backward(j, {this, last_}, end()).n();
           break;
         }
       }
