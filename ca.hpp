@@ -306,26 +306,42 @@ public:
       pop_front();
     }
 
-    T* nb;
+    T* n;
 
     if (size())
     {
-      nb = i.n();
-      auto const f(first_ = next<-1>(first_));
+      iterator const j(this, i.n());
 
-      for (auto n(nb); f != n;)
+      if (std::distance(cbegin(), i) < std::distance(i, cend()) - 1)
       {
-        auto const pn(next<-1>(n));
-        *n = std::move(*pn);
-        n = pn;
+        auto const b(begin());
+        first_ = next<-1>(first_);
+
+        std::move(b, j, begin());
+
+        n = prev(i.n());
+      }
+      else
+      {
+        last_ = next<1>(last_);
+
+        if (i.n())
+        {
+          std::move(j, iterator(this, last_), std::next(j));
+          n = i.n();
+        }
+        else
+        {
+          n = last_;
+        }
       }
     }
     else
     {
-      nb = first_;
+      n = first_;
     }
 
-    *nb = std::forward<decltype(v)>(v);
+    *n = std::forward<decltype(v)>(v);
     ++sz_;
   }
 
