@@ -244,7 +244,7 @@ public:
   iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
-    if (--sz_)
+    if (--sz_) // sz_ >= 2
     {
       iterator const j(this, i.n());
       auto const nxt(std::next(j));
