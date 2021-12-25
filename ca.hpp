@@ -217,7 +217,7 @@ public:
 
   //
   void clear() noexcept { first_ = last_; sz_ = {}; }
-  bool empty() const noexcept { return !sz_; }
+  bool empty() const noexcept { return !size(); }
   bool full() const noexcept { return N == size(); }
   auto max_size() const noexcept { return ~std::size_t(); }
   auto size() const noexcept { return sz_; }
@@ -343,7 +343,8 @@ public:
   {
     if (full())
     {
-      pop_front();
+      --sz_;
+      first_ = next<1>(first_);
     }
 
     auto const l(last_);
