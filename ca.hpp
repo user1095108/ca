@@ -246,9 +246,8 @@ public:
   {
     if (--sz_)
     {
-      auto const nb(i.n());
-
-      if (auto n(nb); nb - first_ <= last_ - nb)
+      if (auto n(i.n()); std::distance(begin(), iterator(this, n)) <=
+        std::distance(iterator(this, n), iterator(this, last_)))
       {
         for (auto const f(first_); f != n;)
         {
@@ -259,7 +258,7 @@ public:
 
         first_ = next<1>(first_);
 
-        return {this, next<1>(nb)};
+        return {this, next<1>(i.n())};
       }
       else
       {
@@ -274,7 +273,7 @@ public:
 
         last_ = next<-1>(l);
 
-        return {this, nb == l ? nullptr : nb};
+        return {this, i.n() == l ? nullptr : i.n()};
       }
     }
     else
