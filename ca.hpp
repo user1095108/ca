@@ -136,7 +136,7 @@ public:
     }
     else
     {
-      swap(o.a_);
+      swap(o);
     }
 
     sz_ = o.sz_;
