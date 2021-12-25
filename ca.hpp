@@ -320,8 +320,10 @@ public:
           n = std::move(iterator(this, f), j, begin()).n();
           break;
         }
-        else if (last_ = next<1>(last_); j.n())
+        else
         {
+          last_ = next<1>(last_);
+
           n = std::move_backward(j, {this, last_}, end()).n();
           break;
         }
