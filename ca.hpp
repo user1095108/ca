@@ -248,8 +248,7 @@ public:
     {
       iterator const j(this, i.n());
 
-      if (std::distance(cbegin(), i) <=
-        std::distance(i, const_iterator(this, last_)))
+      if (std::distance(cbegin(), i) <= std::distance(i, {this, last_}))
       {
         std::move_backward(begin(), j, j);
 
@@ -308,39 +307,37 @@ public:
 
     T* n;
 
-    if (size())
+    do
     {
-      if (iterator const j(this, i.n());
-        std::distance(cbegin(), i) < std::distance(i, cend()))
+      if (size())
       {
-        auto const f(first_);
-        first_ = next<-1>(f);
-
-        std::move(iterator(this, f), j, begin());
-
-        n = next<-1>(i.n());
-      }
-      else
-      {
-        last_ = next<1>(last_);
-
-        if (i.n())
+        if (std::distance(cbegin(), i) <= std::distance(i, cend()))
         {
-          n = i.n();
+          auto const f(first_);
+          first_ = next<-1>(f);
 
-          iterator const k{this, last_};
-          std::move_backward(j, k, k);
+          std::move(iterator(this, f), {this, i.n()}, begin());
+
+          n = next<-1>(i.n());
+          break;
         }
         else
         {
-          n = last_;
+          last_ = next<1>(last_);
+
+          if (i.n())
+          {
+            n = i.n();
+
+            iterator const k{this, last_};
+            std::move_backward(iterator{this, i.n()}, k, k);
+            break;
+          }
         }
       }
-    }
-    else
-    {
-      n = first_;
-    }
+
+      n = last_;
+    } while (false);
 
     *n = std::forward<decltype(v)>(v);
     ++sz_;
