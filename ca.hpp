@@ -247,24 +247,20 @@ public:
     if (--sz_)
     {
       iterator const j(this, i.n());
+      auto const nxt(std::next(j));
 
-      if (std::distance(cbegin(), i) <= std::distance(i, {this, last_}))
+      if (std::distance(cbegin(), i) < std::distance(i, {this, last_}))
       {
-        std::move_backward(begin(), j, j);
-
+        std::move_backward(begin(), j, nxt);
         first_ = next<1>(first_);
-
-        return std::next(j);
       }
       else
       {
-        std::move(std::next(j), end(), j);
-
-        auto const l(last_);
-        last_ = next<-1>(l);
-
-        return i.n() == l ? end() : j;
+        std::move(nxt, end(), j);
+        last_ = next<-1>(last_);
       }
+
+      return nxt;
     }
     else
     {
@@ -311,22 +307,23 @@ public:
     {
       if (size())
       {
-        if (std::distance(cbegin(), i) <= std::distance(i, cend()))
+        iterator const j(this, i.n());
+
+        if (std::distance(cbegin(), i) < std::distance(i, cend()))
         {
+          n = next<-1>(i.n());
+
           auto const f(first_);
           first_ = next<-1>(f);
 
-          std::move(iterator(this, f), {this, i.n()}, begin());
-
-          n = next<-1>(i.n());
+          std::move(iterator(this, f), j, begin());
           break;
         }
         else if (last_ = next<1>(last_); i.n())
         {
           n = i.n();
 
-          iterator const k{this, last_};
-          std::move_backward(iterator{this, i.n()}, k, k);
+          std::move_backward(j, {this, last_}, end());
           break;
         }
       }
