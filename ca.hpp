@@ -85,7 +85,7 @@ public:
   array()
     noexcept(
       ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(new array_t))
+      ((NEW == M) && noexcept(new T[N]))
     )
   {
     if constexpr(NEW == M) a_ = new T[N];
@@ -95,7 +95,7 @@ public:
   ~array()
     noexcept(
       ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(new array_t))
+      ((NEW == M) && noexcept(new new T[N]))
     )
   {
     if constexpr(NEW == M) delete [] a_;
