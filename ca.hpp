@@ -37,9 +37,11 @@ private:
   T* first_, *last_;
   std::size_t sz_{};
 
+  using array_t = T[N];
+
   std::conditional_t<
     MEMBER == M,
-    T[N],
+    array_t,
     std::conditional_t<NEW == M, T*, void>
   > a_;
 
@@ -82,15 +84,17 @@ private:
   }
 
 public:
-  array() noexcept(((MEMBER == M) && noexcept((T[N]){})) ||
-    ((NEW == M) && noexcept(new T[N])))
+  array()
+    noexcept(((MEMBER == M) && std::is_nothrow_constructible_v<array_t>) ||
+      ((NEW == M) && noexcept(new array_t)))
   {
     if constexpr(NEW == M) a_ = new T[N];
     first_ = last_ = a_;
   }
 
-  ~array() noexcept(((MEMBER == M) && noexcept((T[N]){})) ||
-    ((NEW == M) && noexcept(new T[N])))
+  ~array()
+    noexcept(((MEMBER == M) && std::is_nothrow_constructible_v<array_t>) ||
+      ((NEW == M) && noexcept(new array_t)))
   {
     if constexpr(NEW == M) delete [] a_;
   }
