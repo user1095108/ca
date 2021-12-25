@@ -136,14 +136,13 @@ public:
     }
     else
     {
-      swap(o);
+      first_ = o.first_; last_ = o.last_; a_ = o.a_;
     }
 
     sz_ = o.sz_;
 
     //
-    o.sz_ = {};
-    o.first_ = o.last_;
+    o.sz_ = {}; o.first_ = o.last_;
 
     return *this;
   }
