@@ -251,26 +251,21 @@ public:
 
       if (std::distance(begin(), j) <= std::distance(nxt, end()))
       {
-        std::move_backward(begin(), j, nxt);
-        first_ = next<1>(first_);
+        first_ = std::move_backward(begin(), j, nxt).n();
         return nxt;
       }
       else if (nxt.n())
       {
-        std::move(nxt, end(), j);
-        last_ = next<-1>(last_);
+        last_ = std::move(nxt, end(), j).n();
         return j;
       }
       else
       {
         last_ = next<-1>(last_);
-        return nxt;
       }
     }
-    else
-    {
-      return end();
-    }
+
+    return end();
   }
 
   iterator erase(const_iterator a, const_iterator const b)
