@@ -114,7 +114,8 @@ public:
   {
     swap(o);
 
-    o.first_ = o.last_ = o.a_; o.sz_ = {};
+    o.first_ = o.last_;
+    o.sz_ = {};
 
     return *this;
   }
@@ -382,6 +383,8 @@ public:
   {
     sort(b, e, std::distance(b, e), std::forward<decltype(cmp)>(cmp));
   }
+
+  friend void swap(array2& lhs, decltype(lhs) rhs) noexcept { lhs.swap(rhs); }
 };
 
 }
