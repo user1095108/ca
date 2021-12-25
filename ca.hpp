@@ -318,7 +318,7 @@ public:
 
         std::move(b, j, begin());
 
-        n = prev(i.n());
+        n = next<-1>(i.n());
       }
       else
       {
