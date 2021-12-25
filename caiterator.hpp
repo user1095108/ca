@@ -65,9 +65,7 @@ public:
 
   auto& operator--() noexcept
   {
-    n_ = n_ ?
-      n_ == ca_->first_ ? nullptr : ca_->template next<-1>(n_) :
-      ca_->last_;
+    n_ = n_ ? ca_->template next<-1>(n_) : ca_->last_;
     return *this;
   }
 
