@@ -343,28 +343,27 @@ public:
   {
     if (full())
     {
-      --sz_;
-      first_ = next<1>(first_);
+      first_ = last_ = next<1>(last_);
+    }
+    else if (sz_++)
+    {
+      last_ = next<1>(last_);
     }
 
-    auto const l(last_);
-
-    *(empty() ? l : last_ = next<1>(l)) = std::forward<decltype(v)>(v);
-    ++sz_;
+    //
+    *last_ = std::forward<decltype(v)>(v);
   }
 
   void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
-    if (auto const f(first_); full())
+    if (!full() && sz_++)
     {
-      *f = std::forward<decltype(v)>(v);
+      first_ = next<-1>(first_);
     }
-    else
-    {
-      *(empty() ? f : first_ = next<-1>(f)) = std::forward<decltype(v)>(v);
-      ++sz_;
-    }
+
+    //
+    *first_ = std::forward<decltype(v)>(v);
   }
 
   //
