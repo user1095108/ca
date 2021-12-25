@@ -261,7 +261,7 @@ public:
         std::move(nxt, end(), j);
         last_ = next<-1>(last_);
 
-        return nxt.n() ? j : end();
+        return nxt.n() ? j : nxt;
       }
     }
     else
