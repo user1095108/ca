@@ -1,5 +1,5 @@
-#ifndef CA_CA_HPP
-# define CA_CA_HPP
+#ifndef CA_CA2_HPP
+# define CA_CA2_HPP
 # pragma once
 
 #include <algorithm> // inplace_merge()
@@ -11,12 +11,12 @@ namespace ca
 {
 
 template <typename T, std::size_t N>
-class array
+class array2
 {
   static_assert(N);
 
-  friend class caiterator<T, array>;
-  friend class caiterator<T const, array const>;
+  friend class caiterator<T, array2>;
+  friend class caiterator<T const, array2 const>;
 
 public:
   using value_type = T;
@@ -26,16 +26,16 @@ public:
   using reference = value_type&;
   using const_reference = value_type const&;
 
-  using const_iterator = caiterator<T const, array const>;
+  using const_iterator = caiterator<T const, array2 const>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-  using iterator = caiterator<T, array>;
+  using iterator = caiterator<T, array2>;
   using reverse_iterator = std::reverse_iterator<iterator>;
 
 private:
-  T* first_{&*a_}, *last_{&*a_};
+  T* first_, *last_;
   std::size_t sz_{};
 
-  T a_[N];
+  T* a_;
 
   template <difference_type I>
   auto next(auto const p) noexcept requires ((1 == I) || (-1 == I))
@@ -76,17 +76,19 @@ private:
   }
 
 public:
-  array() = default;
+  array2(): a_(first_ = last_ = new T[N]) { }
+
+  ~array2() { delete [] a_; }
 
   //
-  array(array const& o)
+  array2(array2 const& o)
     noexcept(noexcept(*this = o))
     requires(std::is_copy_assignable_v<T>)
   {
     *this = o;
   }
 
-  array(array&& o)
+  array2(array2&& o)
     noexcept(noexcept(*this = std::move(o)))
     requires(std::is_move_assignable_v<T>)
   {
@@ -94,7 +96,7 @@ public:
   }
 
   // self-assign neglected
-  array& operator=(array const& o)
+  array2& operator=(array2 const& o)
     noexcept(std::is_nothrow_copy_assignable_v<T>)
     requires(std::is_copy_assignable_v<T>)
   {
@@ -106,7 +108,7 @@ public:
     return *this;
   }
 
-  array& operator=(array&& o)
+  array2& operator=(array2&& o)
     noexcept(std::is_nothrow_move_assignable_v<T>)
     requires(std::is_move_assignable_v<T>)
   {
@@ -121,23 +123,23 @@ public:
   }
 
   //
-  friend bool operator==(array const& lhs, array const& rhs) noexcept
+  friend bool operator==(array2 const& lhs, array2 const& rhs) noexcept
   {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
   }
 
-  friend auto operator<=>(array const& lhs, array const& rhs) noexcept
+  friend auto operator<=>(array2 const& lhs, array2 const& rhs) noexcept
   {
     return std::lexicographical_compare_three_way(
       lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
     );
   }
 
-  friend bool operator!=(array const&, array const&) = default;
-  friend bool operator<(array const&, array const&) = default;
-  friend bool operator<=(array const&, array const&) = default;
-  friend bool operator>(array const&, array const&) = default;
-  friend bool operator>=(array const&, array const&) = default;
+  friend bool operator!=(array2 const&, array2 const&) = default;
+  friend bool operator<(array2 const&, array2 const&) = default;
+  friend bool operator<=(array2 const&, array2 const&) = default;
+  friend bool operator>(array2 const&, array2 const&) = default;
+  friend bool operator>=(array2 const&, array2 const&) = default;
 
   // iterators
   iterator begin() noexcept { return {this, size() ? first_ : nullptr}; }
@@ -344,13 +346,13 @@ public:
   }
 
   //
-  friend auto erase(array& c, auto const& k)
+  friend auto erase(array2& c, auto const& k)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
   }
 
-  friend auto erase_if(array& c, auto pred)
+  friend auto erase_if(array2& c, auto pred)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     size_type r{};
@@ -380,4 +382,4 @@ public:
 
 }
 
-#endif // CA_CA_HPP
+#endif // CA_CA2_HPP
