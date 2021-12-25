@@ -261,7 +261,7 @@ public:
       }
       else
       {
-        last_ = next<-1>(last_);
+        last_ = j.n();
       }
     }
 
