@@ -320,11 +320,10 @@ public:
           n = std::move(iterator(this, f), j, begin()).n();
           break;
         }
-        else
+        else if (last_ = next<1>(last_); j.n())
         {
-          last_ = next<1>(last_);
-
-          n = std::move_backward(j, {this, last_}, end()).n();
+          n = j.n();
+          std::move_backward(j, {this, last_}, end());
           break;
         }
       }
@@ -332,6 +331,7 @@ public:
       n = last_;
     } while (false);
 
+    //
     *n = std::forward<decltype(v)>(v);
     ++sz_;
   }
@@ -341,8 +341,7 @@ public:
   {
     if (full())
     {
-      last_ = first_;
-      first_ = next<1>(first_);
+      first_ = next<1>(last_ = first_);
     }
     else if (sz_++)
     {
