@@ -217,7 +217,7 @@ public:
 
   //
   void clear() noexcept { first_ = last_; sz_ = {}; }
-  bool empty() const noexcept { return !size(); }
+  bool empty() const noexcept { return !sz_; }
   bool full() const noexcept { return N == size(); }
   auto max_size() const noexcept { return ~std::size_t(); }
   auto size() const noexcept { return sz_; }
