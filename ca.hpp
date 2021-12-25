@@ -246,39 +246,30 @@ public:
   {
     if (--sz_)
     {
-      if (auto n(i.n()); std::distance(begin(), iterator(this, n)) <=
-        std::distance(iterator(this, n), iterator(this, last_)))
+      iterator const j(this, i.n());
+
+      if (std::distance(cbegin(), i) <=
+        std::distance(i, const_iterator(this, last_)))
       {
-        for (auto const f(first_); f != n;)
-        {
-          auto const pn(next<-1>(n));
-          *n = std::move(*pn);
-          n = pn;
-        }
+        std::move_backward(begin(), j, j);
 
         first_ = next<1>(first_);
 
-        return {this, next<1>(i.n())};
+        return std::next(j);
       }
       else
       {
+        std::move(std::next(j), end(), j);
+
         auto const l(last_);
-
-        for (; l != n;)
-        {
-          auto const nn(next<1>(n));
-          *n = std::move(*nn);
-          n = nn;
-        }
-
         last_ = next<-1>(l);
 
-        return {this, i.n() == l ? nullptr : i.n()};
+        return i.n() == l ? end() : j;
       }
     }
     else
     {
-      return {this, {}};
+      return end();
     }
   }
 
