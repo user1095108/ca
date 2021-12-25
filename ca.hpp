@@ -253,20 +253,19 @@ public:
       {
         std::move_backward(begin(), j, nxt);
         first_ = next<1>(first_);
+        return nxt;
       }
       else if (nxt.n())
       {
         std::move(nxt, end(), j);
         last_ = next<-1>(last_);
-
         return j;
       }
       else
       {
         last_ = next<-1>(last_);
+        return nxt;
       }
-
-      return nxt;
     }
     else
     {
