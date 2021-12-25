@@ -142,7 +142,7 @@ public:
     }
     else
     {
-      std::swap(first_, o.first_);
+      first_ = o.first_;
       std::swap(last_, o.last_);
       std::swap(a_, o.a_);
     }
