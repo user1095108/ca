@@ -142,7 +142,8 @@ public:
     sz_ = o.sz_;
 
     //
-    o.sz_ = {}; o.first_ = o.last_;
+    o.sz_ = {};
+    o.first_ = o.last_;
 
     return *this;
   }
