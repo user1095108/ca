@@ -313,10 +313,10 @@ public:
       if (iterator const j(this, i.n());
         std::distance(cbegin(), i) < std::distance(i, cend()))
       {
-        auto const b(begin());
-        first_ = next<-1>(first_);
+        auto const f(first_);
+        first_ = next<-1>(f);
 
-        std::move(b, j, begin());
+        std::move(iterator(this, f), j, begin());
 
         n = next<-1>(i.n());
       }
