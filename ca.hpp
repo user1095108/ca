@@ -343,7 +343,8 @@ public:
   {
     if (full())
     {
-      first_ = last_ = next<1>(last_);
+      last_ = first_;
+      first_ = next<1>(first_);
     }
     else if (sz_++)
     {

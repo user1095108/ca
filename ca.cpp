@@ -13,6 +13,9 @@ int main()
 
   ca.sort();
 
+  std::cout << "size: " << ca.size() << std::endl;
+  std::cout << "full: " << ca.full() << std::endl;
+
   std::for_each(
     ca.cbegin(),
     ca.cend(),
@@ -24,6 +27,18 @@ int main()
 
   ca.push_back(5);
   ca.push_back(10);
+
+  std::cout << "size: " << ca.size() << std::endl;
+  std::cout << "full: " << ca.full() << std::endl;
+
+  std::for_each(
+    ca.cbegin(),
+    ca.cend(),
+    [](auto&& v) noexcept
+    {
+      std::cout << v << std::endl;
+    }
+  );
 
   ca.erase(std::next(ca.cbegin()));
 
