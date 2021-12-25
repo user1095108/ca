@@ -82,13 +82,15 @@ private:
   }
 
 public:
-  array() noexcept(noexcept((T[N]){}) || noexcept(new T[N]))
+  array() noexcept(((MEMBER == M) && noexcept((T[N]){})) ||
+    ((NEW == M) && noexcept(new T[N])))
   {
     if constexpr(NEW == M) a_ = new T[N];
     first_ = last_ = a_;
   }
 
-  ~array() noexcept(noexcept((T[N]){}) || noexcept(delete [] (T*){}))
+  ~array() noexcept(((MEMBER == M) && noexcept((T[N]){})) ||
+    ((NEW == M) && noexcept(new T[N])))
   {
     if constexpr(NEW == M) delete [] a_;
   }
