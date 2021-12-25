@@ -35,7 +35,7 @@ private:
   T* first_, *last_;
   std::size_t sz_{};
 
-  T* a_;
+  T* const a_;
 
   template <difference_type I>
   auto next(auto const p) noexcept requires ((1 == I) || (-1 == I))
@@ -112,12 +112,9 @@ public:
     noexcept(std::is_nothrow_move_assignable_v<T>)
     requires(std::is_move_assignable_v<T>)
   {
-    std::move(o.begin(), o.end(), a_);
+    swap(o);
 
-    first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
-    sz_ = o.sz_;
-
-    o.first_ = o.last_ = {}; o.sz_ = {};
+    o.first_ = o.last_ = o.a_; o.sz_ = {};
 
     return *this;
   }
@@ -343,6 +340,13 @@ public:
   void sort(auto&& cmp)
   {
     sort(begin(), end(), size(), std::forward<decltype(cmp)>(cmp));
+  }
+
+  void swap(array2& o) noexcept
+  {
+    std::swap(first_, o.first_);
+    std::swap(last_, o.last_);
+    std::swap(sz_, o.sz_);
   }
 
   //

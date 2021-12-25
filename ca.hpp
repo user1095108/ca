@@ -110,11 +110,7 @@ public:
     noexcept(std::is_nothrow_move_assignable_v<T>)
     requires(std::is_move_assignable_v<T>)
   {
-    std::move(o.begin(), o.end(), a_);
-
-    first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
-    sz_ = o.sz_;
-
+    first_ = o.first_; last_ = o.last_; sz_ = o.sz_;
     o.first_ = o.last_ = {}; o.sz_ = {};
 
     return *this;
