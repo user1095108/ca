@@ -321,18 +321,13 @@ public:
           n = next<-1>(i.n());
           break;
         }
-        else
+        else if (last_ = next<1>(last_); i.n())
         {
-          last_ = next<1>(last_);
+          n = i.n();
 
-          if (i.n())
-          {
-            n = i.n();
-
-            iterator const k{this, last_};
-            std::move_backward(iterator{this, i.n()}, k, k);
-            break;
-          }
+          iterator const k{this, last_};
+          std::move_backward(iterator{this, i.n()}, k, k);
+          break;
         }
       }
 
