@@ -82,7 +82,7 @@ private:
   }
 
 public:
-  array() noexcept(MEMBER == M)
+  array() noexcept((MEMBER == M) || noexcept(new T[N]))
   {
     if constexpr(NEW == M)
     {
@@ -92,7 +92,10 @@ public:
     first_ = last_ = a_;
   }
 
-  ~array() noexcept(MEMBER == M) { if constexpr(NEW == M) delete [] a_; }
+  ~array() noexcept(MEMBER == M || noexcept(delete [] (T*){}))
+  {
+    if constexpr(NEW == M) delete [] a_;
+  }
 
   //
   array(array const& o)
