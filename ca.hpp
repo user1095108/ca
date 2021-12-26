@@ -80,7 +80,7 @@ private:
   }
 
 public:
-  array()
+  constexpr array()
     noexcept(
       ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
       ((NEW == M) && noexcept(new T[N]))
@@ -91,12 +91,13 @@ public:
     first_ = last_ = a_;
   }
 
-  explicit array(T* const a) noexcept requires((NEW == M) || (USER == M)):
+  constexpr explicit array(T* const a) noexcept
+    requires((NEW == M) || (USER == M)):
     a_(first_ = last_ = a)
   {
   }
 
-  ~array()
+  constexpr ~array()
     noexcept(
       ((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
       ((NEW == M) && noexcept(new T[N])) ||
@@ -399,7 +400,7 @@ public:
   void sort() { sort(std::less<value_type>()); }
   void sort(auto cmp) { sort(begin(), end(), size(), cmp); }
 
-  void swap(array& o) noexcept requires(NEW == M)
+  constexpr void swap(array& o) noexcept requires(NEW == M)
   {
     std::swap(first_, o.first_);
     std::swap(last_, o.last_);
