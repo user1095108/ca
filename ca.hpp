@@ -34,7 +34,7 @@ public:
   using iterator = caiterator<T, array>;
   using reverse_iterator = std::reverse_iterator<iterator>;
 
-  enum : size_type { capacity = N };
+  enum : size_type { capacity = N - 1 };
 
 private:
   T* first_, *last_;
