@@ -25,7 +25,7 @@ int main()
     }
   );
 
-  ca.push(ca.cend(), 5);
+  ca.insert(ca.cend(), 5);
   ca.push_back(10);
 
   std::cout << "size: " << ca.size() << std::endl;

@@ -305,12 +305,9 @@ public:
   }
 
   //
-  void pop_back() noexcept { last_ = next<-1>(last_); }
-  void pop_front() noexcept { first_ = next<1>(first_); }
-
-  //
-  void push(const_iterator const i, auto&& v)
-    noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
+  iterator insert(const_iterator const i, auto&& v)
+    noexcept(std::is_nothrow_assignable_v<T, decltype(v)>)
+    requires(std::is_assignable_v<value_type, decltype(v)>)
   {
     if (full())
     {
@@ -344,7 +341,13 @@ public:
 
     //
     *n = std::forward<decltype(v)>(v);
+
+    return {this, n};
   }
+
+  //
+  void pop_back() noexcept { last_ = next<-1>(last_); }
+  void pop_front() noexcept { first_ = next<1>(first_); }
 
   void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
