@@ -39,11 +39,7 @@ public:
 private:
   T* first_, *last_;
 
-  std::conditional_t<
-    MEMBER == M,
-    T[N],
-    std::conditional_t<NEW == M, T*, void>
-  > a_;
+  std::conditional_t<MEMBER == M, T[N], T*> a_;
 
   template <difference_type I>
   auto next(auto const p) noexcept requires ((1 == I) || (-1 == I))
@@ -60,11 +56,11 @@ private:
   auto next(auto const p) const noexcept requires ((1 == I) || (-1 == I))
   {
     if constexpr((N & (N - 1)) && (1 == I))
-      return p == &a_[N - 1] ? &*a_ : p + 1;
+      return p == &a_[N - 1] ? a_ : p + 1;
     else if constexpr((N & (N - 1)) && (-1 == I))
-      return p == &*a_ ? &a_[N - 1] : p - 1;
+      return p == a_ ? &a_[N - 1] : p - 1;
     else
-      return &a_[(p - &*a_ + I) & (N - 1)];
+      return &a_[(p - a_ + I) & (N - 1)];
   }
 
   //
