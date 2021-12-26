@@ -40,7 +40,8 @@ private:
   std::conditional_t<MEMBER == M, T[N], T*> a_;
 
   template <difference_type I>
-  auto next(auto const p) noexcept requires ((1 == I) || (-1 == I))
+  constexpr auto next(auto const p) noexcept
+    requires ((1 == I) || (-1 == I))
   {
     if constexpr((N & (N - 1)) && (1 == I))
       return p == &a_[N - 1] ? a_ : p + 1;
@@ -51,7 +52,8 @@ private:
   }
 
   template <difference_type I>
-  auto next(auto const p) const noexcept requires ((1 == I) || (-1 == I))
+  constexpr auto next(auto const p) const noexcept
+    requires ((1 == I) || (-1 == I))
   {
     if constexpr((N & (N - 1)) && (1 == I))
       return p == &a_[N - 1] ? a_ : p + 1;
@@ -322,8 +324,8 @@ public:
 
   //
   iterator insert(const_iterator const i, auto&& v)
-    noexcept(std::is_nothrow_assignable_v<T, decltype(v)>)
-    requires(std::is_assignable_v<value_type, decltype(v)>)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
+    requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     if (full())
     {
@@ -362,8 +364,8 @@ public:
   }
 
   //
-  void pop_back() noexcept { last_ = next<-1>(last_); }
-  void pop_front() noexcept { first_ = next<1>(first_); }
+  constexpr void pop_back() noexcept { last_ = next<-1>(last_); }
+  constexpr void pop_front() noexcept { first_ = next<1>(first_); }
 
   void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)>)
