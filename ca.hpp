@@ -172,7 +172,7 @@ public:
   friend bool operator>=(array const&, array const&) = default;
 
   //
-  auto& operator=(std::initializer_list<value_type> const l)
+  constexpr auto& operator=(std::initializer_list<value_type> const l)
     noexcept(noexcept(assign(l)))
     requires(std::is_copy_constructible_v<value_type>)
   {
@@ -182,33 +182,33 @@ public:
   }
 
   // iterators
-  iterator begin() noexcept { return {this, first_}; }
-  iterator end() noexcept { return {this, last_}; }
+  constexpr iterator begin() noexcept { return {this, first_}; }
+  constexpr iterator end() noexcept { return {this, last_}; }
 
-  const_iterator begin() const noexcept { return {this, first_}; }
-  const_iterator end() const noexcept { return {this, last_}; }
+  constexpr const_iterator begin() const noexcept { return {this, first_}; }
+  constexpr const_iterator end() const noexcept { return {this, last_}; }
 
-  const_iterator cbegin() const noexcept { return {this, first_}; }
-  const_iterator cend() const noexcept { return {this, last_}; }
+  constexpr const_iterator cbegin() const noexcept { return {this, first_}; }
+  constexpr const_iterator cend() const noexcept { return {this, last_}; }
 
   // reverse iterators
-  reverse_iterator rbegin() noexcept
+  constexpr reverse_iterator rbegin() noexcept
   {
     return reverse_iterator{iterator(this, last_)};
   }
 
-  reverse_iterator rend() noexcept
+  constexpr reverse_iterator rend() noexcept
   {
     return reverse_iterator{iterator(this, first_)};
   }
 
   // const reverse iterators
-  const_reverse_iterator crbegin() const noexcept
+  constexpr const_reverse_iterator crbegin() const noexcept
   {
     return const_reverse_iterator{const_iterator(this, last_)};
   }
 
-  const_reverse_iterator crend() const noexcept
+  constexpr const_reverse_iterator crend() const noexcept
   {
     return const_reverse_iterator{const_iterator{this, first_}};
   }
@@ -220,23 +220,23 @@ public:
     return std::numeric_limits<difference_type>::max();
   }
 
-  void clear() noexcept { first_ = last_; }
-  bool empty() const noexcept { return first_ == last_; }
-  bool full() const noexcept { return next<1>(last_) == first_; }
+  constexpr void clear() noexcept { first_ = last_; }
+  constexpr bool empty() const noexcept { return first_ == last_; }
+  constexpr bool full() const noexcept { return next<1>(last_) == first_; }
 
-  size_type size() const noexcept
+  constexpr size_type size() const noexcept
   {
     auto const n(last_ - first_);
     return n >= 0 ? n : N + n;
   }
 
   //
-  auto& operator[](size_type const i) noexcept
+  constexpr auto& operator[](size_type const i) noexcept
   {
     return *std::next(begin(), i);
   }
 
-  auto& operator[](size_type const i) const noexcept
+  constexpr auto& operator[](size_type const i) const noexcept
   {
     return *std::next(begin(), i);
   }
@@ -252,21 +252,27 @@ public:
     return *std::next(cbegin(), i);
   }
 
-  auto& back() noexcept { return *next<-1>(last_); }
-  auto& back() const noexcept { return std::as_const(*next<-1>(last_)); }
+  constexpr auto& back() noexcept { return *next<-1>(last_); }
+  constexpr auto& back() const noexcept
+  {
+    return std::as_const(*next<-1>(last_));
+  }
 
-  auto& front() noexcept { return *first_; }
-  auto& front() const noexcept { return std::as_const(*first_); }
+  constexpr auto& front() noexcept { return *first_; }
+  constexpr auto& front() const noexcept
+  {
+    return std::as_const(*first_);
+  }
 
   //
-  void assign(std::initializer_list<value_type> const l)
+  constexpr void assign(std::initializer_list<value_type> const l)
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<value_type>)
   {
     assign(l.begin(), l.end());
   }
 
-  void assign(std::input_iterator auto const i, decltype(i) j)
+  constexpr void assign(std::input_iterator auto const i, decltype(i) j)
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<decltype(*i)>)
   {
