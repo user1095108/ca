@@ -152,6 +152,15 @@ public:
   }
 
   //
+  auto& operator=(std::initializer_list<value_type> l)
+    noexcept(noexcept(assign(l)))
+    requires(std::is_copy_constructible_v<value_type>)
+  {
+    assign(l);
+    return *this;
+  }
+
+  //
   friend bool operator==(array const& lhs, array const& rhs) noexcept
   {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
@@ -238,6 +247,22 @@ public:
   auto& front() const noexcept { return std::as_const(*first_); }
 
   //
+  void assign(std::initializer_list<value_type> l)
+    noexcept(std::is_nothrow_copy_assignable_v<value_type>)
+    requires(std::is_copy_assignable_v<value_type>)
+  {
+    assign(l.begin(), l.end());
+  }
+
+  void assign(std::input_iterator auto const i, decltype(i) j)
+    noexcept(std::is_nothrow_copy_assignable_v<value_type>)
+    requires(std::is_copy_assignable_v<decltype(*i)>)
+  {
+    clear();
+    std::copy(i, j, std::back_inserter(*this));
+  }
+
+  //
   iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
@@ -267,12 +292,12 @@ public:
     return i;
   }
 
-  iterator erase(std::initializer_list<const_iterator> il)
+  iterator erase(std::initializer_list<const_iterator> l)
     noexcept(noexcept(erase(cbegin())))
   {
     iterator r;
 
-    std::for_each(il.begin(), il.end(), [&](auto const i) { r = erase(i); });
+    std::for_each(l.begin(), l.end(), [&](auto const i) { r = erase(i); });
 
     return r;
   }
