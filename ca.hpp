@@ -16,7 +16,7 @@ enum Method { MEMBER, NEW };
 template <typename T, std::size_t N, enum Method M = MEMBER>
 class array
 {
-  static_assert(N);
+  static_assert(N > 1);
 
   friend class caiterator<T, array>;
   friend class caiterator<T const, array const>;
@@ -33,6 +33,8 @@ public:
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
   using iterator = caiterator<T, array>;
   using reverse_iterator = std::reverse_iterator<iterator>;
+
+  enum : size_type { capacity = N };
 
 private:
   T* first_, *last_;
