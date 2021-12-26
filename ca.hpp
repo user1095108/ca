@@ -238,10 +238,7 @@ public:
   iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
-    iterator const j(this, i.n());
-    auto const nxt(std::next(j));
-
-    if (end() == nxt)
+    if (iterator const j(this, i.n()), nxt(std::next(j)); end() == nxt)
     {
       return {this, last_ = next<-1>(last_)};
     }
