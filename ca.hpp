@@ -214,7 +214,7 @@ public:
     {
       return {};
     }
-    else if (auto const n(last_ - first_ + 1); n <= difference_type{})
+    else if (auto const n(last_ - first_ + difference_type(1)); n <= 0)
     {
       return N + n;
     }
