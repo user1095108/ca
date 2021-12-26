@@ -214,13 +214,13 @@ public:
     {
       return {};
     }
-    else if (auto const n(last_ - first_ + 1); n >= 1)
+    else if (auto const n(last_ - first_ + 1); n <= difference_type{})
     {
-      return n;
+      return N + n;
     }
     else
     {
-      return N + n;
+      return n;
     }
   }
 
