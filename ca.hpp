@@ -290,36 +290,29 @@ public:
       first_ = next<1>(first_);
     }
 
+    //
     T* n;
 
-    if (empty())
+    if (iterator const j(this, i.n()); end() == j)
     {
       n = last_;
       last_ = next<1>(last_);
     }
+    else if (std::distance(begin(), j) <= std::distance(j, end()))
+    {
+      auto const f(first_);
+      first_ = next<-1>(f);
+
+      n = std::move(iterator(this, f), j, begin()).n();
+    }
     else
     {
-      if (iterator const j(this, i.n()); end() == j)
-      {
-        n = last_;
-        last_ = next<1>(last_);
-      }
-      else if (std::distance(begin(), j) <= std::distance(j, end()))
-      {
-        auto const f(first_);
-        first_ = next<-1>(f);
+      n = j.n();
 
-        n = std::move(iterator(this, f), j, begin()).n();
-      }
-      else
-      {
-        n = j.n();
+      auto const l(last_);
+      last_ = next<1>(last_);
 
-        auto const l(last_);
-        last_ = next<1>(last_);
-
-        std::move_backward(j, {this, l}, end());
-      }
+      std::move_backward(j, {this, l}, end());
     }
 
     //
