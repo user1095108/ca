@@ -155,15 +155,15 @@ public:
   }
 
   //
-  friend bool operator==(array const& lhs, array const& rhs) noexcept
+  constexpr friend bool operator==(array const& l, array const& r) noexcept
   {
-    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    return std::equal(l.begin(), l.end(), r.begin(), r.end());
   }
 
-  friend auto operator<=>(array const& lhs, array const& rhs) noexcept
+  constexpr friend auto operator<=>(array const& l, array const& r) noexcept
   {
     return std::lexicographical_compare_three_way(
-      lhs.begin(), lhs.end(), rhs.begin(), rhs.end()
+      l.begin(), l.end(), r.begin(), r.end()
     );
   }
 
@@ -367,8 +367,9 @@ public:
   constexpr void pop_back() noexcept { last_ = next<-1>(last_); }
   constexpr void pop_front() noexcept { first_ = next<1>(first_); }
 
-  void push_back(auto&& v)
-    noexcept(std::is_nothrow_assignable_v<T, decltype(v)>)
+  constexpr void push_back(auto&& v)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
+    requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     if (full())
     {
@@ -381,8 +382,9 @@ public:
     last_ = next<1>(l);
   }
 
-  void push_front(auto&& v)
-    noexcept(std::is_nothrow_assignable_v<T, decltype(v)>)
+  constexpr void push_front(auto&& v)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
+    requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     if (!full())
     {
