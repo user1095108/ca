@@ -311,7 +311,7 @@ public:
   {
     if (full())
     {
-      first_ = next<1>(first_);
+      pop_front();
     }
 
     T* n;
