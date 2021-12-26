@@ -121,9 +121,9 @@ public:
     noexcept(std::is_nothrow_copy_assignable_v<T>)
     requires(std::is_copy_assignable_v<T>)
   {
-    std::copy(o.cbegin(), o.cend(), a_);
-
     first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
+    std::copy(o.cbegin(), o.cend(), begin());
+
     sz_ = o.sz_;
 
     return *this;
@@ -135,8 +135,8 @@ public:
   {
     if constexpr(MEMBER == M)
     {
-      std::move(o.begin(), o.end(), a_);
       first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
+      std::move(o.begin(), o.end(), begin());
     }
     else
     {
