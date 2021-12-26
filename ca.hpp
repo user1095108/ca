@@ -242,6 +242,16 @@ public:
   }
 
   //
+  constexpr const_reference at(size_type const i) noexcept
+  {
+    return *std::next(cbegin(), i);
+  }
+
+  constexpr const_reference at(size_type const i) const noexcept
+  {
+    return *std::next(cbegin(), i);
+  }
+
   auto& back() noexcept { return *next<-1>(last_); }
   auto& back() const noexcept { return std::as_const(*next<-1>(last_)); }
 
