@@ -96,7 +96,7 @@ public:
 
   ~array()
     noexcept(
-      ((MEMBER == M) && std::is_nothrow_deconstructible_v<T[N]>) ||
+      ((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
       ((NEW == M) && noexcept(new T[N])) ||
       (USER == M)
     )
