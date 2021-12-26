@@ -248,8 +248,7 @@ public:
     }
     else if (end() == nxt)
     {
-      last_ = next<-1>(last_);
-      return end();
+      return {this, last_ = next<-1>(last_)};
     }
     else
     {
