@@ -246,17 +246,16 @@ public:
       first_ = std::move_backward(begin(), j, nxt).n();
       return nxt;
     }
-    else if (nxt.n())
+    else if (end() == nxt)
+    {
+      last_ = next<-1>(last_);
+      return end();
+    }
+    else
     {
       last_ = std::move(nxt, end(), j).n();
       return j;
     }
-    else
-    {
-      last_ = next<-1>(last_);
-    }
-
-    return end();
   }
 
   iterator erase(const_iterator a, const_iterator const b)
@@ -280,8 +279,8 @@ public:
   }
 
   //
-  void pop_back() noexcept { if (!empty()) last_ = next<-1>(last_); }
-  void pop_front() noexcept { if (!empty()) first_ = next<1>(first_); }
+  void pop_back() noexcept { last_ = next<-1>(last_); }
+  void pop_front() noexcept { first_ = next<1>(first_); }
 
   //
   void push(const_iterator const i, auto&& v)
