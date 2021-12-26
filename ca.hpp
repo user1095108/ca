@@ -11,7 +11,7 @@
 namespace ca
 {
 
-enum Method { MEMBER, NEW };
+enum Method { MEMBER, NEW, USER };
 
 template <typename T, std::size_t N, enum Method M = MEMBER>
 class array
@@ -83,9 +83,15 @@ public:
       ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
       ((NEW == M) && noexcept(new T[N]))
     )
+    requires((MEMBER == M) || (NEW == M))
   {
     if constexpr(NEW == M) a_ = new T[N];
     first_ = last_ = a_;
+  }
+
+  explicit array(T* const a) noexcept requires(USER == M):
+    a_(first_ = last_ = a)
+  {
   }
 
   ~array()
