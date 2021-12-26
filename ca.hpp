@@ -325,8 +325,9 @@ public:
     }
 
     //
-    *last_ = std::forward<decltype(v)>(v);
-    last_ = next<1>(last_);
+    auto const l(last_);
+    *l = std::forward<decltype(v)>(v);
+    last_ = next<1>(l);
   }
 
   void push_front(auto&& v)
