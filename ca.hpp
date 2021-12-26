@@ -153,15 +153,6 @@ public:
   }
 
   //
-  auto& operator=(std::initializer_list<value_type> l)
-    noexcept(noexcept(assign(l)))
-    requires(std::is_copy_constructible_v<value_type>)
-  {
-    assign(l);
-    return *this;
-  }
-
-  //
   friend bool operator==(array const& lhs, array const& rhs) noexcept
   {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
@@ -179,6 +170,16 @@ public:
   friend bool operator<=(array const&, array const&) = default;
   friend bool operator>(array const&, array const&) = default;
   friend bool operator>=(array const&, array const&) = default;
+
+  //
+  auto& operator=(std::initializer_list<value_type> const l)
+    noexcept(noexcept(assign(l)))
+    requires(std::is_copy_constructible_v<value_type>)
+  {
+    assign(l);
+
+    return *this;
+  }
 
   // iterators
   iterator begin() noexcept { return {this, first_}; }
@@ -248,7 +249,7 @@ public:
   auto& front() const noexcept { return std::as_const(*first_); }
 
   //
-  void assign(std::initializer_list<value_type> l)
+  void assign(std::initializer_list<value_type> const l)
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<value_type>)
   {
@@ -293,7 +294,7 @@ public:
     return i;
   }
 
-  iterator erase(std::initializer_list<const_iterator> l)
+  iterator erase(std::initializer_list<const_iterator> const l)
     noexcept(noexcept(erase(cbegin())))
   {
     iterator r;
