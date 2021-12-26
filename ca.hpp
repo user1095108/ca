@@ -292,41 +292,35 @@ public:
 
     T* n;
 
-    do
+    if (empty())
     {
-      if (!empty())
-      {
-        iterator const j(this, i.n());
-
-        if (std::distance(begin(), j) <= std::distance(j, end()))
-        {
-          auto const f(first_);
-          first_ = next<-1>(f);
-
-          n = std::move(iterator(this, f), j, begin()).n();
-          break;
-        }
-        else if (end() == j)
-        {
-          n = last_;
-
-          last_ = next<1>(last_);
-          break;
-        }
-        else
-        {
-          n = j.n();
-
-          auto const l(last_);
-          last_ = next<1>(last_);
-
-          std::move_backward(j, {this, l}, end());
-          break;
-        }
-      }
-
       n = last_;
-    } while (false);
+      last_ = next<1>(last_);
+    }
+    else
+    {
+      if (iterator const j(this, i.n()); end() == j)
+      {
+        n = last_;
+        last_ = next<1>(last_);
+      }
+      else if (std::distance(begin(), j) <= std::distance(j, end()))
+      {
+        auto const f(first_);
+        first_ = next<-1>(f);
+
+        n = std::move(iterator(this, f), j, begin()).n();
+      }
+      else
+      {
+        n = j.n();
+
+        auto const l(last_);
+        last_ = next<1>(last_);
+
+        std::move_backward(j, {this, l}, end());
+      }
+    }
 
     //
     *n = std::forward<decltype(v)>(v);
