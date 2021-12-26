@@ -199,14 +199,14 @@ public:
   }
 
   //
-  void clear() noexcept { first_ = last_; }
-  bool empty() const noexcept { return first_ == last_; }
-  bool full() const noexcept { return next<1>(last_) == first_; }
-
-  size_type max_size() const noexcept
+  static size_type max_size() noexcept
   {
     return std::numeric_limits<difference_type>::max();
   }
+
+  void clear() noexcept { first_ = last_; }
+  bool empty() const noexcept { return first_ == last_; }
+  bool full() const noexcept { return next<1>(last_) == first_; }
 
   size_type size() const noexcept
   {
