@@ -107,22 +107,22 @@ public:
   //
   array(array const& o)
     noexcept(noexcept(*this = o))
-    requires(std::is_copy_assignable_v<T>)
+    requires(std::is_copy_assignable_v<value_type>)
   {
     *this = o;
   }
 
   array(array&& o)
     noexcept(noexcept(*this = std::move(o)))
-    requires(std::is_move_assignable_v<T>)
+    requires(std::is_move_assignable_v<value_type>)
   {
     *this = std::move(o);
   }
 
   // self-assign neglected
   array& operator=(array const& o)
-    noexcept(std::is_nothrow_copy_assignable_v<T>)
-    requires(std::is_copy_assignable_v<T>)
+    noexcept(std::is_nothrow_copy_assignable_v<value_type>)
+    requires(std::is_copy_assignable_v<value_type>)
   {
     first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
     std::copy(o.cbegin(), o.cend(), begin());
@@ -131,8 +131,8 @@ public:
   }
 
   array& operator=(array&& o)
-    noexcept(std::is_nothrow_move_assignable_v<T>)
-    requires(std::is_move_assignable_v<T>)
+    noexcept(std::is_nothrow_move_assignable_v<value_type>)
+    requires(std::is_move_assignable_v<value_type>)
   {
     if constexpr(MEMBER == M)
     {
