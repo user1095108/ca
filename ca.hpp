@@ -89,15 +89,16 @@ public:
     first_ = last_ = a_;
   }
 
-  explicit array(T* const a) noexcept requires(USER == M):
+  explicit array(T* const a) noexcept requires((NEW == M) || (USER == M)):
     a_(first_ = last_ = a)
   {
   }
 
   ~array()
     noexcept(
-      ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(new T[N]))
+      ((MEMBER == M) && std::is_nothrow_deconstructible_v<T[N]>) ||
+      ((NEW == M) && noexcept(new T[N])) ||
+      (USER == M)
     )
   {
     if constexpr(NEW == M) delete [] a_;
