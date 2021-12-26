@@ -366,7 +366,7 @@ public:
   void pop_front() noexcept { first_ = next<1>(first_); }
 
   void push_back(auto&& v)
-    noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
+    noexcept(std::is_nothrow_assignable_v<T, decltype(v)>)
   {
     if (full())
     {
@@ -380,7 +380,7 @@ public:
   }
 
   void push_front(auto&& v)
-    noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
+    noexcept(std::is_nothrow_assignable_v<T, decltype(v)>)
   {
     if (!full())
     {
