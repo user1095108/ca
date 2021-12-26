@@ -3,6 +3,7 @@
 # pragma once
 
 #include <algorithm> // inplace_merge()
+#include <limits>
 #include <utility> // as_const()
 
 #include "caiterator.hpp"
@@ -34,8 +35,7 @@ public:
   using reverse_iterator = std::reverse_iterator<iterator>;
 
 private:
-  T* first_, *last_;
-  std::size_t sz_{};
+  T* first_{}, *last_{};
 
   std::conditional_t<
     MEMBER == M,
@@ -47,11 +47,11 @@ private:
   auto next(auto const p) noexcept requires ((1 == I) || (-1 == I))
   {
     if constexpr((N & (N - 1)) && (1 == I))
-      return p == &a_[N - 1] ? &*a_ : p + 1;
+      return p == &a_[N - 1] ? a_ : p + 1;
     else if constexpr((N & (N - 1)) && (-1 == I))
-      return p == &*a_ ? &a_[N - 1] : p - 1;
+      return p == a_ ? &a_[N - 1] : p - 1;
     else
-      return &a_[(p - &*a_ + I) & (N - 1)];
+      return &a_[(p - a_ + I) & (N - 1)];
   }
 
   template <difference_type I>
@@ -89,7 +89,6 @@ public:
     )
   {
     if constexpr(NEW == M) a_ = new T[N];
-    first_ = last_ = a_;
   }
 
   ~array()
@@ -124,8 +123,6 @@ public:
     first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
     std::copy(o.cbegin(), o.cend(), begin());
 
-    sz_ = o.sz_;
-
     return *this;
   }
 
@@ -140,16 +137,12 @@ public:
     }
     else
     {
-      first_ = o.first_;
-      std::swap(last_, o.last_);
+      first_ = o.first_; last_  = o.last_;
       std::swap(a_, o.a_);
     }
 
-    sz_ = o.sz_;
-
     //
-    o.sz_ = {};
-    o.first_ = o.last_;
+    o.first_ = o.last_ = {};
 
     return *this;
   }
@@ -177,18 +170,10 @@ public:
   iterator begin() noexcept { return {this, size() ? first_ : nullptr}; }
   iterator end() noexcept { return {this, {}}; }
 
-  const_iterator begin() const noexcept
-  {
-    return {this, size() ? first_ : nullptr};
-  }
-
+  const_iterator begin() const noexcept { return {this, first_}; }
   const_iterator end() const noexcept { return {this, {}}; }
 
-  const_iterator cbegin() const noexcept
-  {
-    return {this, size() ? first_ : nullptr};
-  }
-
+  const_iterator cbegin() const noexcept { return {this, first_}; }
   const_iterator cend() const noexcept { return {this, {}}; }
 
   // reverse iterators
@@ -199,7 +184,7 @@ public:
 
   reverse_iterator rend() noexcept
   {
-    return reverse_iterator{iterator(this, size() ? first_ : nullptr)};
+    return reverse_iterator{iterator(this, first_)};
   }
 
   // const reverse iterators
@@ -210,17 +195,34 @@ public:
 
   const_reverse_iterator crend() const noexcept
   {
-    return const_reverse_iterator{
-      const_iterator{this, size() ? first_ : nullptr}
-    };
+    return const_reverse_iterator{const_iterator{this, first_}};
   }
 
   //
-  void clear() noexcept { first_ = last_; sz_ = {}; }
-  bool empty() const noexcept { return !size(); }
-  bool full() const noexcept { return N == size(); }
-  auto max_size() const noexcept { return ~std::size_t(); }
-  auto size() const noexcept { return sz_; }
+  void clear() noexcept { first_ = last_ = {}; }
+  bool empty() const noexcept { return !first_; }
+  bool full() const noexcept { return next<1>(last_) == first_; }
+
+  size_type max_size() const noexcept
+  {
+    return std::numeric_limits<difference_type>::max();
+  }
+
+  size_type size() const noexcept
+  {
+    if (empty())
+    {
+      return {};
+    }
+    else if (auto const n(last_ - first_ + 1); n >= 1)
+    {
+      return n;
+    }
+    else
+    {
+      return N + n;
+    }
+  }
 
   //
   auto& operator[](size_type const i) noexcept
@@ -244,7 +246,11 @@ public:
   iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
-    if (--sz_) // sz_ >= 2
+    if (first_ == last_) // sz_ < 2
+    {
+      first_ = last_ = {};
+    }
+    else
     {
       iterator const j(this, i.n());
       auto const nxt(std::next(j));
@@ -289,8 +295,15 @@ public:
   }
 
   //
-  void pop_back() noexcept { if (--sz_) { last_ = next<-1>(last_); } }
-  void pop_front() noexcept { if (--sz_) { first_ = next<1>(first_); } }
+  void pop_back() noexcept
+  {
+    first_ == last_ ? first_ = last_ = {} : last_ = next<-1>(last_);
+  }
+
+  void pop_front() noexcept
+  {
+    first_ == last_ ? first_ = last_ = {} : first_ = next<1>(first_);
+  }
 
   //
   void push(const_iterator const i, auto&& v)
@@ -298,7 +311,6 @@ public:
   {
     if (full())
     {
-      --sz_;
       first_ = next<1>(first_);
     }
 
@@ -306,7 +318,11 @@ public:
 
     do
     {
-      if (size())
+      if (empty())
+      {
+        first_ = last_ = a_;
+      }
+      else
       {
         iterator const j(this, i.n());
 
@@ -331,17 +347,20 @@ public:
 
     //
     *n = std::forward<decltype(v)>(v);
-    ++sz_;
   }
 
   void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
-    if (full())
+    if (empty())
+    {
+      first_ = last_ = a_;
+    }
+    else if (full())
     {
       first_ = next<1>(last_ = first_);
     }
-    else if (sz_++)
+    else
     {
       last_ = next<1>(last_);
     }
@@ -353,7 +372,11 @@ public:
   void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
-    if (!full() && sz_++)
+    if (empty())
+    {
+      first_ = last_ = a_;
+    }
+    else if (!full())
     {
       first_ = next<-1>(first_);
     }
@@ -371,7 +394,6 @@ public:
   {
     std::swap(first_, o.first_);
     std::swap(last_, o.last_);
-    std::swap(sz_, o.sz_);
     std::swap(a_, o.a_);
   }
 
