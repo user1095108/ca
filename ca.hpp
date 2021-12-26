@@ -241,14 +241,14 @@ public:
     iterator const j(this, i.n());
     auto const nxt(std::next(j));
 
-    if (std::distance(begin(), j) <= std::distance(nxt, end()))
+    if (end() == nxt)
+    {
+      return {this, last_ = next<-1>(last_)};
+    }
+    else if (std::distance(begin(), j) <= std::distance(nxt, end()))
     {
       first_ = std::move_backward(begin(), j, nxt).n();
       return nxt;
-    }
-    else if (end() == nxt)
-    {
-      return {this, last_ = next<-1>(last_)};
     }
     else
     {
