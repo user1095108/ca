@@ -34,8 +34,6 @@ public:
   using iterator = caiterator<T, array>;
   using reverse_iterator = std::reverse_iterator<iterator>;
 
-  enum : size_type { capacity = N - 1 };
-
 private:
   T* first_, *last_;
 
@@ -204,6 +202,7 @@ public:
     return std::numeric_limits<difference_type>::max();
   }
 
+  size_type capacity() const noexcept { return N - 1; }
   void clear() noexcept { first_ = last_; }
   bool empty() const noexcept { return first_ == last_; }
   bool full() const noexcept { return next<1>(last_) == first_; }
