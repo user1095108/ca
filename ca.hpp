@@ -35,7 +35,7 @@ public:
   using reverse_iterator = std::reverse_iterator<iterator>;
 
 private:
-  T* first_{}, *last_{};
+  T* first_, *last_;
 
   std::conditional_t<
     MEMBER == M,
@@ -89,6 +89,7 @@ public:
     )
   {
     if constexpr(NEW == M) a_ = new T[N];
+    first_ = last_ = a_;
   }
 
   ~array()
@@ -137,12 +138,13 @@ public:
     }
     else
     {
-      first_ = o.first_; last_  = o.last_;
+      first_ = o.first_;
+      std::swap(last_, o.last_);
       std::swap(a_, o.a_);
     }
 
     //
-    o.first_ = o.last_ = {};
+    o.first_ = o.last_;
 
     return *this;
   }
@@ -167,19 +169,19 @@ public:
   friend bool operator>=(array const&, array const&) = default;
 
   // iterators
-  iterator begin() noexcept { return {this, size() ? first_ : nullptr}; }
-  iterator end() noexcept { return {this, {}}; }
+  iterator begin() noexcept { return {this, first_}; }
+  iterator end() noexcept { return {this, last_}; }
 
   const_iterator begin() const noexcept { return {this, first_}; }
-  const_iterator end() const noexcept { return {this, {}}; }
+  const_iterator end() const noexcept { return {this, last_}; }
 
   const_iterator cbegin() const noexcept { return {this, first_}; }
-  const_iterator cend() const noexcept { return {this, {}}; }
+  const_iterator cend() const noexcept { return {this, last_}; }
 
   // reverse iterators
   reverse_iterator rbegin() noexcept
   {
-    return reverse_iterator{iterator(this, {})};
+    return reverse_iterator{iterator(this, last_)};
   }
 
   reverse_iterator rend() noexcept
@@ -190,7 +192,7 @@ public:
   // const reverse iterators
   const_reverse_iterator crbegin() const noexcept
   {
-    return const_reverse_iterator{const_iterator(this, {})};
+    return const_reverse_iterator{const_iterator(this, last_)};
   }
 
   const_reverse_iterator crend() const noexcept
@@ -199,8 +201,8 @@ public:
   }
 
   //
-  void clear() noexcept { first_ = last_ = {}; }
-  bool empty() const noexcept { return !first_; }
+  void clear() noexcept { first_ = last_; }
+  bool empty() const noexcept { return first_ == last_; }
   bool full() const noexcept { return next<1>(last_) == first_; }
 
   size_type max_size() const noexcept
@@ -210,18 +212,8 @@ public:
 
   size_type size() const noexcept
   {
-    if (empty())
-    {
-      return {};
-    }
-    else if (auto const n(last_ - first_ + difference_type(1)); n <= 0)
-    {
-      return N + n;
-    }
-    else
-    {
-      return n;
-    }
+    auto const n(last_ - first_);
+    return n >= 0 ? n : N + n;
   }
 
   //
@@ -236,8 +228,8 @@ public:
   }
 
   //
-  auto& back() noexcept { return *last_; }
-  auto& back() const noexcept { return std::as_const(*last_); }
+  auto& back() noexcept { return *next<-1>(last_); }
+  auto& back() const noexcept { return std::as_const(*next<-1>(last_)); }
 
   auto& front() noexcept { return *first_; }
   auto& front() const noexcept { return std::as_const(*first_); }
@@ -246,29 +238,22 @@ public:
   iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
-    if (first_ == last_) // sz_ < 2
+    iterator const j(this, i.n());
+    auto const nxt(std::next(j));
+
+    if (std::distance(begin(), j) <= std::distance(nxt, end()))
     {
-      first_ = last_ = {};
+      first_ = std::move_backward(begin(), j, nxt).n();
+      return nxt;
+    }
+    else if (nxt.n())
+    {
+      last_ = std::move(nxt, end(), j).n();
+      return j;
     }
     else
     {
-      iterator const j(this, i.n());
-      auto const nxt(std::next(j));
-
-      if (std::distance(begin(), j) <= std::distance(nxt, end()))
-      {
-        first_ = std::move_backward(begin(), j, nxt).n();
-        return nxt;
-      }
-      else if (nxt.n())
-      {
-        last_ = std::move(nxt, end(), j).n();
-        return j;
-      }
-      else
-      {
-        last_ = next<-1>(last_);
-      }
+      last_ = next<-1>(last_);
     }
 
     return end();
@@ -295,15 +280,8 @@ public:
   }
 
   //
-  void pop_back() noexcept
-  {
-    first_ == last_ ? first_ = last_ = {} : last_ = next<-1>(last_);
-  }
-
-  void pop_front() noexcept
-  {
-    first_ == last_ ? first_ = last_ = {} : first_ = next<1>(first_);
-  }
+  void pop_back() noexcept { if (!empty()) last_ = next<-1>(last_); }
+  void pop_front() noexcept { if (!empty()) first_ = next<1>(first_); }
 
   //
   void push(const_iterator const i, auto&& v)
@@ -311,18 +289,14 @@ public:
   {
     if (full())
     {
-      pop_front();
+      first_ = next<1>(first_);
     }
 
     T* n;
 
     do
     {
-      if (empty())
-      {
-        first_ = last_ = a_;
-      }
-      else
+      if (!empty())
       {
         iterator const j(this, i.n());
 
@@ -334,10 +308,21 @@ public:
           n = std::move(iterator(this, f), j, begin()).n();
           break;
         }
-        else if (last_ = next<1>(last_); j.n())
+        else if (end() == j)
+        {
+          n = last_;
+
+          last_ = next<1>(last_);
+          break;
+        }
+        else
         {
           n = j.n();
-          std::move_backward(j, {this, last_}, end());
+
+          auto const l(last_);
+          last_ = next<1>(last_);
+
+          std::move_backward(j, {this, l}, end());
           break;
         }
       }
@@ -352,31 +337,20 @@ public:
   void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
-    if (empty())
+    if (full())
     {
-      first_ = last_ = a_;
-    }
-    else if (full())
-    {
-      first_ = next<1>(last_ = first_);
-    }
-    else
-    {
-      last_ = next<1>(last_);
+      first_ = next<1>(first_);
     }
 
     //
     *last_ = std::forward<decltype(v)>(v);
+    last_ = next<1>(last_);
   }
 
   void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<T, decltype(v)&&>)
   {
-    if (empty())
-    {
-      first_ = last_ = a_;
-    }
-    else if (!full())
+    if (!full())
     {
       first_ = next<-1>(first_);
     }
@@ -409,7 +383,9 @@ public:
   {
     size_type r{};
 
-    for (auto i(c.begin()); i.n();)
+    auto const end(c.end());
+
+    for (auto i(c.begin()); end != i;)
     {
       i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
     }

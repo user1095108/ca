@@ -59,13 +59,13 @@ public:
   // increment, decrement
   auto& operator++() noexcept
   {
-    n_ = n_ == ca_->last_ ? nullptr : ca_->template next<1>(n_);
+    n_ = ca_->template next<1>(n_);
     return *this;
   }
 
   auto& operator--() noexcept
   {
-    n_ = n_ ? ca_->template next<-1>(n_) : ca_->last_;
+    n_ = n_ == ca_->last_ ? ca_->first_ : ca_->template next<-1>(n_);
     return *this;
   }
 

@@ -4,7 +4,7 @@
 
 int main()
 {
-  ca::array<int, 3> ca;
+  ca::array<int, 4> ca;
 
   ca.push_front(1);
   ca.push_back(2);
