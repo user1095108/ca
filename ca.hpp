@@ -39,13 +39,15 @@ private:
 
   std::conditional_t<MEMBER == M, T[N], T*> a_;
 
+  static constexpr bool is_pow2(auto const n) noexcept { return n & (n - 1); }
+
   template <difference_type I>
   constexpr auto next(auto const p) noexcept
-    requires ((1 == I) || (-1 == I))
+    requires((1 == I) || (-1 == I))
   {
-    if constexpr((N & (N - 1)) && (1 == I))
+    if constexpr(is_pow2(N) && (1 == I))
       return p == &a_[N - 1] ? a_ : p + 1;
-    else if constexpr((N & (N - 1)) && (-1 == I))
+    else if constexpr(is_pow2(N) && (-1 == I))
       return p == a_ ? &a_[N - 1] : p - 1;
     else
       return &a_[(p - a_ + I) & (N - 1)];
@@ -53,11 +55,11 @@ private:
 
   template <difference_type I>
   constexpr auto next(auto const p) const noexcept
-    requires ((1 == I) || (-1 == I))
+    requires((1 == I) || (-1 == I))
   {
-    if constexpr((N & (N - 1)) && (1 == I))
+    if constexpr(is_pow2(N) && (1 == I))
       return p == &a_[N - 1] ? a_ : p + 1;
-    else if constexpr((N & (N - 1)) && (-1 == I))
+    else if constexpr(is_pow2(N) && (-1 == I))
       return p == a_ ? &a_[N - 1] : p - 1;
     else
       return &a_[(p - a_ + I) & (N - 1)];
