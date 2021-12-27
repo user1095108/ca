@@ -24,7 +24,7 @@ public:
   using value_type = T;
 
   using difference_type = std::ptrdiff_t;
-  using size_type = std::ptrdiff_t;
+  using size_type = std::size_t;
   using reference = value_type&;
   using const_reference = value_type const&;
 
@@ -38,22 +38,14 @@ private:
 
   std::conditional_t<MEMBER == M, T[N], T*> a_;
 
-  static constexpr bool is_pow2(auto const n) noexcept { return n & (n - 1); }
-
   static constexpr auto next(auto const a, auto const p) noexcept
   {
-    if constexpr(is_pow2(N))
-      return p == &a[N - 1] ? a : p + 1;
-    else
-      return &a[(p - a + 1) & (N - 1)];
+    return p == &a[N - 1] ? a : p + 1;
   }
 
   static constexpr auto prev(auto const a, auto const p) noexcept
   {
-    if constexpr(is_pow2(N))
-      return p == a ? &a[N - 1] : p - 1;
-    else
-      return &a[(p - a - 1) & (N - 1)];
+    return p == a ? &a[N - 1] : p - 1;
   }
 
   //
@@ -280,7 +272,7 @@ public:
     {
       return {this, last_ = prev(a_, last_)};
     }
-    else if (std::distance(begin(), j) <= size() / 2)
+    else if (std::distance(begin(), j) <= difference_type(size() / 2))
     {
       first_ = std::move_backward(begin(), j, nxt).n();
       return nxt;
@@ -330,7 +322,7 @@ public:
       n = last_;
       last_ = next(a_, last_);
     }
-    else if (std::distance(begin(), j) <= size() / 2)
+    else if (std::distance(begin(), j) <= difference_type(size() / 2))
     {
       auto const f(first_);
       first_ = prev(a_, f);
