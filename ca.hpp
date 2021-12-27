@@ -272,7 +272,7 @@ public:
     {
       return {this, last_ = prev(a_, last_)};
     }
-    else if (std::distance(begin(), j) <= difference_type(size() / 2))
+    else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
       first_ = std::move_backward(begin(), j, nxt).n();
       return nxt;
@@ -322,7 +322,7 @@ public:
       n = last_;
       last_ = next(a_, last_);
     }
-    else if (std::distance(begin(), j) <= difference_type(size() / 2))
+    else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
       auto const f(first_);
       first_ = prev(a_, f);
