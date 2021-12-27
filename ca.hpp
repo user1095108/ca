@@ -42,27 +42,15 @@ private:
   static constexpr bool is_pow2(auto const n) noexcept { return n & (n - 1); }
 
   template <difference_type I>
-  constexpr auto next(auto const p) noexcept
+  static constexpr auto next(auto const a, auto const p) noexcept
     requires((1 == I) || (-1 == I))
   {
     if constexpr(is_pow2(N) && (1 == I))
-      return p == &a_[N - 1] ? a_ : p + 1;
+      return p == &a[N - 1] ? a : p + 1;
     else if constexpr(is_pow2(N) && (-1 == I))
-      return p == a_ ? &a_[N - 1] : p - 1;
+      return p == a ? &a[N - 1] : p - 1;
     else
-      return &a_[(p - a_ + I) & (N - 1)];
-  }
-
-  template <difference_type I>
-  constexpr auto next(auto const p) const noexcept
-    requires((1 == I) || (-1 == I))
-  {
-    if constexpr(is_pow2(N) && (1 == I))
-      return p == &a_[N - 1] ? a_ : p + 1;
-    else if constexpr(is_pow2(N) && (-1 == I))
-      return p == a_ ? &a_[N - 1] : p - 1;
-    else
-      return &a_[(p - a_ + I) & (N - 1)];
+      return &a[(p - a + I) & (N - 1)];
   }
 
   //
@@ -227,7 +215,11 @@ public:
 
   constexpr void clear() noexcept { first_ = last_; }
   constexpr bool empty() const noexcept { return first_ == last_; }
-  constexpr bool full() const noexcept { return next<1>(last_) == first_; }
+
+  constexpr bool full() const noexcept
+  {
+    return next<1>(a_, last_) == first_;
+  }
 
   constexpr size_type size() const noexcept
   {
@@ -257,10 +249,10 @@ public:
     return *std::next(cbegin(), i);
   }
 
-  constexpr auto& back() noexcept { return *next<-1>(last_); }
+  constexpr auto& back() noexcept { return *next<-1>(a_, last_); }
   constexpr auto& back() const noexcept
   {
-    return std::as_const(*next<-1>(last_));
+    return std::as_const(*next<-1>(a_, last_));
   }
 
   constexpr auto& front() noexcept { return *first_; }
@@ -291,7 +283,7 @@ public:
   {
     if (iterator const j(this, i.n()), nxt(std::next(j)); end() == nxt)
     {
-      return {this, last_ = next<-1>(last_)};
+      return {this, last_ = next<-1>(a_, last_)};
     }
     else if (std::distance(begin(), j) <= std::distance(nxt, end()))
     {
@@ -332,7 +324,7 @@ public:
   {
     if (full())
     {
-      first_ = next<1>(first_);
+      first_ = next<1>(a_, first_);
     }
 
     //
@@ -341,12 +333,12 @@ public:
     if (iterator const j(this, i.n()); end() == j)
     {
       n = last_;
-      last_ = next<1>(last_);
+      last_ = next<1>(a_, last_);
     }
     else if (std::distance(begin(), j) <= std::distance(j, end()))
     {
       auto const f(first_);
-      first_ = next<-1>(f);
+      first_ = next<-1>(a_, f);
 
       n = std::move(iterator(this, f), j, begin()).n();
     }
@@ -355,7 +347,7 @@ public:
       n = j.n();
 
       auto const l(last_);
-      last_ = next<1>(last_);
+      last_ = next<1>(a_, last_);
 
       std::move_backward(j, {this, l}, end());
     }
@@ -367,8 +359,8 @@ public:
   }
 
   //
-  constexpr void pop_back() noexcept { last_ = next<-1>(last_); }
-  constexpr void pop_front() noexcept { first_ = next<1>(first_); }
+  constexpr void pop_back() noexcept { last_ = next<-1>(a_, last_); }
+  constexpr void pop_front() noexcept { first_ = next<1>(a_, first_); }
 
   constexpr void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
@@ -376,13 +368,13 @@ public:
   {
     if (full())
     {
-      first_ = next<1>(first_);
+      first_ = next<1>(a_, first_);
     }
 
     //
     auto const l(last_);
     *l = std::forward<decltype(v)>(v);
-    last_ = next<1>(l);
+    last_ = next<1>(a_, l);
   }
 
   constexpr void push_front(auto&& v)
@@ -391,7 +383,7 @@ public:
   {
     if (!full())
     {
-      first_ = next<-1>(first_);
+      first_ = next<-1>(a_, first_);
     }
 
     //
