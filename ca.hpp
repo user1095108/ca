@@ -351,11 +351,10 @@ public:
   {
     auto l(last_);
     *l = std::forward<decltype(v)>(v);
-    l = next(a_, l);
+    if ((l = next(a_, l)) == first_) pop_front();
 
     //
-    if (l == first_) pop_front(); // if full, pop front
-    last_ = l; // update last_
+    last_ = l;
   }
 
   constexpr void push_front(auto&& v)
