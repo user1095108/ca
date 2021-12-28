@@ -320,7 +320,7 @@ public:
       auto const f(first_);
       first_ = prev(a_, f);
 
-      n = std::move(iterator(this, f), j, begin()).n();
+      n = std::move({this, f}, j, begin()).n();
     }
     else
     {
