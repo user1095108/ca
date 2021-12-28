@@ -327,7 +327,7 @@ public:
       n = j.n();
 
       auto const l(last_);
-      last_ = next(a_, last_);
+      last_ = next(a_, l);
 
       std::move_backward(j, {this, l}, end());
     }
