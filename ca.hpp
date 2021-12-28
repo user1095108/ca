@@ -305,10 +305,7 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    if (full())
-    {
-      first_ = next(a_, first_);
-    }
+    if (full()) pop_front();
 
     //
     T* n;
