@@ -48,7 +48,6 @@ private:
     return p == a ? &a[N - 1] : p - 1;
   }
 
-  //
   static void sort(auto const b, decltype(b) e, size_type const sz,
     auto&& cmp)
   {
@@ -125,16 +124,14 @@ public:
     {
       first_ = &a_[o.first - o.a_]; last_ = &a_[o.last_ - o.a_];
       std::move(o.begin(), o.end(), begin());
+      o.clear();
     }
     else
     {
-      first_ = o.first_;
-      std::swap(last_, o.last_);
+      first_ = o.first_; last_ = o.last_;
+      o.first_ = o.last_ = a_;
       std::swap(a_, o.a_);
     }
-
-    //
-    o.first_ = o.last_;
 
     return *this;
   }
