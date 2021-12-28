@@ -76,8 +76,7 @@ public:
     first_ = last_ = a_;
   }
 
-  constexpr explicit array(T* const a) noexcept
-    requires((NEW == M) || (USER == M)):
+  constexpr explicit array(T* const a) noexcept requires(USER == M):
     a_(first_ = last_ = a)
   {
   }
@@ -381,7 +380,7 @@ public:
   void sort() { sort(std::less<value_type>()); }
   void sort(auto cmp) { sort(begin(), end(), size(), cmp); }
 
-  constexpr void swap(array& o) noexcept requires(NEW == M)
+  constexpr void swap(array& o) noexcept requires((NEW == M) && (USER == M))
   {
     std::swap(first_, o.first_);
     std::swap(last_, o.last_);
@@ -424,7 +423,8 @@ public:
     sort(b, e, std::distance(b, e), cmp);
   }
 
-  friend void swap(array& lhs, decltype(lhs) rhs) noexcept requires(NEW == M)
+  friend void swap(array& lhs, decltype(lhs) rhs) noexcept
+    requires((NEW == M) && (USER == M))
   {
     lhs.swap(rhs);
   }
