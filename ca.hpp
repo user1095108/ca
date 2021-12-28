@@ -352,28 +352,21 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    if (full())
-    {
-      first_ = next(a_, first_);
-    }
+    auto l(last_);
+    *l = std::forward<decltype(v)>(v);
+    l = next(a_, l);
 
     //
-    auto const l(last_);
-    *l = std::forward<decltype(v)>(v);
-    last_ = next(a_, l);
+    if (first_ == l) pop_front(); // if full, pop front
+    last_ = l; // update last_
   }
 
   constexpr void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    if (!full())
-    {
-      first_ = prev(a_, first_);
-    }
-
-    //
-    *first_ = std::forward<decltype(v)>(v);
+    *(full() ? first_ : first_ = prev(a_, first_)) =
+      std::forward<decltype(v)>(v);
   }
 
   //
