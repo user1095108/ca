@@ -354,7 +354,7 @@ public:
     l = next(a_, l);
 
     //
-    if (first_ == l) pop_front(); // if full, pop front
+    if (l == first_) pop_front(); // if full, pop front
     last_ = l; // update last_
   }
 
