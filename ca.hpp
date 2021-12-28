@@ -349,12 +349,9 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    auto l(last_);
+    auto const l(last_);
     *l = std::forward<decltype(v)>(v);
-    if ((l = next(a_, l)) == first_) pop_front();
-
-    //
-    last_ = l;
+    if ((last_ = next(a_, l)) == first_) pop_front();
   }
 
   constexpr void push_front(auto&& v)
