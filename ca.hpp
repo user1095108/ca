@@ -213,7 +213,7 @@ public:
   constexpr size_type size() const noexcept
   {
     auto const n(last_ - first_);
-    return n >= 0 ? n : N + n;
+    return n < 0 ? N + n : n;
   }
 
   //
