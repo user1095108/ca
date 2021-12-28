@@ -380,7 +380,7 @@ public:
   void sort() { sort(std::less<value_type>()); }
   void sort(auto cmp) { sort(begin(), end(), size(), cmp); }
 
-  constexpr void swap(array& o) noexcept requires((NEW == M) && (USER == M))
+  constexpr void swap(array& o) noexcept requires((NEW == M) || (USER == M))
   {
     std::swap(first_, o.first_);
     std::swap(last_, o.last_);
@@ -424,7 +424,7 @@ public:
   }
 
   friend void swap(array& lhs, decltype(lhs) rhs) noexcept
-    requires((NEW == M) && (USER == M))
+    requires((NEW == M) || (USER == M))
   {
     lhs.swap(rhs);
   }
