@@ -312,8 +312,7 @@ public:
 
     if (iterator const j(this, i.n()); end() == j)
     {
-      n = last_;
-      last_ = next(a_, n);
+      last_ = next(a_, n = last_);
     }
     else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
