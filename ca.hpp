@@ -207,7 +207,6 @@ public:
 
   constexpr void clear() noexcept { first_ = last_; }
   constexpr bool empty() const noexcept { return first_ == last_; }
-
   constexpr bool full() const noexcept { return next(a_, last_) == first_; }
 
   constexpr size_type size() const noexcept
