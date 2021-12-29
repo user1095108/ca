@@ -48,6 +48,7 @@ private:
     return p == a ? &a[N - 1] : p - 1;
   }
 
+  //
   static void sort(auto const b, decltype(b) e, size_type const sz,
     auto&& cmp)
   {
