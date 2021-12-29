@@ -380,9 +380,7 @@ public:
   {
     size_type r{};
 
-    auto const end(c.end());
-
-    for (auto i(c.begin()); end != i;)
+    for (auto i(c.begin()); end() != i;)
     {
       i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
     }
