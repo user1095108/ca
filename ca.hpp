@@ -40,12 +40,12 @@ private:
 
   static constexpr auto next(auto const a, auto const p) noexcept
   {
-    return p == &a[N - 1] ? a : p + 1;
+    return p == a + (N - 1) ? a : p + 1;
   }
 
   static constexpr auto prev(auto const a, auto const p) noexcept
   {
-    return p == a ? &a[N - 1] : p - 1;
+    return p == a ? a + (N - 1) : p - 1;
   }
 
   //
