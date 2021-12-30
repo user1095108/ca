@@ -92,14 +92,14 @@ public:
   }
 
   //
-  array(array const& o)
+  constexpr array(array const& o)
     noexcept(noexcept(*this = o))
     requires(std::is_copy_assignable_v<value_type>)
   {
     *this = o;
   }
 
-  array(array&& o)
+  constexpr array(array&& o)
     noexcept(noexcept(*this = std::move(o)))
     requires(std::is_move_assignable_v<value_type>)
   {
@@ -107,7 +107,7 @@ public:
   }
 
   // self-assign neglected
-  array& operator=(array const& o)
+  constexpr array& operator=(array const& o)
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<value_type>)
   {
@@ -117,7 +117,7 @@ public:
     return *this;
   }
 
-  array& operator=(array&& o)
+  constexpr array& operator=(array&& o)
     noexcept(std::is_nothrow_move_assignable_v<value_type>)
     requires(std::is_move_assignable_v<value_type>)
   {
@@ -138,12 +138,12 @@ public:
   }
 
   //
-  constexpr friend bool operator==(array const& l, array const& r) noexcept
+  friend constexpr bool operator==(array const& l, array const& r) noexcept
   {
     return std::equal(l.begin(), l.end(), r.begin(), r.end());
   }
 
-  constexpr friend auto operator<=>(array const& l, array const& r) noexcept
+  friend constexpr auto operator<=>(array const& l, array const& r) noexcept
   {
     return std::lexicographical_compare_three_way(
       l.begin(), l.end(), r.begin(), r.end()
@@ -261,7 +261,7 @@ public:
   }
 
   //
-  iterator erase(const_iterator const i)
+  constexpr iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     if (iterator const j(this, i.n()), nxt(std::next(j)); end() == nxt)
@@ -280,7 +280,7 @@ public:
     }
   }
 
-  iterator erase(const_iterator a, const_iterator const b)
+  constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
     iterator i(b);
@@ -290,7 +290,7 @@ public:
     return i;
   }
 
-  iterator erase(std::initializer_list<const_iterator> const l)
+  constexpr iterator erase(std::initializer_list<const_iterator> const l)
     noexcept(noexcept(erase(cbegin())))
   {
     iterator r;
@@ -301,7 +301,7 @@ public:
   }
 
   //
-  iterator insert(const_iterator const i, auto&& v)
+  constexpr iterator insert(const_iterator const i, auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
@@ -370,13 +370,13 @@ public:
   }
 
   //
-  friend auto erase(array& c, auto const& k)
+  friend constexpr auto erase(array& c, auto const& k)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
   }
 
-  friend auto erase_if(array& c, auto pred)
+  friend constexpr auto erase_if(array& c, auto pred)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
     size_type r{};
@@ -403,7 +403,7 @@ public:
     sort(b, e, std::distance(b, e), cmp);
   }
 
-  friend void swap(array& lhs, decltype(lhs) rhs) noexcept
+  friend constexpr void swap(array& lhs, decltype(lhs) rhs) noexcept
     requires((NEW == M) || (USER == M))
   {
     lhs.swap(rhs);
