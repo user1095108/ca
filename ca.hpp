@@ -222,7 +222,7 @@ public:
     return *std::next(begin(), i);
   }
 
-  constexpr auto& operator[](size_type const i) const noexcept
+  constexpr auto const& operator[](size_type const i) const noexcept
   {
     return *std::next(begin(), i);
   }
@@ -262,7 +262,7 @@ public:
 
   //
   constexpr iterator erase(const_iterator const i)
-    noexcept(std::is_nothrow_move_assignable_v<T>)
+    noexcept(std::is_nothrow_move_assignable_v<value_type>)
   {
     if (iterator const j(this, i.n()), nxt(std::next(j)); end() == nxt)
     {
