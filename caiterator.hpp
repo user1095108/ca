@@ -64,12 +64,14 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    n_ = ca_->next(ca_->a_, n_); return *this;
+    n_ = ca_->next(ca_->a_, n_);
+    return *this;
   }
 
   constexpr auto& operator--() noexcept
   {
-    n_ = ca_->prev(ca_->a_, n_); return *this;
+    n_ = ca_->prev(ca_->a_, n_);
+    return *this;
   }
 
   constexpr auto operator++(int) noexcept
