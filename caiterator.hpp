@@ -33,42 +33,64 @@ public:
 public:
   caiterator() = default;
 
-  caiterator(CA* const ca, T* const n) noexcept:
+  constexpr caiterator(CA* const ca, T* const n) noexcept:
     n_(n),
     ca_(ca)
   {
   }
 
-  caiterator(caiterator const&) = default;
-  caiterator(caiterator&&) = default;
+  constexpr caiterator(caiterator const&) = default;
+  constexpr caiterator(caiterator&&) = default;
 
   // iterator -> const_iterator conversion
-  caiterator(inverse_const_t const& o) noexcept requires(std::is_const_v<CA>):
+  constexpr caiterator(inverse_const_t const& o) noexcept
+    requires(std::is_const_v<CA>):
     n_(o.n_),
     ca_(o.ca_)
   {
   }
 
   //
-  caiterator& operator=(caiterator const&) = default;
-  caiterator& operator=(caiterator&&) = default;
+  constexpr caiterator& operator=(caiterator const&) = default;
+  constexpr caiterator& operator=(caiterator&&) = default;
 
-  bool operator==(caiterator const& o) const noexcept { return o.n_ == n_; }
+  constexpr bool operator==(caiterator const& o) const noexcept
+  {
+    return o.n_ == n_;
+  }
+
   bool operator!=(caiterator const&) const = default;
 
   // increment, decrement
-  auto& operator++() noexcept { n_ = ca_->next(ca_->a_, n_); return *this; }
-  auto& operator--() noexcept { n_ = ca_->prev(ca_->a_, n_); return *this; }
+  constexpr auto& operator++() noexcept
+  {
+    n_ = ca_->next(ca_->a_, n_); return *this;
+  }
 
-  auto operator++(int) noexcept { auto const r(*this); ++*this; return r; }
-  auto operator--(int) noexcept { auto const r(*this); --*this; return r; }
+  constexpr auto& operator--() noexcept
+  {
+    n_ = ca_->prev(ca_->a_, n_); return *this;
+  }
+
+  constexpr auto operator++(int) noexcept
+  {
+    auto const r(*this); ++*this; return r;
+  }
+
+  constexpr auto operator--(int) noexcept
+  {
+    auto const r(*this); --*this; return r;
+  }
 
   // member access
-  auto operator->() const noexcept { return n_; }
-  auto& operator*() const noexcept { return *n_; }
+  constexpr auto operator->() const noexcept { return n_; }
+  constexpr auto& operator*() const noexcept { return *n_; }
 
   //
-  auto n() const noexcept { return const_cast<std::remove_const_t<T>*>(n_); }
+  constexpr auto n() const noexcept
+  {
+    return const_cast<std::remove_const_t<T>*>(n_);
+  }
 };
 
 }
