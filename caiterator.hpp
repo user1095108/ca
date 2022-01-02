@@ -57,17 +57,8 @@ public:
   bool operator!=(caiterator const&) const = default;
 
   // increment, decrement
-  auto& operator++() noexcept
-  {
-    n_ = ca_->next(ca_->a_, n_);
-    return *this;
-  }
-
-  auto& operator--() noexcept
-  {
-    n_ = n_ == ca_->last_ ? ca_->first_ : ca_->prev(ca_->a_, n_);
-    return *this;
-  }
+  auto& operator++() noexcept { n_ = ca_->next(ca_->a_, n_); return *this; }
+  auto& operator--() noexcept { n_ = ca_->prev(ca_->a_, n_); return *this; }
 
   auto operator++(int) noexcept { auto const r(*this); ++*this; return r; }
   auto operator--(int) noexcept { auto const r(*this); --*this; return r; }
