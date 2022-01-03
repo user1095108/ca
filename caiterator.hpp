@@ -19,8 +19,7 @@ class caiterator
 
   friend inverse_const_t;
 
-  T* n_;
-  CA* ca_;
+  T* n_, *a_;
 
 public:
   using iterator_category = std::bidirectional_iterator_tag;
@@ -33,9 +32,9 @@ public:
 public:
   caiterator() = default;
 
-  constexpr caiterator(CA* const ca, T* const n) noexcept:
+  constexpr caiterator(T* const a, T* const n) noexcept:
     n_(n),
-    ca_(ca)
+    a_(a)
   {
   }
 
@@ -46,7 +45,7 @@ public:
   constexpr caiterator(inverse_const_t const& o) noexcept
     requires(std::is_const_v<CA>):
     n_(o.n_),
-    ca_(o.ca_)
+    a_(o.a_)
   {
   }
 
@@ -64,13 +63,13 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    n_ = ca_->next(ca_->a_, n_);
+    n_ = std::remove_const_t<CA>::next(a_, n_);
     return *this;
   }
 
   constexpr auto& operator--() noexcept
   {
-    n_ = ca_->prev(ca_->a_, n_);
+    n_ = std::remove_const_t<CA>::prev(a_, n_);
     return *this;
   }
 

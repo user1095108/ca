@@ -167,35 +167,35 @@ public:
   }
 
   // iterators
-  constexpr iterator begin() noexcept { return {this, first_}; }
-  constexpr iterator end() noexcept { return {this, last_}; }
+  constexpr iterator begin() noexcept { return {a_, first_}; }
+  constexpr iterator end() noexcept { return {a_, last_}; }
 
-  constexpr const_iterator begin() const noexcept { return {this, first_}; }
-  constexpr const_iterator end() const noexcept { return {this, last_}; }
+  constexpr const_iterator begin() const noexcept { return {a_, first_}; }
+  constexpr const_iterator end() const noexcept { return {a_, last_}; }
 
-  constexpr const_iterator cbegin() const noexcept { return {this, first_}; }
-  constexpr const_iterator cend() const noexcept { return {this, last_}; }
+  constexpr const_iterator cbegin() const noexcept { return {a_, first_}; }
+  constexpr const_iterator cend() const noexcept { return {a_, last_}; }
 
   // reverse iterators
   constexpr reverse_iterator rbegin() noexcept
   {
-    return reverse_iterator{iterator(this, last_)};
+    return reverse_iterator{iterator(a_, last_)};
   }
 
   constexpr reverse_iterator rend() noexcept
   {
-    return reverse_iterator{iterator(this, first_)};
+    return reverse_iterator{iterator(a_, first_)};
   }
 
   // const reverse iterators
   constexpr const_reverse_iterator crbegin() const noexcept
   {
-    return const_reverse_iterator{const_iterator(this, last_)};
+    return const_reverse_iterator{const_iterator(a_, last_)};
   }
 
   constexpr const_reverse_iterator crend() const noexcept
   {
-    return const_reverse_iterator{const_iterator{this, first_}};
+    return const_reverse_iterator{const_iterator{a_, first_}};
   }
 
   //
@@ -264,9 +264,9 @@ public:
   constexpr iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<value_type>)
   {
-    if (iterator const j(this, i.n()), nxt(std::next(j)); end() == nxt)
+    if (iterator const j(a_, i.n()), nxt(std::next(j)); end() == nxt)
     {
-      return {this, last_ = prev(a_, last_)};
+      return {a_, last_ = prev(a_, last_)};
     }
     else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
@@ -319,7 +319,7 @@ public:
       auto const f(first_);
       first_ = prev(a_, f);
 
-      n = std::move({this, f}, j, begin()).n();
+      n = std::move({a_, f}, j, begin()).n();
     }
     else
     {
@@ -328,13 +328,13 @@ public:
       auto const l(last_);
       last_ = next(a_, l);
 
-      std::move_backward(j, {this, l}, end());
+      std::move_backward(j, {a_, l}, end());
     }
 
     //
     *n = std::forward<decltype(v)>(v);
 
-    return {this, n};
+    return {a_, n};
   }
 
   //
