@@ -66,12 +66,16 @@ public:
 
   constexpr caiterator operator++(int) noexcept
   {
-    auto const n(n_); ++*this; return {a_, n};
+    auto const n(n_);
+    n_ = std::remove_const_t<CA>::next(a_, n);
+    return {a_, n};
   }
 
   constexpr caiterator operator--(int) noexcept
   {
-    auto const n(n_); --*this; return {a_, n};
+    auto const n(n_);
+    n_ = std::remove_const_t<CA>::prev(a_, n);
+    return {a_, n};
   }
 
   // comparison
