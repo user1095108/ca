@@ -49,28 +49,19 @@ public:
   {
   }
 
-  //
+  // assignment
   constexpr caiterator& operator=(caiterator const&) = default;
   constexpr caiterator& operator=(caiterator&&) = default;
-
-  constexpr bool operator==(caiterator const& o) const noexcept
-  {
-    return o.n_ == n_;
-  }
-
-  bool operator!=(caiterator const&) const = default;
 
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    n_ = std::remove_const_t<CA>::next(a_, n_);
-    return *this;
+    n_ = std::remove_const_t<CA>::next(a_, n_); return *this;
   }
 
   constexpr auto& operator--() noexcept
   {
-    n_ = std::remove_const_t<CA>::prev(a_, n_);
-    return *this;
+    n_ = std::remove_const_t<CA>::prev(a_, n_); return *this;
   }
 
   constexpr auto operator++(int) noexcept
@@ -82,6 +73,14 @@ public:
   {
     auto const r(*this); --*this; return r;
   }
+
+  // comparison
+  constexpr bool operator==(caiterator const& o) const noexcept
+  {
+    return o.n_ == n_;
+  }
+
+  bool operator!=(caiterator const&) const = default;
 
   // member access
   constexpr auto operator->() const noexcept { return n_; }
