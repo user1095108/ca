@@ -310,7 +310,7 @@ public:
     //
     T* n;
 
-    if (iterator const j(this, i.n()); end() == j)
+    if (iterator const j(a_, i.n()); end() == j)
     {
       last_ = next(a_, n = last_);
     }
