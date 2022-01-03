@@ -64,14 +64,14 @@ public:
     n_ = std::remove_const_t<CA>::prev(a_, n_); return *this;
   }
 
-  constexpr auto operator++(int) noexcept
+  constexpr caiterator operator++(int) noexcept
   {
-    auto const r(*this); ++*this; return r;
+    auto const n(n_); ++*this; return {a_, n};
   }
 
-  constexpr auto operator--(int) noexcept
+  constexpr caiterator operator--(int) noexcept
   {
-    auto const r(*this); --*this; return r;
+    auto const n(n_); --*this; return {a_, n};
   }
 
   // comparison
