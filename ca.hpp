@@ -18,7 +18,7 @@ class array
   static_assert(N > 1);
 
   friend class caiterator<T, array>;
-  friend class caiterator<T const, array const>;
+  friend class caiterator<T const, array>;
 
 public:
   using value_type = T;
@@ -28,7 +28,7 @@ public:
   using reference = value_type&;
   using const_reference = value_type const&;
 
-  using const_iterator = caiterator<T const, array const>;
+  using const_iterator = caiterator<T const, array>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
   using iterator = caiterator<T, array>;
   using reverse_iterator = std::reverse_iterator<iterator>;

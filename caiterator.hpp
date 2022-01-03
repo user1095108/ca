@@ -12,9 +12,9 @@ template <typename T, typename CA>
 class caiterator
 {
   using inverse_const_t = std::conditional_t<
-    std::is_const_v<CA>,
-    caiterator<std::remove_const_t<T>, std::remove_const_t<CA>>,
-    caiterator<T const, CA const>
+    std::is_const_v<T>,
+    caiterator<std::remove_const_t<T>, CA>,
+    caiterator<T const, CA>
   >;
 
   friend inverse_const_t;
@@ -43,7 +43,7 @@ public:
 
   // iterator -> const_iterator conversion
   constexpr caiterator(inverse_const_t const& o) noexcept
-    requires(std::is_const_v<CA>):
+    requires(std::is_const_v<T>):
     n_(o.n_),
     a_(o.a_)
   {
@@ -56,26 +56,22 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    n_ = std::remove_const_t<CA>::next(a_, n_); return *this;
+    n_ = CA::next(a_, n_); return *this;
   }
 
   constexpr auto& operator--() noexcept
   {
-    n_ = std::remove_const_t<CA>::prev(a_, n_); return *this;
+    n_ = CA::prev(a_, n_); return *this;
   }
 
   constexpr caiterator operator++(int) noexcept
   {
-    auto const n(n_);
-    n_ = std::remove_const_t<CA>::next(a_, n);
-    return {a_, n};
+    auto const n(n_); n_ = CA::next(a_, n); return {a_, n};
   }
 
   constexpr caiterator operator--(int) noexcept
   {
-    auto const n(n_);
-    n_ = std::remove_const_t<CA>::prev(a_, n);
-    return {a_, n};
+    auto const n(n_); n_ = CA::prev(a_, n); return {a_, n};
   }
 
   // comparison
