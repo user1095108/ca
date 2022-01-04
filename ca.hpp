@@ -150,11 +150,11 @@ public:
     );
   }
 
-  friend bool operator!=(array const&, array const&) = default;
-  friend bool operator<(array const&, array const&) = default;
-  friend bool operator<=(array const&, array const&) = default;
-  friend bool operator>(array const&, array const&) = default;
-  friend bool operator>=(array const&, array const&) = default;
+  friend constexpr bool operator!=(array const&, array const&) = default;
+  friend constexpr bool operator<(array const&, array const&) = default;
+  friend constexpr bool operator<=(array const&, array const&) = default;
+  friend constexpr bool operator>(array const&, array const&) = default;
+  friend constexpr bool operator>=(array const&, array const&) = default;
 
   //
   constexpr auto& operator=(std::initializer_list<value_type> const l)
