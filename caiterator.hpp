@@ -32,11 +32,7 @@ public:
 public:
   caiterator() = default;
 
-  constexpr caiterator(T* const a, T* const n) noexcept:
-    n_(n),
-    a_(a)
-  {
-  }
+  constexpr caiterator(T* const a, decltype(a) n) noexcept: n_(n), a_(a) { }
 
   constexpr caiterator(caiterator const&) = default;
   constexpr caiterator(caiterator&&) = default;
