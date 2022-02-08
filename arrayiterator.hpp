@@ -1,5 +1,5 @@
-#ifndef CA_ITERATOR_HPP
-# define CA_ITERATOR_HPP
+#ifndef CA_ARRAYITERATOR_HPP
+# define CA_ARRAYITERATOR_HPP
 # pragma once
 
 #include <iterator>
@@ -91,4 +91,4 @@ public:
 
 }
 
-#endif // CA_ITERATOR_HPP
+#endif // CA_ARRAYITERATOR_HPP

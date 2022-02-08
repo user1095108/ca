@@ -1,5 +1,5 @@
-#ifndef CA_CA_HPP
-# define CA_CA_HPP
+#ifndef CA_ARRAY_HPP
+# define CA_ARRAY_HPP
 # pragma once
 
 #include <limits>
@@ -414,4 +414,4 @@ public:
 
 }
 
-#endif // CA_CA_HPP
+#endif // CA_ARRAY_HPP
