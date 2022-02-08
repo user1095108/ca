@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ca.hpp"
+#include "array.hpp"
 
 int main()
 {

@@ -2,10 +2,11 @@
 # define CA_CA_HPP
 # pragma once
 
-#include <algorithm> // inplace_merge()
 #include <limits>
 
-#include "caiterator.hpp"
+#include <algorithm> // inplace_merge()
+
+#include "arrayiterator.hpp"
 
 namespace ca
 {
@@ -17,8 +18,8 @@ class array
 {
   static_assert(N > 1);
 
-  friend class caiterator<T, array>;
-  friend class caiterator<T const, array>;
+  friend class arrayiterator<T, array>;
+  friend class arrayiterator<T const, array>;
 
 public:
   using value_type = T;
@@ -28,9 +29,9 @@ public:
   using reference = value_type&;
   using const_reference = value_type const&;
 
-  using const_iterator = caiterator<T const, array>;
+  using const_iterator = arrayiterator<T const, array>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-  using iterator = caiterator<T, array>;
+  using iterator = arrayiterator<T, array>;
   using reverse_iterator = std::reverse_iterator<iterator>;
 
 private:
@@ -213,6 +214,7 @@ public:
   constexpr size_type size() const noexcept
   {
     auto const n(last_ - first_);
+
     return n < 0 ? N + n : n;
   }
 

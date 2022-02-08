@@ -9,12 +9,12 @@ namespace ca
 {
 
 template <typename T, typename CA>
-class caiterator
+class arrayiterator
 {
   using inverse_const_t = std::conditional_t<
     std::is_const_v<T>,
-    caiterator<std::remove_const_t<T>, CA>,
-    caiterator<T const, CA>
+    arrayiterator<std::remove_const_t<T>, CA>,
+    arrayiterator<T const, CA>
   >;
 
   friend inverse_const_t;
@@ -30,15 +30,15 @@ public:
   using reference = value_type&;
 
 public:
-  caiterator() = default;
+  arrayiterator() = default;
 
-  constexpr caiterator(T* const a, decltype(a) n) noexcept: n_(n), a_(a) { }
+  constexpr arrayiterator(T* const a, decltype(a) n) noexcept: n_(n), a_(a) { }
 
-  constexpr caiterator(caiterator const&) = default;
-  constexpr caiterator(caiterator&&) = default;
+  constexpr arrayiterator(arrayiterator const&) = default;
+  constexpr arrayiterator(arrayiterator&&) = default;
 
   // iterator -> const_iterator conversion
-  constexpr caiterator(inverse_const_t const& o) noexcept
+  constexpr arrayiterator(inverse_const_t const& o) noexcept
     requires(std::is_const_v<T>):
     n_(o.n_),
     a_(o.a_)
@@ -46,8 +46,8 @@ public:
   }
 
   // assignment
-  constexpr caiterator& operator=(caiterator const&) = default;
-  constexpr caiterator& operator=(caiterator&&) = default;
+  constexpr arrayiterator& operator=(arrayiterator const&) = default;
+  constexpr arrayiterator& operator=(arrayiterator&&) = default;
 
   // increment, decrement
   constexpr auto& operator++() noexcept
@@ -60,23 +60,23 @@ public:
     n_ = CA::prev(a_, n_); return *this;
   }
 
-  constexpr caiterator operator++(int) noexcept
+  constexpr arrayiterator operator++(int) noexcept
   {
     auto const n(n_); n_ = CA::next(a_, n); return {a_, n};
   }
 
-  constexpr caiterator operator--(int) noexcept
+  constexpr arrayiterator operator--(int) noexcept
   {
     auto const n(n_); n_ = CA::prev(a_, n); return {a_, n};
   }
 
   // comparison
-  constexpr bool operator==(caiterator const& o) const noexcept
+  constexpr bool operator==(arrayiterator const& o) const noexcept
   {
     return o.n_ == n_;
   }
 
-  bool operator!=(caiterator const&) const = default;
+  bool operator!=(arrayiterator const&) const = default;
 
   // member access
   constexpr auto operator->() const noexcept { return n_; }
