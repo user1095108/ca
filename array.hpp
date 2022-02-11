@@ -352,7 +352,24 @@ public:
     if ((last_ = next(a_, l)) == first_) pop_front();
   }
 
+  constexpr void push_back(value_type&& v)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
+    requires(std::is_assignable_v<value_type&, decltype(v)>)
+  {
+    auto const l(last_);
+    *l = std::forward<decltype(v)>(v);
+    if ((last_ = next(a_, l)) == first_) pop_front();
+  }
+
   constexpr void push_front(auto&& v)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
+    requires(std::is_assignable_v<value_type&, decltype(v)>)
+  {
+    *(full() ? first_ : first_ = prev(a_, first_)) =
+      std::forward<decltype(v)>(v);
+  }
+
+  constexpr void push_front(value_type&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
