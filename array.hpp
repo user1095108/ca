@@ -343,6 +343,7 @@ public:
   constexpr void pop_back() noexcept { last_ = prev(a_, last_); }
   constexpr void pop_front() noexcept { first_ = next(a_, first_); }
 
+  //
   constexpr void push_back(value_type&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
