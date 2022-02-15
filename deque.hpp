@@ -128,8 +128,10 @@ public:
       }
       else
       {
-        if (auto const l1(prev(a_, l));
-          last_.compare_exchange_weak(
+        auto const l1(prev(a_, l));
+        v = std::move(*l1);
+
+        if (last_.compare_exchange_strong(
             l,
             l1,
             std::memory_order::acq_rel,
@@ -137,8 +139,6 @@ public:
           )
         )
         {
-          v = std::move(*l1);
-
           return true;
         }
       }
@@ -156,7 +156,9 @@ public:
       }
       else
       {
-        if (first_.compare_exchange_weak(
+        v = std::move(*f);
+
+        if (first_.compare_exchange_strong(
             f,
             next(a_, f),
             std::memory_order::acq_rel,
@@ -164,8 +166,6 @@ public:
           )
         )
         {
-          v = std::move(*f);
-
           return true;
         }
       }
@@ -179,7 +179,9 @@ public:
   {
     for (auto l(last_.load(std::memory_order::acquire));;)
     {
-      if (last_.compare_exchange_weak(
+      *l = std::forward<decltype(v)>(v);
+
+      if (last_.compare_exchange_strong(
           l,
           next(a_, l),
           std::memory_order::acq_rel,
@@ -187,23 +189,22 @@ public:
         )
       )
       {
-        *l = std::forward<decltype(v)>(v);
+        break;
+      }
+    }
 
-        for (auto f(first_.load(std::memory_order::acquire));
-          f == last_.load(std::memory_order::acquire);)
-        {
-          if (first_.compare_exchange_weak(
-              f,
-              next(a_, f),
-              std::memory_order::acq_rel,
-              std::memory_order::acquire
-            )
-          )
-          {
-            break;
-          }
-        }
-
+    //
+    for (auto f(first_.load(std::memory_order::acquire));
+      f == last_.load(std::memory_order::acquire);)
+    {
+      if (first_.compare_exchange_weak(
+          f,
+          next(a_, f),
+          std::memory_order::acq_rel,
+          std::memory_order::acquire
+        )
+      )
+      {
         break;
       }
     }
@@ -215,23 +216,27 @@ public:
   {
     for (auto f0(first_.load(std::memory_order::acquire));;)
     {
-      auto f1(
-        f0 == next(a_, last_.load(std::memory_order::acquire)) ?
-          f0 :
-          prev(a_, f0)
-      );
-
-      if (first_.compare_exchange_weak(
-          f0,
-          f1,
-          std::memory_order::acq_rel,
-          std::memory_order::acquire
-        )
-      )
+      if (f0 == next(a_, last_.load(std::memory_order::acquire)))
       {
-        *f1 = std::forward<decltype(v)>(v);
+        *f0 = std::forward<decltype(v)>(v);
 
         break;
+      }
+      else
+      {
+        auto const f1(prev(a_, f0));
+        *f1 = std::forward<decltype(v)>(v);
+
+        if (first_.compare_exchange_strong(
+            f0,
+            f1,
+            std::memory_order::acq_rel,
+            std::memory_order::acquire
+          )
+        )
+        {
+          break;
+        }
       }
     }
   }
