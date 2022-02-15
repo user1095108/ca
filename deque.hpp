@@ -193,7 +193,7 @@ public:
       }
     }
 
-    //
+    // pop_front(), if full
     for (auto f(first_.load(std::memory_order::acquire));
       f == last_.load(std::memory_order::acquire);)
     {
@@ -216,27 +216,33 @@ public:
   {
     for (auto f0(first_.load(std::memory_order::acquire));;)
     {
-      if (f0 == next(a_, last_.load(std::memory_order::acquire)))
-      {
-        *f0 = std::forward<decltype(v)>(v);
+      auto const f1(&(*prev(a_, f0) = std::forward<decltype(v)>(v)));
 
+      if (first_.compare_exchange_strong(
+          f0,
+          f1,
+          std::memory_order::acq_rel,
+          std::memory_order::acquire
+        )
+      )
+      {
         break;
       }
-      else
-      {
-        auto const f1(prev(a_, f0));
-        *f1 = std::forward<decltype(v)>(v);
+    }
 
-        if (first_.compare_exchange_strong(
-            f0,
-            f1,
-            std::memory_order::acq_rel,
-            std::memory_order::acquire
-          )
+    // pop_front(), if full
+    for (auto f(first_.load(std::memory_order::acquire));
+      f == last_.load(std::memory_order::acquire);)
+    {
+      if (first_.compare_exchange_weak(
+          f,
+          next(a_, f),
+          std::memory_order::acq_rel,
+          std::memory_order::acquire
         )
-        {
-          break;
-        }
+      )
+      {
+        break;
       }
     }
   }
