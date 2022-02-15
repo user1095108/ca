@@ -195,19 +195,14 @@ public:
 
     // pop_front(), if full
     for (auto f(first_.load(std::memory_order::acquire));
-      f == last_.load(std::memory_order::acquire);)
-    {
-      if (first_.compare_exchange_weak(
-          f,
-          next(a_, f),
-          std::memory_order::acq_rel,
-          std::memory_order::acquire
-        )
+      f == last_.load(std::memory_order::acquire);
+      first_.compare_exchange_weak(
+        f,
+        next(a_, f),
+        std::memory_order::acq_rel,
+        std::memory_order::acquire
       )
-      {
-        break;
-      }
-    }
+    );
   }
 
   constexpr void push_front(auto&& v)
@@ -216,7 +211,8 @@ public:
   {
     for (auto f0(first_.load(std::memory_order::acquire));;)
     {
-      auto const f1(&(*prev(a_, f0) = std::forward<decltype(v)>(v)));
+      auto const f1(prev(a_, f0));
+      *f1 = std::forward<decltype(v)>(v);
 
       if (first_.compare_exchange_strong(
           f0,
@@ -230,21 +226,16 @@ public:
       }
     }
 
-    // pop_front(), if full
-    for (auto f(first_.load(std::memory_order::acquire));
-      f == last_.load(std::memory_order::acquire);)
-    {
-      if (first_.compare_exchange_weak(
-          f,
-          next(a_, f),
-          std::memory_order::acq_rel,
-          std::memory_order::acquire
-        )
+    // pop_back(), if full
+    for (auto l(last_.load(std::memory_order::acquire));
+      l == first_.load(std::memory_order::acquire);
+      last_.compare_exchange_weak(
+        l,
+        prev(a_, l),
+        std::memory_order::acq_rel,
+        std::memory_order::acquire
       )
-      {
-        break;
-      }
-    }
+    );
   }
 };
 
