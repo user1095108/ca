@@ -128,17 +128,17 @@ public:
       }
       else
       {
-        auto const l1(prev(a_, l));
-        v = std::move(*l1);
-
-        if (last_.compare_exchange_strong(
+        if (auto const l1(prev(a_, l));
+          last_.compare_exchange_weak(
             l,
             l1,
             std::memory_order::acq_rel,
             std::memory_order::acquire
           )
         )
-        { // strong, so we don't have to loop while setting v
+        {
+          v = std::move(*l1);
+
           return true;
         }
       }
@@ -156,16 +156,16 @@ public:
       }
       else
       {
-        v = std::move(*f);
-
-        if (first_.compare_exchange_strong(
+        if (first_.compare_exchange_weak(
             f,
             next(a_, f),
             std::memory_order::acq_rel,
             std::memory_order::acquire
           )
         )
-        { // strong, so we don't have to loop while setting v
+        {
+          v = std::move(*f);
+
           return true;
         }
       }
@@ -179,9 +179,7 @@ public:
   {
     for (auto l(last_.load(std::memory_order::acquire));;)
     {
-      *l = std::forward<decltype(v)>(v);
-
-      if (last_.compare_exchange_strong(
+      if (last_.compare_exchange_weak(
           l,
           next(a_, l),
           std::memory_order::acq_rel,
@@ -189,10 +187,12 @@ public:
         )
       )
       {
+        *l = std::forward<decltype(v)>(v);
+
         for (auto f(first_.load(std::memory_order::acquire));
           f == last_.load(std::memory_order::acquire);)
         {
-          if (first_.compare_exchange_strong(
+          if (first_.compare_exchange_weak(
               f,
               next(a_, f),
               std::memory_order::acq_rel,
@@ -221,9 +221,7 @@ public:
           prev(a_, f0)
       );
 
-      *f1 = std::forward<decltype(v)>(v);
-
-      if (first_.compare_exchange_strong(
+      if (first_.compare_exchange_weak(
           f0,
           f1,
           std::memory_order::acq_rel,
@@ -231,6 +229,8 @@ public:
         )
       )
       {
+        *f1 = std::forward<decltype(v)>(v);
+
         break;
       }
     }
