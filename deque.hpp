@@ -177,8 +177,19 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    for (auto l(last_.load(std::memory_order::acquire));;)
+    for (T* l;;)
     {
+      // pop_front(), if full
+      for (auto f(first_.load(std::memory_order::acquire));
+        f == next(a_, l = last_.load(std::memory_order::acquire));
+        first_.compare_exchange_weak(
+          f,
+          next(a_, f),
+          std::memory_order::acq_rel,
+          std::memory_order::acquire
+        )
+      );
+
       *l = v;
 
       if (last_.compare_exchange_strong(
@@ -192,25 +203,25 @@ public:
         break;
       }
     }
-
-    // pop_front(), if full
-    for (auto f(first_.load(std::memory_order::acquire));
-      f == last_.load(std::memory_order::acquire);
-      first_.compare_exchange_weak(
-        f,
-        next(a_, f),
-        std::memory_order::acq_rel,
-        std::memory_order::acquire
-      )
-    );
   }
 
   constexpr void push_front(auto const& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    for (auto f0(first_.load(std::memory_order::acquire));;)
+    for (T* f0;;)
     {
+      // pop_back(), if full
+      for (auto l(last_.load(std::memory_order::acquire));
+        l == next(a_, f0 = first_.load(std::memory_order::acquire));
+        last_.compare_exchange_weak(
+          l,
+          prev(a_, l),
+          std::memory_order::acq_rel,
+          std::memory_order::acquire
+        )
+      );
+
       auto const f1(prev(a_, f0));
       *f1 = v;
 
@@ -225,17 +236,6 @@ public:
         break;
       }
     }
-
-    // pop_back(), if full
-    for (auto l(last_.load(std::memory_order::acquire));
-      l == first_.load(std::memory_order::acquire);
-      last_.compare_exchange_weak(
-        l,
-        prev(a_, l),
-        std::memory_order::acq_rel,
-        std::memory_order::acquire
-      )
-    );
   }
 };
 
