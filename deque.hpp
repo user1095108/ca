@@ -133,11 +133,10 @@ public:
       else
       {
         auto const l1(prev(a_, l0));
-        v = *l1;
 
         if (last_.compare_exchange_strong(
             l0,
-            l1,
+            (v = *l1, l1),
             std::memory_order::acq_rel,
             std::memory_order::acquire
           )
@@ -160,10 +159,8 @@ public:
       }
       else
       {
-        v = *f;
-
         if (first_.compare_exchange_strong(
-            f,
+            (v = *f, f),
             next(a_, f),
             std::memory_order::acq_rel,
             std::memory_order::acquire
@@ -194,10 +191,8 @@ public:
         )
       );
 
-      *l = v;
-
       if (last_.compare_exchange_strong(
-          l,
+          (*l = v, l),
           next(a_, l),
           std::memory_order::acq_rel,
           std::memory_order::acquire
@@ -213,11 +208,11 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    for (T* f0;;)
+    for (T* f;;)
     {
       // pop_back(), if full
       for (auto l(last_.load(std::memory_order::acquire));
-        l == next(a_, f0 = first_.load(std::memory_order::acquire));
+        l == next(a_, f = first_.load(std::memory_order::acquire));
         last_.compare_exchange_weak(
           l,
           prev(a_, l),
@@ -226,12 +221,9 @@ public:
         )
       );
 
-      auto const f1(prev(a_, f0));
-      *f1 = v;
-
       if (first_.compare_exchange_strong(
-          f0,
-          f1,
+          f,
+          &(*prev(a_, f) = v),
           std::memory_order::acq_rel,
           std::memory_order::acquire
         )
