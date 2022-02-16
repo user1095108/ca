@@ -43,7 +43,7 @@ private:
   }
 
 public:
-  constexpr deque()
+  deque()
     noexcept(
       ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
       ((NEW == M) && noexcept(new T[N]))
@@ -55,14 +55,14 @@ public:
     last_.store(a_, std::memory_order_relaxed);
   }
 
-  constexpr explicit deque(T* const a) noexcept requires(USER == M):
+  explicit deque(T* const a) noexcept requires(USER == M):
     a_(a)
   {
     first_.store(a, std::memory_order_relaxed);
     last_.store(a, std::memory_order_relaxed);
   }
 
-  constexpr ~deque()
+  ~deque()
     noexcept(
       ((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
       ((NEW == M) && noexcept(new T[N])) ||
@@ -73,12 +73,12 @@ public:
   }
 
   //
-  constexpr deque(deque const&) = delete;
-  constexpr deque(deque&&) = delete;
+  deque(deque const&) = delete;
+  deque(deque&&) = delete;
 
   //
-  constexpr deque& operator=(deque const& o) = delete;
-  constexpr deque& operator=(deque&& o) = delete;
+  deque& operator=(deque const& o) = delete;
+  deque& operator=(deque&& o) = delete;
 
   //
   static constexpr size_type capacity() noexcept { return N - 1; }
@@ -86,6 +86,11 @@ public:
   static constexpr size_type max_size() noexcept
   {
     return std::numeric_limits<difference_type>::max();
+  }
+
+  bool is_lock_free() noexcept
+  {
+    return first_.is_lock_free() && last_.is_lock_free();
   }
 
   void clear() noexcept

@@ -6,6 +6,8 @@ int main()
 {
   ca::deque<int, 5> dq;
 
+  std::cout << dq.is_lock_free() << std::endl;
+
   dq.push_back(1);
   dq.push_back(2);
   dq.push_back(3);
