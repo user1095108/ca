@@ -88,11 +88,13 @@ public:
     return std::numeric_limits<difference_type>::max();
   }
 
-  bool is_lock_free() noexcept
+  //
+  bool is_lock_free() const noexcept
   {
     return first_.is_lock_free() && last_.is_lock_free();
   }
 
+  //
   void clear() noexcept
   {
     first_.store(a_, std::memory_order::release);
@@ -178,7 +180,7 @@ public:
   }
 
   //
-  constexpr void push_back(auto const& v)
+  void push_back(auto const& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
@@ -210,7 +212,7 @@ public:
     }
   }
 
-  constexpr void push_front(auto const& v)
+  void push_front(auto const& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
