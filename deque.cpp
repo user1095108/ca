@@ -10,12 +10,12 @@ int main()
   dq.push_back(2);
   dq.push_back(3);
 
+  while (dq.size())
   {
-    int v;
-
-    dq.pop_back(v);
-
-    std::cout << v << std::endl;
+    if (int v; dq.pop_back(v))
+    {
+      std::cout << v << std::endl;
+    }
   }
 
   return 0;
