@@ -118,7 +118,7 @@ public:
 
   //
   bool pop_back(T& v)
-    noexcept(std::is_nothrow_assignable_v<T&, T&&>)
+    noexcept(std::is_nothrow_assignable_v<T&, T&>)
   {
     for (auto l(last_.load(std::memory_order::acquire));;)
     {
@@ -129,7 +129,7 @@ public:
       else
       {
         auto const l1(prev(a_, l));
-        v = std::move(*l1);
+        v = *l1;
 
         if (last_.compare_exchange_strong(
             l,
@@ -146,7 +146,7 @@ public:
   }
 
   bool pop_front(T& v)
-    noexcept(std::is_nothrow_assignable_v<T&, T&&>)
+    noexcept(std::is_nothrow_assignable_v<T&, T&>)
   {
     for (auto f(first_.load(std::memory_order::acquire));;)
     {
@@ -156,7 +156,7 @@ public:
       }
       else
       {
-        v = std::move(*f);
+        v = *f;
 
         if (first_.compare_exchange_strong(
             f,
@@ -173,13 +173,13 @@ public:
   }
 
   //
-  constexpr void push_back(auto&& v)
+  constexpr void push_back(auto const& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     for (auto l(last_.load(std::memory_order::acquire));;)
     {
-      *l = std::forward<decltype(v)>(v);
+      *l = v;
 
       if (last_.compare_exchange_strong(
           l,
@@ -205,14 +205,14 @@ public:
     );
   }
 
-  constexpr void push_front(auto&& v)
+  constexpr void push_front(auto const& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     for (auto f0(first_.load(std::memory_order::acquire));;)
     {
       auto const f1(prev(a_, f0));
-      *f1 = std::forward<decltype(v)>(v);
+      *f1 = v;
 
       if (first_.compare_exchange_strong(
           f0,
