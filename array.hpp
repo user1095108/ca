@@ -39,12 +39,12 @@ private:
 
   std::conditional_t<MEMBER == M, T[N], T*> a_;
 
-  static constexpr auto next(auto const a, auto const p) noexcept
+  static constexpr auto next(auto const a, decltype(a) p) noexcept
   {
     return p == &a[N - 1] ? a : p + 1;
   }
 
-  static constexpr auto prev(auto const a, auto const p) noexcept
+  static constexpr auto prev(auto const a, decltype(a) p) noexcept
   {
     return p == a ? &a[N - 1] : p - 1;
   }

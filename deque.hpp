@@ -25,17 +25,16 @@ public:
   using const_reference = value_type const&;
 
 private:
-  std::atomic<T*> first_;
-  std::atomic<T*> last_;
+  std::atomic<T*> first_, last_;
 
   std::conditional_t<MEMBER == M, T[N], T*> a_;
 
-  static constexpr auto next(auto const a, auto const p) noexcept
+  static constexpr auto next(auto const a, decltype(a) p) noexcept
   {
     return p == &a[N - 1] ? a : p + 1;
   }
 
-  static constexpr auto prev(auto const a, auto const p) noexcept
+  static constexpr auto prev(auto const a, decltype(a) p) noexcept
   {
     return p == a ? &a[N - 1] : p - 1;
   }
@@ -125,19 +124,19 @@ public:
   bool pop_back(T& v)
     noexcept(std::is_nothrow_assignable_v<T&, T&>)
   {
-    for (auto l(last_.load(std::memory_order::acquire));;)
+    for (auto l0(last_.load(std::memory_order::acquire));;)
     {
-      if (l == first_.load(std::memory_order::acquire))
+      if (l0 == first_.load(std::memory_order::acquire))
       { // empty?
         return false;
       }
       else
       {
-        auto const l1(prev(a_, l));
+        auto const l1(prev(a_, l0));
         v = *l1;
 
         if (last_.compare_exchange_strong(
-            l,
+            l0,
             l1,
             std::memory_order::acq_rel,
             std::memory_order::acquire
