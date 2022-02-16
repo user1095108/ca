@@ -6,8 +6,6 @@
 
 #include <limits>
 
-#include <algorithm> // inplace_merge()
-
 #include "array.hpp"
 
 namespace ca
