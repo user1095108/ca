@@ -257,6 +257,36 @@ public:
   }
 
   //
+  constexpr void emplace_back(auto&& ...a)
+    noexcept(
+      std::is_nothrow_assignable_v<value_type&, value_type&&> &&
+      std::is_nothrow_constructible_v<value_type, decltype(a)...>
+    )
+    requires(
+      std::is_assignable_v<value_type&, value_type&&> &&
+      std::is_constructible_v<value_type, decltype(a)...>
+    )
+  {
+    auto const l(last_);
+    *l = value_type(std::forward<decltype(a)>(a)...);
+    if ((last_ = next(a_, l)) == first_) pop_front();
+  }
+
+  constexpr void emplace_front(auto&& ...a)
+    noexcept(
+      std::is_nothrow_assignable_v<value_type&, value_type&&> &&
+      std::is_nothrow_constructible_v<value_type, decltype(a)...>
+    )
+    requires(
+      std::is_assignable_v<value_type&, value_type&&> &&
+      std::is_constructible_v<value_type, decltype(a)...>
+    )
+  {
+    *(full() ? first_ : first_ = prev(a_, first_)) =
+      value_type(std::forward<decltype(a)>(a)...);
+  }
+
+  //
   constexpr iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<value_type>)
   {
