@@ -267,9 +267,7 @@ public:
       std::is_constructible_v<value_type, decltype(a)...>
     )
   {
-    auto const l(last_);
-    *l = value_type(std::forward<decltype(a)>(a)...);
-    if ((last_ = next(a_, l)) == first_) pop_front();
+    push_back({std::forward<decltype(a)>(a)...});
   }
 
   constexpr void emplace_front(auto&& ...a)
@@ -282,8 +280,7 @@ public:
       std::is_constructible_v<value_type, decltype(a)...>
     )
   {
-    *(full() ? first_ : first_ = prev(a_, first_)) =
-      value_type(std::forward<decltype(a)>(a)...);
+    push_front({std::forward<decltype(a)>(a)...});
   }
 
   //
