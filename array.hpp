@@ -253,6 +253,7 @@ public:
     requires(std::is_copy_assignable_v<decltype(*i)>)
   {
     clear();
+
     std::copy(i, j, std::back_inserter(*this));
   }
 
@@ -294,11 +295,13 @@ public:
     else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
       first_ = std::move_backward(begin(), j, nxt).n();
+
       return nxt;
     }
     else
     {
       last_ = std::move(nxt, end(), j).n();
+
       return j;
     }
   }
