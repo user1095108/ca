@@ -438,11 +438,11 @@ public:
     return r;
   }
 
-  friend void sort(auto const b, decltype(b) e, auto&& cmp)
+  friend void sort(auto const b, decltype(b) e, auto cmp)
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
-    sort(b, e, std::distance(b, e), std::forward<decltype(cmp)>(cmp));
+    sort(b, e, std::distance(b, e), cmp);
   }
 
   friend void sort(auto const b, decltype(b) e)
