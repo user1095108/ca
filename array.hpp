@@ -2,9 +2,8 @@
 # define CA_ARRAY_HPP
 # pragma once
 
-#include <limits>
-
 #include <algorithm> // inplace_merge()
+#include <limits> // numeric_limits
 
 #include "arrayiterator.hpp"
 
