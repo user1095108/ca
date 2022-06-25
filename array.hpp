@@ -52,6 +52,7 @@ private:
   //
   static void sort(auto const b, decltype(b) e, size_type const sz,
     auto&& cmp)
+    noexcept(noexcept(std::inplace_merge(b, b, e, cmp)))
   {
     if (sz > 1)
     {
@@ -402,9 +403,19 @@ public:
   }
 
   //
-  void sort() { sort(std::less<value_type>()); }
-  void sort(auto cmp) { sort(begin(), end(), size(), cmp); }
+  void sort(auto cmp)
+    noexcept(noexcept(node::sort(begin(), end(), size(), cmp)))
+  {
+    node::sort(begin(), end(), size(), cmp);
+  }
 
+  void sort()
+    noexcept(noexcept(sort(std::less<value_type>())))
+  {
+    sort(std::less<value_type>());
+  }
+
+  //
   constexpr void swap(array& o) noexcept requires((NEW == M) || (USER == M))
   {
     std::swap(first_, o.first_);
@@ -438,18 +449,20 @@ public:
     return r;
   }
 
-  friend void sort(auto const b, decltype(b) e, auto cmp)
+  friend void sort(auto const b, decltype(b) e)
+    noexcept(noexcept(node::sort(b, e, {}, std::less<value_type>())))
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
-    sort(b, e, std::distance(b, e), cmp);
+    node::sort(b, e, std::distance(b, e), std::less<value_type>());
   }
 
-  friend void sort(auto const b, decltype(b) e)
+  friend void sort(auto const b, decltype(b) e, auto cmp)
+    noexcept(noexcept(node::sort(b, e, {}, cmp)))
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
-    sort(b, e, std::distance(b, e), std::less<value_type>());
+    node::sort(b, e, std::distance(b, e), cmp);
   }
 
   friend constexpr void swap(array& lhs, decltype(lhs) rhs) noexcept
