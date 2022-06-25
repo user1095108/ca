@@ -210,7 +210,7 @@ public:
   {
     auto const n(last_ - first_);
 
-    return n < 0 ? N + n : n;
+    return n < difference_type{} ? N + n : n;
   }
 
   //
