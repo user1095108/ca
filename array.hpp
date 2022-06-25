@@ -196,12 +196,9 @@ public:
 
   //
   static constexpr size_type capacity() noexcept { return N - 1; }
+  static constexpr size_type max_size() noexcept { return N - 1; }
 
-  static constexpr size_type max_size() noexcept
-  {
-    return std::numeric_limits<difference_type>::max() - 1;
-  }
-
+  //
   constexpr void clear() noexcept { first_ = last_; }
   constexpr bool empty() const noexcept { return first_ == last_; }
   constexpr bool full() const noexcept { return next(a_, last_) == first_; }
