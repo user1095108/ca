@@ -199,7 +199,7 @@ public:
 
   static constexpr size_type max_size() noexcept
   {
-    return std::numeric_limits<difference_type>::max();
+    return std::numeric_limits<difference_type>::max() - 1;
   }
 
   constexpr void clear() noexcept { first_ = last_; }
