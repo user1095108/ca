@@ -153,7 +153,7 @@ public:
   }
 
   //
-  constexpr auto& operator=(std::initializer_list<value_type> const l)
+  constexpr auto& operator=(std::initializer_list<value_type> l)
     noexcept(noexcept(assign(l)))
     requires(std::is_copy_constructible_v<value_type>)
   {
@@ -316,16 +316,6 @@ public:
     for (; a != b; i = erase(a), a = i);
 
     return i;
-  }
-
-  constexpr iterator erase(std::initializer_list<const_iterator> const l)
-    noexcept(noexcept(erase(cbegin())))
-  {
-    iterator r;
-
-    std::for_each(l.begin(), l.end(), [&](auto const i) { r = erase(i); });
-
-    return r;
   }
 
   //
