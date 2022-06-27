@@ -434,6 +434,7 @@ public:
     return r;
   }
 
+  //
   friend void sort(auto const b, decltype(b) e)
     noexcept(noexcept(sort(b, e, {}, std::less<value_type>())))
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
