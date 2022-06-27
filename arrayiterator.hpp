@@ -76,8 +76,6 @@ public:
     return o.n_ == n_;
   }
 
-  bool operator!=(arrayiterator const&) const = default;
-
   // member access
   constexpr auto operator->() const noexcept { return n_; }
   constexpr auto& operator*() const noexcept { return *n_; }
