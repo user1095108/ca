@@ -425,12 +425,6 @@ public:
   }
 
   //
-  friend constexpr auto erase(array& c, value_type const& k)
-    noexcept(std::is_nothrow_move_assignable_v<T>)
-  {
-    return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
-  }
-
   friend constexpr auto erase(array& c, auto const& k)
     noexcept(std::is_nothrow_move_assignable_v<T>)
   {
