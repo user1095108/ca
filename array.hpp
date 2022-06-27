@@ -451,6 +451,7 @@ public:
     sort(b, e, std::distance(b, e), cmp);
   }
 
+  //
   friend constexpr void swap(array& lhs, decltype(lhs) rhs) noexcept
     requires((NEW == M) || (USER == M))
   {
