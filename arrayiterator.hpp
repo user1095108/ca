@@ -73,7 +73,7 @@ public:
   // comparison
   constexpr bool operator==(arrayiterator const& o) const noexcept
   {
-    return o.n_ == n_;
+    return n_ == o.n_;
   }
 
   // member access
