@@ -401,15 +401,15 @@ public:
   }
 
   //
-  void sort(auto cmp) noexcept(
-    noexcept(cmp(std::declval<value_type>(), std::declval<value_type>())) &&
-    noexcept(S::sort(begin(), end(), size(), cmp))
-  )
+  void sort(auto cmp) noexcept(noexcept(S::sort(begin(), end(), size(), cmp)))
   {
     S::sort(begin(), end(), size(), cmp);
   }
 
-  void sort() { sort(std::less<value_type>()); }
+  void sort() noexcept(noexcept(sort(std::less<value_type>())))
+  {
+    sort(std::less<value_type>());
+  }
 
   //
   constexpr void swap(array& o) noexcept requires((NEW == M) || (USER == M))
@@ -421,14 +421,33 @@ public:
 
   //
   friend constexpr auto erase(array& c, auto const& k)
+    noexcept(
+      noexcept(
+        erase_if(
+          c,
+          [](T const&) noexcept(
+            noexcept(std::equal_to()(std::declval<T>(), std::declval<T>()))
+          )
+          {
+            return true;
+          }
+        )
+      )
+    )
   {
-    return erase_if(c, [&](auto&& v) { return std::equal_to()(v, k); });
+    return erase_if(
+      c,
+      [&](auto&& v) noexcept(noexcept(std::equal_to()(v, k)))
+      {
+        return std::equal_to()(v, k);
+      }
+    );
   }
 
   friend constexpr auto erase_if(array& c, auto pred)
     noexcept(
       noexcept(pred(std::declval<T>())) &&
-      noexcept(std::is_nothrow_move_assignable_v<T>)
+      noexcept(c.erase(c.begin()))
     )
   {
     size_type r{};
