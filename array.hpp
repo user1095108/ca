@@ -401,7 +401,10 @@ public:
   }
 
   //
-  void sort(auto cmp) noexcept(noexcept(S::sort(begin(), end(), size(), cmp)))
+  void sort(auto cmp) noexcept(
+    noexcept(cmp(std::declval<value_type>(), std::declval<value_type>())) &&
+    noexcept(S::sort(begin(), end(), size(), cmp))
+  )
   {
     S::sort(begin(), end(), size(), cmp);
   }
@@ -423,7 +426,10 @@ public:
   }
 
   friend constexpr auto erase_if(array& c, auto pred)
-    noexcept(std::is_nothrow_move_assignable_v<T>)
+    noexcept(
+      noexcept(pred(std::declval<T>())) &&
+      noexcept(std::is_nothrow_move_assignable_v<T>)
+    )
   {
     size_type r{};
 
