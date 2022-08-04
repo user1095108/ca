@@ -39,32 +39,35 @@ private:
 
   std::conditional_t<MEMBER == M, T[N], T*> a_;
 
-  static constexpr auto next(auto const a, decltype(a) p) noexcept
+  struct S
   {
-    return p == &a[N - 1] ? a : p + 1;
-  }
-
-  static constexpr auto prev(auto const a, decltype(a) p) noexcept
-  {
-    return p == a ? &a[N - 1] : p - 1;
-  }
-
-  //
-  static void sort(auto const b, decltype(b) e, size_type const sz,
-    auto&& cmp)
-    noexcept(noexcept(std::inplace_merge(b, b, e, cmp)))
-  {
-    if (sz > 1)
+    static constexpr auto next(auto const a, decltype(a) p) noexcept
     {
-      auto const hsz(sz / 2);
-      auto const m(std::next(b, hsz));
-
-      sort(b, m, hsz, std::forward<decltype(cmp)>(cmp));
-      sort(m, e, sz - hsz, std::forward<decltype(cmp)>(cmp));
-
-      std::inplace_merge(b, m, e, cmp);
+      return p == &a[N - 1] ? a : p + 1;
     }
-  }
+
+    static constexpr auto prev(auto const a, decltype(a) p) noexcept
+    {
+      return p == a ? &a[N - 1] : p - 1;
+    }
+
+    //
+    static void sort(auto const b, decltype(b) e, size_type const sz,
+      auto&& cmp)
+      noexcept(noexcept(std::inplace_merge(b, b, e, cmp)))
+    {
+      if (sz > 1)
+      {
+        auto const hsz(sz / 2);
+        auto const m(std::next(b, hsz));
+
+        sort(b, m, hsz, std::forward<decltype(cmp)>(cmp));
+        sort(m, e, sz - hsz, std::forward<decltype(cmp)>(cmp));
+
+        std::inplace_merge(b, m, e, cmp);
+      }
+    }
+  };
 
 public:
   constexpr array()
@@ -205,7 +208,11 @@ public:
   //
   constexpr void clear() noexcept { first_ = last_; }
   constexpr bool empty() const noexcept { return first_ == last_; }
-  constexpr bool full() const noexcept { return next(a_, last_) == first_; }
+
+  constexpr bool full() const noexcept
+  {
+    return S::next(a_, last_) == first_;
+  }
 
   constexpr size_type size() const noexcept
   {
@@ -236,8 +243,8 @@ public:
     return *std::next(cbegin(), i);
   }
 
-  constexpr auto& back() noexcept { return *prev(a_, last_); }
-  constexpr auto const& back() const noexcept { return *prev(a_, last_); }
+  constexpr auto& back() noexcept { return *S::prev(a_, last_); }
+  constexpr auto const& back() const noexcept { return *S::prev(a_, last_); }
 
   constexpr auto& front() noexcept { return *first_; }
   constexpr auto const& front() const noexcept { return *first_; }
@@ -292,7 +299,7 @@ public:
   {
     if (iterator const j(a_, i.n()), nxt(std::next(j)); end() == nxt)
     {
-      return {a_, last_ = prev(a_, last_)};
+      return {a_, last_ = S::prev(a_, last_)};
     }
     else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
@@ -330,12 +337,12 @@ public:
 
     if (iterator const j(a_, i.n()); end() == j)
     {
-      last_ = next(a_, n = last_);
+      last_ = S::next(a_, n = last_);
     }
     else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
       auto const f(first_);
-      first_ = prev(a_, f);
+      first_ = S::prev(a_, f);
 
       n = std::move({a_, f}, j, begin()).n();
     }
@@ -344,7 +351,7 @@ public:
       n = j.n();
 
       auto const l(last_);
-      last_ = next(a_, l);
+      last_ = S::next(a_, l);
 
       std::move_backward(j, {a_, l}, end());
     }
@@ -356,8 +363,8 @@ public:
   }
 
   //
-  constexpr void pop_back() noexcept { last_ = prev(a_, last_); }
-  constexpr void pop_front() noexcept { first_ = next(a_, first_); }
+  constexpr void pop_back() noexcept { last_ = S::prev(a_, last_); }
+  constexpr void pop_front() noexcept { first_ = S::next(a_, first_); }
 
   //
   constexpr void push_back(value_type&& v)
@@ -366,7 +373,7 @@ public:
   {
     auto const l(last_);
     *l = std::move(v);
-    if ((last_ = next(a_, l)) == first_) pop_front();
+    if ((last_ = S::next(a_, l)) == first_) pop_front();
   }
 
   constexpr void push_back(auto&& v)
@@ -375,33 +382,31 @@ public:
   {
     auto const l(last_);
     *l = std::forward<decltype(v)>(v);
-    if ((last_ = next(a_, l)) == first_) pop_front();
+    if ((last_ = S::next(a_, l)) == first_) pop_front();
   }
 
   constexpr void push_front(value_type&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    *(full() ? first_ : first_ = prev(a_, first_)) = std::move(v);
+    *(full() ? first_ : first_ = S::prev(a_, first_)) = std::move(v);
   }
 
   constexpr void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    *(full() ? first_ : first_ = prev(a_, first_)) =
+    *(full() ? first_ : first_ = S::prev(a_, first_)) =
       std::forward<decltype(v)>(v);
   }
 
   //
-  void sort(auto cmp)
-    noexcept(noexcept(sort(begin(), end(), size(), cmp)))
+  void sort(auto cmp) noexcept(noexcept(S::sort(begin(), end(), size(), cmp)))
   {
-    sort(begin(), end(), size(), cmp);
+    S::sort(begin(), end(), size(), cmp);
   }
 
-  void sort()
-    noexcept(noexcept(sort(std::less<value_type>())))
+  void sort() noexcept(noexcept(sort(std::less<value_type>())))
   {
     sort(std::less<value_type>());
   }
@@ -416,9 +421,8 @@ public:
 
   //
   friend constexpr auto erase(array& c, auto const& k)
-    noexcept(std::is_nothrow_move_assignable_v<T>)
   {
-    return erase_if(c, [&](auto&& v) noexcept{return std::equal_to()(v, k);});
+    return erase_if(c, [&](auto&& v) { return std::equal_to()(v, k); });
   }
 
   friend constexpr auto erase_if(array& c, auto pred)
@@ -436,19 +440,19 @@ public:
 
   //
   friend void sort(auto const b, decltype(b) e)
-    noexcept(noexcept(sort(b, e, {}, std::less<value_type>())))
+    noexcept(noexcept(S::sort(b, e, {}, std::less<value_type>())))
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
-    sort(b, e, std::distance(b, e), std::less<value_type>());
+    S::sort(b, e, std::distance(b, e), std::less<value_type>());
   }
 
   friend void sort(auto const b, decltype(b) e, auto cmp)
-    noexcept(noexcept(sort(b, e, {}, cmp)))
+    noexcept(noexcept(S::sort(b, e, {}, cmp)))
     requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
       std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
   {
-    sort(b, e, std::distance(b, e), cmp);
+    S::sort(b, e, std::distance(b, e), cmp);
   }
 
   //

@@ -52,22 +52,22 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    n_ = CA::next(a_, n_); return *this;
+    n_ = CA::S::next(a_, n_); return *this;
   }
 
   constexpr auto& operator--() noexcept
   {
-    n_ = CA::prev(a_, n_); return *this;
+    n_ = CA::S::prev(a_, n_); return *this;
   }
 
   constexpr arrayiterator operator++(int) noexcept
   {
-    auto const n(n_); n_ = CA::next(a_, n); return {a_, n};
+    auto const n(n_); n_ = CA::S::next(a_, n); return {a_, n};
   }
 
   constexpr arrayiterator operator--(int) noexcept
   {
-    auto const n(n_); n_ = CA::prev(a_, n); return {a_, n};
+    auto const n(n_); n_ = CA::S::prev(a_, n); return {a_, n};
   }
 
   // comparison
