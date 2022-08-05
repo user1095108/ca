@@ -272,7 +272,7 @@ public:
   constexpr void emplace_back(auto&& ...a)
     noexcept(
       std::is_nothrow_assignable_v<value_type&, value_type&&> &&
-      std::is_nothrow_constructible_v<value_type, decltype(a)&&...>
+      std::is_nothrow_constructible_v<value_type, decltype(a)...>
     )
     requires(
       std::is_assignable_v<value_type&, value_type&&> &&
@@ -285,7 +285,7 @@ public:
   constexpr void emplace_front(auto&& ...a)
     noexcept(
       std::is_nothrow_assignable_v<value_type&, value_type&&> &&
-      std::is_nothrow_constructible_v<value_type, decltype(a)&&...>
+      std::is_nothrow_constructible_v<value_type, decltype(a)...>
     )
     requires(
       std::is_assignable_v<value_type&, value_type&&> &&
