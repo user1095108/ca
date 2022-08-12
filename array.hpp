@@ -229,20 +229,15 @@ public:
     return *std::next(begin(), i);
   }
 
-  constexpr auto const& operator[](size_type const i) const noexcept
+  constexpr auto& operator[](size_type const i) const noexcept
   {
     return *std::next(begin(), i);
   }
 
   //
-  constexpr const_reference at(size_type const i) noexcept
+  constexpr auto& at(size_type const i) const noexcept
   {
-    return *std::next(cbegin(), i);
-  }
-
-  constexpr const_reference at(size_type const i) const noexcept
-  {
-    return *std::next(cbegin(), i);
+    return *std::next(begin(), i);
   }
 
   constexpr auto& back() noexcept { return *S::prev(a_, last_); }
