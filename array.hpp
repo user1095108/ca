@@ -247,7 +247,7 @@ public:
   constexpr auto& front() const noexcept { return *first_; }
 
   //
-  constexpr void assign(std::initializer_list<value_type> const l)
+  constexpr void assign(std::initializer_list<value_type> l)
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<value_type>)
   {
