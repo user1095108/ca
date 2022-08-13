@@ -238,10 +238,10 @@ public:
   constexpr auto& at(size_type const i) const noexcept { return (*this)[i]; }
 
   constexpr auto& back() noexcept { return *S::prev(a_, last_); }
-  constexpr auto& back() const noexcept { return *S::prev(a_, last_); }
+  constexpr auto const& back() const noexcept { return *S::prev(a_, last_); }
 
   constexpr auto& front() noexcept { return *first_; }
-  constexpr auto& front() const noexcept { return *first_; }
+  constexpr auto const& front() const noexcept { return *first_; }
 
   //
   constexpr void assign(std::initializer_list<value_type> l)
