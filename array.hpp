@@ -234,15 +234,8 @@ public:
     return *std::next(begin(), i);
   }
 
-  constexpr auto& at(size_type const i) noexcept
-  {
-    return *std::next(begin(), i);
-  }
-
-  constexpr auto& at(size_type const i) const noexcept
-  {
-    return *std::next(begin(), i);
-  }
+  constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
+  constexpr auto& at(size_type const i) const noexcept { return (*this)[i]; }
 
   constexpr auto& back() noexcept { return *S::prev(a_, last_); }
   constexpr auto& back() const noexcept { return *S::prev(a_, last_); }
