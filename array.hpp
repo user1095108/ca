@@ -224,14 +224,14 @@ public:
   }
 
   //
-  constexpr auto& operator[](size_type const i) noexcept
+  constexpr auto& operator[](size_type i) noexcept
   {
-    return *std::next(begin(), i);
+    auto n(first_); for (; i; --i) n = S::next(a_, n); return *n;
   }
 
-  constexpr auto& operator[](size_type const i) const noexcept
+  constexpr auto const& operator[](size_type i) const noexcept
   {
-    return *std::next(begin(), i);
+    auto n(first_); for (; i; --i) n = S::next(a_, n); return *n;
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
