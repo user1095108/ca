@@ -466,6 +466,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
   return r;
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, enum Method M>
 constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
   requires((NEW == M) || (USER == M))
