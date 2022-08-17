@@ -412,72 +412,66 @@ public:
     std::swap(last_, o.last_);
     std::swap(a_, o.a_);
   }
+};
 
-  //
-  friend constexpr auto erase(array& c, auto const& k)
+//////////////////////////////////////////////////////////////////////////////
+template <typename T, std::size_t S, enum Method M>
+constexpr auto erase(array<T, S, M>& c, auto&& k, char = {})
+  noexcept(
     noexcept(
-      noexcept(
-        erase_if(
-          c,
-          [](T const&) noexcept(
-            noexcept(std::equal_to()(std::declval<T>(), std::declval<T>()))
+      erase_if(
+        c,
+        [](T const&) noexcept(noexcept(
+            std::equal_to()(std::declval<T>(), std::declval<decltype(k)>())
           )
-          {
-            return true;
-          }
         )
+        {
+          return true;
+        }
       )
     )
-  {
-    return erase_if(
-      c,
-      [&](auto&& v) noexcept(noexcept(std::equal_to()(v, k)))
-      {
-        return std::equal_to()(v, k);
-      }
-    );
-  }
-
-  friend constexpr auto erase_if(array& c, auto pred)
-    noexcept(
-      noexcept(pred(std::declval<T>())) &&
-      noexcept(c.erase(c.begin()))
-    )
-  {
-    size_type r{};
-
-    for (auto i(c.begin()); i.n() != c.last_;)
+  )
+  requires(requires{std::equal_to()(std::declval<T>(), k);})
+{
+  return erase_if(
+    c,
+    [&](auto&& v) noexcept(noexcept(std::equal_to()(v, k)))
     {
-      i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
+      return std::equal_to()(v, k);
     }
+  );
+}
 
-    return r;
-  }
+template <typename T, std::size_t S, enum Method M>
+constexpr auto erase(array<T, S, M>& c, T const& k)
+  noexcept(noexcept(erase(c, k, {})))
+{
+  return erase(c, k, {});
+}
 
-  //
-  friend void sort(auto const b, decltype(b) e)
-    noexcept(noexcept(S::sort(b, e, {}, std::less<value_type>())))
-    requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
-      std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
+template <typename T, std::size_t S, enum Method M>
+constexpr auto erase_if(array<T, S, M>& c, auto pred)
+  noexcept(
+    noexcept(pred(std::declval<T>())) &&
+    noexcept(c.erase(c.begin()))
+  )
+{
+  typename array<T, S, M>::size_type r{};
+
+  for (auto i(c.begin()); i.n() != c.last_;)
   {
-    S::sort(b, e, std::distance(b, e), std::less<value_type>());
+    i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
   }
 
-  friend void sort(auto const b, decltype(b) e, auto cmp)
-    noexcept(noexcept(S::sort(b, e, {}, cmp)))
-    requires(std::is_same_v<iterator, std::remove_const_t<decltype(b)>> ||
-      std::is_same_v<reverse_iterator, std::remove_const_t<decltype(b)>>)
-  {
-    S::sort(b, e, std::distance(b, e), cmp);
-  }
+  return r;
+}
 
-  //
-  friend constexpr void swap(array& lhs, decltype(lhs) rhs) noexcept
-    requires((NEW == M) || (USER == M))
-  {
-    lhs.swap(rhs);
-  }
-};
+template <typename T, std::size_t S, enum Method M>
+constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
+  requires((NEW == M) || (USER == M))
+{
+  lhs.swap(rhs);
+}
 
 }
 
