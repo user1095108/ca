@@ -145,12 +145,19 @@ public:
   }
 
   //
-  friend constexpr bool operator==(array const& l, array const& r) noexcept
+  friend constexpr bool operator==(array const& l, array const& r)
+    noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
   {
     return std::equal(l.begin(), l.end(), r.begin(), r.end());
   }
 
-  friend constexpr auto operator<=>(array const& l, array const& r) noexcept
+  friend constexpr auto operator<=>(array const& l, array const& r)
+    noexcept(noexcept(
+        std::lexicographical_compare_three_way(
+          l.begin(), l.end(), r.begin(), r.end()
+        )
+      )
+    )
   {
     return std::lexicographical_compare_three_way(
       l.begin(), l.end(), r.begin(), r.end()
