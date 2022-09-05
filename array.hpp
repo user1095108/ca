@@ -2,7 +2,7 @@
 # define CA_ARRAY_HPP
 # pragma once
 
-#include <climits>
+#include <climits> // PTRDIFF_MAX
 #include <algorithm> // inplace_merge()
 
 #include "arrayiterator.hpp"
