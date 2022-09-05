@@ -244,10 +244,7 @@ public:
 
   //
   constexpr void assign(std::initializer_list<value_type> l)
-    noexcept(noexcept(
-        assign(decltype(l)::iterator(), decltype(l)::iterator())
-      )
-    )
+    noexcept(noexcept(assign(l.begin(), l.end())))
   {
     assign(l.begin(), l.end());
   }
