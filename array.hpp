@@ -108,7 +108,9 @@ public:
 
   constexpr array(array&& o)
     noexcept(noexcept(*this = std::move(o)))
-    requires(std::is_move_assignable_v<value_type>)
+    requires(
+      std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
+    )
   {
     *this = std::move(o);
   }
@@ -126,7 +128,9 @@ public:
 
   constexpr array& operator=(array&& o)
     noexcept(std::is_nothrow_move_assignable_v<value_type>)
-    requires(std::is_move_assignable_v<value_type>)
+    requires(
+      std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
+    )
   {
     if constexpr(MEMBER == M)
     {
