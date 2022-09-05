@@ -228,7 +228,7 @@ public:
   {
     auto const n(last_ - first_);
 
-    return n < difference_type{} ? N + n : n;
+    return n < decltype(n){} ? N + n : n;
   }
 
   //
