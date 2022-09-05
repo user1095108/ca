@@ -318,7 +318,7 @@ public:
   }
 
   //
-  constexpr iterator insert(const_iterator const i, auto&& v)
+  constexpr iterator insert(const_iterator const i, auto&& v, char = {})
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
@@ -352,6 +352,12 @@ public:
     *n = std::forward<decltype(v)>(v);
 
     return {a_, n};
+  }
+
+  constexpr iterator insert(const_iterator const i, value_type&& v)
+    noexcept(noexcept(insert(i, std::move(v), {})))
+  {
+    return insert(i, std::move(v), {});
   }
 
   //
