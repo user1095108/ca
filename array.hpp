@@ -2,8 +2,8 @@
 # define CA_ARRAY_HPP
 # pragma once
 
+#include <climits>
 #include <algorithm> // inplace_merge()
-#include <limits> // numeric_limits
 
 #include "arrayiterator.hpp"
 
@@ -16,7 +16,7 @@ template <typename T, std::size_t N, enum Method M = MEMBER>
 class array
 {
   static_assert(N > 1);
-  static_assert(N - 1 <= std::numeric_limits<std::ptrdiff_t>::max());
+  static_assert(N - 1 <= PTRDIFF_MAX);
 
   friend class arrayiterator<T, array>;
   friend class arrayiterator<T const, array>;
@@ -209,11 +209,7 @@ public:
 
   //
   static constexpr size_type capacity() noexcept { return N - 1; }
-
-  static constexpr size_type max_size() noexcept
-  {
-    return std::numeric_limits<difference_type>::max();
-  }
+  static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
   //
   constexpr void clear() noexcept { first_ = last_; }
