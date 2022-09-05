@@ -219,7 +219,6 @@ public:
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
   //
-  constexpr void clear() noexcept { f_ = l_; }
   constexpr bool empty() const noexcept { return f_ == l_; }
   constexpr bool full() const noexcept { return S::next(a_, l_) == f_; }
 
@@ -267,6 +266,9 @@ public:
   }
 
   //
+  constexpr void clear() noexcept { f_ = l_; }
+
+  //
   constexpr void emplace_back(auto&& ...a)
     noexcept(noexcept(push_back(std::declval<T>())))
     requires(
@@ -312,11 +314,7 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    iterator i(b);
-
-    for (; a != b; i = erase(a), a = i);
-
-    return i;
+    iterator i(b); for (; a != b; i = erase(a), a = i); return i;
   }
 
   //
