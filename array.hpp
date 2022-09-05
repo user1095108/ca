@@ -412,8 +412,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, enum Method M>
 constexpr auto erase(array<T, S, M>& c, auto&& k, char = {})
-  noexcept(
-    noexcept(
+  noexcept(noexcept(
       erase_if(
         c,
         [](T const&) noexcept(noexcept(
