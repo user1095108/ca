@@ -35,9 +35,8 @@ public:
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
-  T* first_, *last_;
-
-  std::conditional_t<MEMBER == M, T[N], T*> a_;
+  T* f_, *l_; // pointer to first and last elements of element array
+  std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
 
   struct S
   {
@@ -81,11 +80,11 @@ public:
     requires((MEMBER == M) || (NEW == M))
   {
     if constexpr(NEW == M) a_ = new T[N];
-    first_ = last_ = a_;
+    f_ = l_ = a_;
   }
 
   constexpr explicit array(T* const a) noexcept requires(USER == M):
-    a_(first_ = last_ = a)
+    a_(f_ = l_ = a)
   {
   }
 
@@ -119,7 +118,7 @@ public:
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<value_type>)
   {
-    first_ = &a_[o.first_ - o.a_]; last_ = &a_[o.last_ - o.a_];
+    f_ = &a_[o.f_ - o.a_]; l_ = &a_[o.l_ - o.a_];
     std::copy(o.cbegin(), o.cend(), begin());
 
     return *this;
@@ -131,14 +130,14 @@ public:
   {
     if constexpr(MEMBER == M)
     {
-      first_ = &a_[o.first_ - o.a_]; last_ = &a_[o.last_ - o.a_];
+      f_ = &a_[o.f_ - o.a_]; l_ = &a_[o.l_ - o.a_];
       std::move(o.begin(), o.end(), begin());
       o.clear();
     }
     else
     {
-      first_ = o.first_; last_ = o.last_;
-      o.first_ = o.last_ = a_;
+      f_ = o.f_; l_ = o.l_;
+      o.f_ = o.l_ = a_;
       std::swap(a_, o.a_);
     }
 
@@ -176,35 +175,35 @@ public:
   }
 
   // iterators
-  constexpr iterator begin() noexcept { return {a_, first_}; }
-  constexpr iterator end() noexcept { return {a_, last_}; }
+  constexpr iterator begin() noexcept { return {a_, f_}; }
+  constexpr iterator end() noexcept { return {a_, l_}; }
 
-  constexpr const_iterator begin() const noexcept { return {a_, first_}; }
-  constexpr const_iterator end() const noexcept { return {a_, last_}; }
+  constexpr const_iterator begin() const noexcept { return {a_, f_}; }
+  constexpr const_iterator end() const noexcept { return {a_, l_}; }
 
-  constexpr const_iterator cbegin() const noexcept { return {a_, first_}; }
-  constexpr const_iterator cend() const noexcept { return {a_, last_}; }
+  constexpr const_iterator cbegin() const noexcept { return {a_, f_}; }
+  constexpr const_iterator cend() const noexcept { return {a_, l_}; }
 
   // reverse iterators
   constexpr reverse_iterator rbegin() noexcept
   {
-    return reverse_iterator{iterator(a_, last_)};
+    return reverse_iterator{iterator(a_, l_)};
   }
 
   constexpr reverse_iterator rend() noexcept
   {
-    return reverse_iterator{iterator(a_, first_)};
+    return reverse_iterator{iterator(a_, f_)};
   }
 
   // const reverse iterators
   constexpr const_reverse_iterator crbegin() const noexcept
   {
-    return const_reverse_iterator{const_iterator(a_, last_)};
+    return const_reverse_iterator{const_iterator(a_, l_)};
   }
 
   constexpr const_reverse_iterator crend() const noexcept
   {
-    return const_reverse_iterator{const_iterator{a_, first_}};
+    return const_reverse_iterator{const_iterator{a_, f_}};
   }
 
   //
@@ -212,17 +211,13 @@ public:
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
   //
-  constexpr void clear() noexcept { first_ = last_; }
-  constexpr bool empty() const noexcept { return first_ == last_; }
-
-  constexpr bool full() const noexcept
-  {
-    return S::next(a_, last_) == first_;
-  }
+  constexpr void clear() noexcept { f_ = l_; }
+  constexpr bool empty() const noexcept { return f_ == l_; }
+  constexpr bool full() const noexcept { return S::next(a_, l_) == f_; }
 
   constexpr size_type size() const noexcept
   {
-    auto const n(last_ - first_);
+    auto const n(l_ - f_);
 
     return n < decltype(n){} ? N + n : n;
   }
@@ -230,22 +225,22 @@ public:
   //
   constexpr auto& operator[](size_type i) noexcept
   {
-    auto n(first_); for (; i; --i) n = S::next(a_, n); return *n;
+    auto n(f_); for (; i; --i) n = S::next(a_, n); return *n;
   }
 
   constexpr auto const& operator[](size_type i) const noexcept
   {
-    auto n(first_); for (; i; --i) n = S::next(a_, n); return *n;
+    auto n(f_); for (; i; --i) n = S::next(a_, n); return *n;
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
   constexpr auto& at(size_type const i) const noexcept { return (*this)[i]; }
 
-  constexpr auto& back() noexcept { return *S::prev(a_, last_); }
-  constexpr auto const& back() const noexcept { return *S::prev(a_, last_); }
+  constexpr auto& back() noexcept { return *S::prev(a_, l_); }
+  constexpr auto const& back() const noexcept { return *S::prev(a_, l_); }
 
-  constexpr auto& front() noexcept { return *first_; }
-  constexpr auto const& front() const noexcept { return *first_; }
+  constexpr auto& front() noexcept { return *f_; }
+  constexpr auto const& front() const noexcept { return *f_; }
 
   //
   constexpr void assign(std::initializer_list<value_type> l)
@@ -297,17 +292,17 @@ public:
   {
     if (iterator const j(a_, i.n()), nxt(std::next(j)); end() == nxt)
     {
-      return {a_, last_ = S::prev(a_, last_)};
+      return {a_, l_ = S::prev(a_, l_)};
     }
     else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
-      first_ = std::move_backward(begin(), j, nxt).n();
+      f_ = std::move_backward(begin(), j, nxt).n();
 
       return nxt;
     }
     else
     {
-      last_ = std::move(nxt, end(), j).n();
+      l_ = std::move(nxt, end(), j).n();
 
       return j;
     }
@@ -335,12 +330,12 @@ public:
 
     if (iterator const j(a_, i.n()); end() == j)
     {
-      last_ = S::next(a_, n = last_);
+      l_ = S::next(a_, n = l_);
     }
     else if (size_type(std::distance(begin(), j)) <= size() / 2)
     {
-      auto const f(first_);
-      first_ = S::prev(a_, f);
+      auto const f(f_);
+      f_ = S::prev(a_, f);
 
       n = std::move({a_, f}, j, begin()).n();
     }
@@ -348,8 +343,8 @@ public:
     {
       n = j.n();
 
-      auto const l(last_);
-      last_ = S::next(a_, l);
+      auto const l(l_);
+      l_ = S::next(a_, l);
 
       std::move_backward(j, {a_, l}, end());
     }
@@ -361,41 +356,40 @@ public:
   }
 
   //
-  constexpr void pop_back() noexcept { last_ = S::prev(a_, last_); }
-  constexpr void pop_front() noexcept { first_ = S::next(a_, first_); }
+  constexpr void pop_back() noexcept { l_ = S::prev(a_, l_); }
+  constexpr void pop_front() noexcept { f_ = S::next(a_, f_); }
 
   //
   constexpr void push_back(value_type&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    auto const l(last_);
+    auto const l(l_);
     *l = std::move(v);
-    if ((last_ = S::next(a_, l)) == first_) pop_front();
+    if ((l_ = S::next(a_, l)) == f_) pop_front();
   }
 
   constexpr void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    auto const l(last_);
+    auto const l(l_);
     *l = std::forward<decltype(v)>(v);
-    if ((last_ = S::next(a_, l)) == first_) pop_front();
+    if ((l_ = S::next(a_, l)) == f_) pop_front();
   }
 
   constexpr void push_front(value_type&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    *(full() ? first_ : first_ = S::prev(a_, first_)) = std::move(v);
+    *(full() ? f_ : f_ = S::prev(a_, f_)) = std::move(v);
   }
 
   constexpr void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    *(full() ? first_ : first_ = S::prev(a_, first_)) =
-      std::forward<decltype(v)>(v);
+    *(full() ? f_ : f_ = S::prev(a_, f_)) = std::forward<decltype(v)>(v);
   }
 
   //
@@ -412,8 +406,8 @@ public:
   //
   constexpr void swap(array& o) noexcept requires((NEW == M) || (USER == M))
   {
-    std::swap(first_, o.first_);
-    std::swap(last_, o.last_);
+    std::swap(f_, o.f_);
+    std::swap(l_, o.l_);
     std::swap(a_, o.a_);
   }
 };
@@ -462,7 +456,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 {
   typename array<T, S, M>::size_type r{};
 
-  for (auto i(c.begin()); i.n() != c.last_;)
+  for (auto i(c.begin()); i.n() != c.l_;)
   {
     i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
   }
