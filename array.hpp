@@ -16,7 +16,7 @@ template <typename T, std::size_t N, enum Method M = MEMBER>
 class array
 {
   static_assert(N > 1);
-  static_assert(N - 1 <= PTRDIFF_MAX);
+  static_assert((N - 1) * sizeof(T) <= PTRDIFF_MAX);
 
   friend class arrayiterator<T, array>;
   friend class arrayiterator<T const, array>;
