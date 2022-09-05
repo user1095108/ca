@@ -244,15 +244,17 @@ public:
 
   //
   constexpr void assign(std::initializer_list<value_type> l)
-    noexcept(std::is_nothrow_copy_assignable_v<value_type>)
-    requires(std::is_copy_assignable_v<value_type>)
+    noexcept(noexcept(
+        assign(decltype(l)::iterator(), decltype(l)::iterator())
+      )
+    )
   {
     assign(l.begin(), l.end());
   }
 
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
-    noexcept(std::is_nothrow_copy_assignable_v<value_type>)
-    requires(std::is_copy_assignable_v<decltype(*i)>)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(*i)>)
+    requires(std::is_assignable_v<T, decltype(*i)>)
   {
     clear();
 
@@ -261,10 +263,7 @@ public:
 
   //
   constexpr void emplace_back(auto&& ...a)
-    noexcept(
-      std::is_nothrow_assignable_v<value_type&, value_type&&> &&
-      std::is_nothrow_constructible_v<value_type, decltype(a)...>
-    )
+    noexcept(noexcept(push_back(std::declval<T>())))
     requires(
       std::is_assignable_v<value_type&, value_type&&> &&
       std::is_constructible_v<value_type, decltype(a)...>
@@ -274,10 +273,7 @@ public:
   }
 
   constexpr void emplace_front(auto&& ...a)
-    noexcept(
-      std::is_nothrow_assignable_v<value_type&, value_type&&> &&
-      std::is_nothrow_constructible_v<value_type, decltype(a)...>
-    )
+    noexcept(noexcept(push_front(std::declval<T>())))
     requires(
       std::is_assignable_v<value_type&, value_type&&> &&
       std::is_constructible_v<value_type, decltype(a)...>
