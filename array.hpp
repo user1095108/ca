@@ -127,7 +127,11 @@ public:
   }
 
   constexpr array& operator=(array&& o)
-    noexcept(std::is_nothrow_move_assignable_v<value_type>)
+    noexcept(
+      std::is_nothrow_move_assignable_v<value_type> ||
+      (NEW == M) ||
+      (USER == M)
+    )
     requires(
       std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
     )
