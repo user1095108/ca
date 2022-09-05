@@ -92,7 +92,7 @@ public:
   constexpr ~array()
     noexcept(
       ((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(delete [] a_)) ||
+      ((NEW == M) && noexcept(delete [] std::declval<T*>())) ||
       (USER == M)
     )
   {
