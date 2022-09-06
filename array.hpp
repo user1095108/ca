@@ -4,6 +4,7 @@
 
 #include <climits> // PTRDIFF_MAX
 #include <algorithm> // inplace_merge()
+#include <initializer_list>
 
 #include "arrayiterator.hpp"
 
@@ -88,17 +89,6 @@ public:
   {
   }
 
-  constexpr ~array()
-    noexcept(
-      ((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(delete [] std::declval<T*>())) ||
-      (USER == M)
-    )
-  {
-    if constexpr(NEW == M) delete [] a_;
-  }
-
-  //
   constexpr array(array const& o)
     noexcept(noexcept(*this = o))
     requires(std::is_copy_assignable_v<value_type>)
@@ -113,6 +103,35 @@ public:
     )
   {
     *this = std::move(o);
+  }
+
+  constexpr array(std::input_iterator auto const i, decltype(i) j)
+    noexcept(noexcept(push_back(*i)))
+  {
+    std::for_each(
+      i,
+      j,
+      [&](auto&& v) noexcept(noexcept(push_back(*i)))
+      {
+        push_back(std::forward<decltype(v)>(v));
+      }
+    );
+  }
+
+  constexpr array(std::initializer_list<value_type> l)
+    noexcept(noexcept(array(l.begin(), l.end()))):
+    array(l.begin(), l.end())
+  {
+  }
+
+  constexpr ~array()
+    noexcept(
+      ((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
+      ((NEW == M) && noexcept(delete [] std::declval<T*>())) ||
+      (USER == M)
+    )
+  {
+    if constexpr(NEW == M) delete [] a_;
   }
 
   // self-assign neglected
