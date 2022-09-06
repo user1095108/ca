@@ -272,19 +272,19 @@ public:
   constexpr void emplace_back(auto&& ...a)
     noexcept(noexcept(push_back(std::declval<T>())))
   {
-    push_back({std::forward<decltype(a)>(a)...});
+    push_back(T{std::forward<decltype(a)>(a)...});
   }
 
   constexpr void emplace_front(auto&& ...a)
     noexcept(noexcept(push_front(std::declval<T>())))
   {
-    push_front({std::forward<decltype(a)>(a)...});
+    push_front(T{std::forward<decltype(a)>(a)...});
   }
 
   constexpr iterator emplace(const_iterator const i, auto&& ...a)
     noexcept(noexcept(emplace(std::declval<T>())))
   {
-    return insert(i, {std::forward<decltype(a)>(a)...});
+    return insert(i, T{std::forward<decltype(a)>(a)...});
   }
 
   //
