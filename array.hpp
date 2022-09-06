@@ -134,11 +134,11 @@ public:
     if constexpr(NEW == M) delete [] a_;
   }
 
-  // self-assign neglected
+  //
   constexpr array& operator=(array const& o)
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<value_type>)
-  {
+  { // self-assign neglected
     f_ = &a_[o.f_ - o.a_]; l_ = &a_[o.l_ - o.a_];
     std::copy(o.cbegin(), o.cend(), begin());
 
@@ -170,6 +170,15 @@ public:
     return *this;
   }
 
+  constexpr array& operator=(std::initializer_list<value_type> l)
+    noexcept(noexcept(assign(l)))
+    requires(std::is_copy_constructible_v<value_type>)
+  {
+    assign(l);
+
+    return *this;
+  }
+
   //
   friend constexpr bool operator==(array const& l, array const& r)
     noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
@@ -188,16 +197,6 @@ public:
     return std::lexicographical_compare_three_way(
       l.begin(), l.end(), r.begin(), r.end()
     );
-  }
-
-  //
-  constexpr auto& operator=(std::initializer_list<value_type> l)
-    noexcept(noexcept(assign(l)))
-    requires(std::is_copy_constructible_v<value_type>)
-  {
-    assign(l);
-
-    return *this;
   }
 
   // iterators
