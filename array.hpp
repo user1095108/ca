@@ -399,7 +399,7 @@ public:
         std::next(j),
         k,
         [&](auto&& v) noexcept(noexcept(insert(i, *j)))
-        { // the parent changes
+        {
           i = std::next(insert(i, std::forward<decltype(v)>(v)));
         }
       );
