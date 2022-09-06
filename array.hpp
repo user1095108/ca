@@ -271,22 +271,20 @@ public:
   //
   constexpr void emplace_back(auto&& ...a)
     noexcept(noexcept(push_back(std::declval<T>())))
-    requires(
-      std::is_assignable_v<value_type&, value_type&&> &&
-      std::is_constructible_v<value_type, decltype(a)...>
-    )
   {
     push_back({std::forward<decltype(a)>(a)...});
   }
 
   constexpr void emplace_front(auto&& ...a)
     noexcept(noexcept(push_front(std::declval<T>())))
-    requires(
-      std::is_assignable_v<value_type&, value_type&&> &&
-      std::is_constructible_v<value_type, decltype(a)...>
-    )
   {
     push_front({std::forward<decltype(a)>(a)...});
+  }
+
+  constexpr iterator emplace(const_iterator const i, auto&& ...a)
+    noexcept(noexcept(emplace(std::declval<T>())))
+  {
+    return insert(i, {std::forward<decltype(a)>(a)...});
   }
 
   //
@@ -358,6 +356,56 @@ public:
     noexcept(noexcept(insert(i, std::move(v), {})))
   {
     return insert(i, std::move(v), {});
+  }
+
+  iterator insert(const_iterator i, size_type count, auto&& v)
+    noexcept(noexcept(insert(i, std::declval<decltype(v)>())))
+  {
+    if (count)
+    {
+      auto const r(insert(i, v));
+      i = std::next(r);
+
+      for (--count; count; --count) i = std::next(insert(i, v));
+
+      return r;
+    }
+    else
+    {
+      return {a_, i.n()};
+    }
+  }
+
+  iterator insert(const_iterator i, size_type count, value_type&& v)
+    noexcept(noexcept(insert(i, count, v)))
+  {
+    return insert(i, count, v);
+  }
+
+  iterator insert(const_iterator i,
+    std::input_iterator auto const j, decltype(j) k)
+    noexcept(noexcept(insert(i, *j)))
+  {
+    if (j == k)
+    {
+      return {a_, i.n()};
+    }
+    else
+    {
+      auto const r(emplace(i, *j));
+      i = std::next(r);
+
+      std::for_each(
+        std::next(j),
+        k,
+        [&](auto&& v) noexcept(noexcept(insert(i, *j)))
+        { // the parent changes
+          i = std::next(insert(i, std::forward<decltype(v)>(v)));
+        }
+      );
+
+      return r;
+    }
   }
 
   //
