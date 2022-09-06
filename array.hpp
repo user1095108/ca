@@ -148,8 +148,7 @@ public:
   constexpr array& operator=(array&& o)
     noexcept(
       std::is_nothrow_move_assignable_v<value_type> ||
-      (NEW == M) ||
-      (USER == M)
+      (NEW == M) || (USER == M)
     )
     requires(
       std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
@@ -269,12 +268,6 @@ public:
   constexpr auto const& front() const noexcept { return *f_; }
 
   //
-  constexpr void assign(std::initializer_list<value_type> l)
-    noexcept(noexcept(assign(l.begin(), l.end())))
-  {
-    assign(l.begin(), l.end());
-  }
-
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(*i)>)
     requires(std::is_assignable_v<T, decltype(*i)>)
@@ -282,6 +275,12 @@ public:
     clear();
 
     std::copy(i, j, std::back_inserter(*this));
+  }
+
+  constexpr void assign(std::initializer_list<value_type> l)
+    noexcept(noexcept(assign(l.begin(), l.end())))
+  {
+    assign(l.begin(), l.end());
   }
 
   //
