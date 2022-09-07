@@ -90,20 +90,24 @@ public:
   }
 
   constexpr array(array const& o)
-    noexcept(noexcept(*this = o))
+    noexcept(noexcept(array(o.cbegin(), o.cend())))
     requires(std::is_copy_assignable_v<value_type>):
-    array()
+    array(o.cbegin(), o.cend())
   {
-    *this = o;
   }
 
   constexpr array(array&& o)
     noexcept(noexcept(*this = std::move(o)))
     requires(
       std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
-    ):
-    array()
+    )
   {
+    if constexpr((MEMBER == M) || (NEW == M))
+    {
+      if constexpr(NEW == M) a_ = new T[N];
+      f_ = l_ = a_;
+    }
+
     *this = std::move(o);
   }
 
@@ -135,7 +139,7 @@ public:
     noexcept(std::is_nothrow_copy_assignable_v<value_type>)
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
-    f_ = &a_[o.f_ - o.a_]; l_ = &a_[o.l_ - o.a_];
+    clear();
     std::copy(o.cbegin(), o.cend(), begin());
 
     return *this;
@@ -152,15 +156,24 @@ public:
   {
     if constexpr(MEMBER == M)
     {
-      f_ = &a_[o.f_ - o.a_]; l_ = &a_[o.l_ - o.a_];
+      clear();
       std::move(o.begin(), o.end(), begin());
       o.clear();
     }
     else
     {
       f_ = o.f_; l_ = o.l_;
-      o.f_ = o.l_ = a_;
-      std::swap(a_, o.a_);
+
+      if (USER == M)
+      {
+        a_ = o.a_; o.a_ = {};
+      }
+      else
+      {
+        std::swap(a_, o.a_);
+      }
+
+      o.clear();
     }
 
     return *this;
