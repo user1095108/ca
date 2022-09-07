@@ -91,7 +91,8 @@ public:
 
   constexpr array(array const& o)
     noexcept(noexcept(*this = o))
-    requires(std::is_copy_assignable_v<value_type>)
+    requires(std::is_copy_assignable_v<value_type>):
+    array()
   {
     *this = o;
   }
@@ -100,22 +101,17 @@ public:
     noexcept(noexcept(*this = std::move(o)))
     requires(
       std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
-    )
+    ):
+    array()
   {
     *this = std::move(o);
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(push_back(*i)))
+    noexcept(noexcept(push_back(*i))):
+    array()
   {
-    std::for_each(
-      i,
-      j,
-      [&](auto&& v) noexcept(noexcept(push_back(*i)))
-      {
-        push_back(std::forward<decltype(v)>(v));
-      }
-    );
+    std::copy(i, j, std::back_inserter(*this));
   }
 
   constexpr array(std::initializer_list<value_type> l)
