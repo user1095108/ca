@@ -158,6 +158,7 @@ public:
     {
       clear();
       std::move(o.begin(), o.end(), std::back_inserter(*this));
+      o.clear();
     }
     else
     {
@@ -171,9 +172,9 @@ public:
       {
         std::swap(a_, o.a_);
       }
-    }
 
-    o.clear();
+      o.f_ = o.l_ = o.a_;
+    }
 
     return *this;
   }
