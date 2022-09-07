@@ -157,8 +157,7 @@ public:
     if constexpr(MEMBER == M)
     {
       clear();
-      std::move(o.begin(), o.end(), begin());
-      o.clear();
+      std::move(o.begin(), o.end(), std::back_inserter(*this));
     }
     else
     {
@@ -172,9 +171,9 @@ public:
       {
         std::swap(a_, o.a_);
       }
-
-      o.clear();
     }
+
+    o.clear();
 
     return *this;
   }
