@@ -164,7 +164,7 @@ public:
     {
       f_ = o.f_; l_ = o.l_;
 
-      if (USER == M)
+      if constexpr(USER == M)
       {
         a_ = o.a_; o.a_ = {};
       }
