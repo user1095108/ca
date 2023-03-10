@@ -248,7 +248,7 @@ public:
 
   constexpr size_type size() const noexcept
   {
-    auto const n(l_ - f_);
+    auto const n(l_ - f_); // N - 1 <= PTRDIFF_MAX
 
     return n < decltype(n){} ? N + n : n;
   }
