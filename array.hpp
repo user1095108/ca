@@ -14,11 +14,9 @@ namespace ca
 enum Method { MEMBER, NEW, USER };
 
 template <typename T, std::size_t N, enum Method M = MEMBER>
+  requires ((N > 1) && (N - 1 <= PTRDIFF_MAX))
 class array
 {
-  static_assert(N > 1);
-  static_assert(N - 1 <= PTRDIFF_MAX);
-
   friend class arrayiterator<T, array>;
   friend class arrayiterator<T const, array>;
 
@@ -258,12 +256,12 @@ public:
   //
   constexpr auto& operator[](size_type i) noexcept
   {
-    auto n(f_); for (; i; --i) n = S::next(a_, n); return *n;
+    i %= N; auto const n(&a_[N] - f_); return *(i < n ? f_ + i : i - n + a_);
   }
 
   constexpr auto const& operator[](size_type i) const noexcept
   {
-    auto n(f_); for (; i; --i) n = S::next(a_, n); return *n;
+    i %= N; auto const n(&a_[N] - f_); return *(i < n ? f_ + i : i - n + a_);
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
