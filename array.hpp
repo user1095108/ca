@@ -256,12 +256,12 @@ public:
   //
   constexpr auto& operator[](size_type i) noexcept
   {
-    i %= N; auto const n(&a_[N] - f_); return *(i < n ? f_ + i : i - n + a_);
+    i %= N; auto const n(a_ - f_ + N); return *(i < n ? f_ + i : i - n + a_);
   }
 
   constexpr auto const& operator[](size_type i) const noexcept
   {
-    i %= N; auto const n(&a_[N] - f_); return *(i < n ? f_ + i : i - n + a_);
+    i %= N; auto const n(a_ - f_ + N); return *(i < n ? f_ + i : i - n + a_);
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
