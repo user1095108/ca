@@ -258,14 +258,14 @@ public:
   {
     i %= size();
 
-    auto const d(&a_[N - 1] - f_); return *(i <= d ? f_ + i : i - d + a_);
+    auto const d(&a_[N - 1] - f_); return i <= d ? f_[i] : a_[i - d];
   }
 
   constexpr auto const& operator[](size_type i) const noexcept
   {
     i %= size();
 
-    auto const d(&a_[N - 1] - f_); return *(i <= d ? f_ + i : i - d + a_);
+    auto const d(&a_[N - 1] - f_); return i <= d ? f_[i] : a_[i - d];
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
