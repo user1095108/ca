@@ -117,7 +117,7 @@ public:
   }
 
   // comparison
-  constexpr auto operator==(arrayiterator const& o) const noexcept
+  constexpr bool operator==(arrayiterator const& o) const noexcept
   {
     return n_ == o.n_;
   }
