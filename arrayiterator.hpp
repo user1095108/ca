@@ -87,22 +87,22 @@ public:
 
   constexpr arrayiterator operator+(difference_type const n) const noexcept
   {
-    return {a_, a_->next(n_, n)};
+    return {a_, n >= 0 ? a_->next(n_, n) : a_->prev(n_, -n)};
   }
 
   constexpr arrayiterator operator-(difference_type const n) const noexcept
   {
-    return {a_, a_->prev(n_, n)};
+    return {a_, n >= 0 ? a_->prev(n_, n) : a_->next(n_, -n)};
   }
 
   constexpr auto& operator+=(difference_type const n) noexcept
   {
-    n_ = a_->next(n_, n); return *this;
+    n_ = n >= 0 ? a_->next(n_, n) : a_->prev(n_, -n); return *this;
   }
 
   constexpr auto& operator-=(difference_type const n) noexcept
   {
-    n_ = a_->prev(n_, n); return *this;
+    n_ = n >= 0 ? a_->prev(n_, n) : a_->next(n_, -n); return *this;
   }
 
   // comparison
@@ -117,9 +117,9 @@ public:
   }
 
   // member access
-  constexpr auto& operator[](difference_type const i) const noexcept
+  constexpr auto& operator[](difference_type const n) const noexcept
   {
-    return *a_->next(n_, i);
+    return *(n >= 0 ? a_->next(n_, n) : a_->prev(n_, -n));
   }
 
   constexpr auto operator->() const noexcept { return n_; }
