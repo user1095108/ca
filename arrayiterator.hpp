@@ -71,22 +71,18 @@ public:
   // arithmetic
   constexpr auto operator-(arrayiterator const& o) const noexcept
   {
-    auto const a(a_->a_);
-    auto const f(a_->f_);
+    auto const d([a(a_->a_), f(a_->f_)](auto const p) noexcept
+      {
+        auto d(p - f);
+
+        if (d < 0) d = (&a[CA::cap - 1] - f) + p - a + 1;
+
+        return d;
+      }
+    );
 
     //
-    auto d0(n_ - f);
-
-    if (d0 < 0) d0 = (&a[CA::cap - 1] - f) + n_ - a + 1;
-
-    //
-    auto const on(o.n_);
-    auto d1(on - f);
-
-    if (d1 < 0) d1 = (&a[CA::cap - 1] - f) + on - a + 1;
-
-    //
-    return d0 - d1;
+    return d(n_) - d(o.n_);
   }
 
   constexpr arrayiterator operator+(std::size_t const N) const noexcept
