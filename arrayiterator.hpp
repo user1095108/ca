@@ -130,7 +130,7 @@ public:
   // member access
   constexpr auto& operator[](std::size_t const i) const noexcept
   {
-    return *a_->next(n_, i);
+    return reference(*a_->next(n_, i));
   }
 
   constexpr auto operator->() const noexcept { return n_; }
