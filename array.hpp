@@ -3,7 +3,7 @@
 # pragma once
 
 #include <climits> // PTRDIFF_MAX
-#include <algorithm> // inplace_merge()
+#include <algorithm> // std::move()
 #include <initializer_list>
 
 #include "arrayiterator.hpp"
