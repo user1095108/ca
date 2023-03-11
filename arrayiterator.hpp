@@ -55,15 +55,8 @@ public:
   constexpr arrayiterator& operator=(arrayiterator&&) = default;
 
   // increment, decrement
-  constexpr auto& operator++() noexcept
-  {
-    n_ = a_->next(n_); return *this;
-  }
-
-  constexpr auto& operator--() noexcept
-  {
-    n_ = a_->prev(n_); return *this;
-  }
+  constexpr auto& operator++() noexcept { n_ = a_->next(n_); return *this; }
+  constexpr auto& operator--() noexcept { n_ = a_->prev(n_); return *this; }
 
   constexpr arrayiterator operator++(int) noexcept
   {
