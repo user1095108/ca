@@ -66,6 +66,13 @@ private:
     return d >= n ? p + n : n - d - 1 + a_;
   }
 
+  constexpr auto next(auto const p, size_type const n) const noexcept
+  {
+    auto const d(&a_[N - 1] - p); // >= 0
+
+    return d >= n ? p + n : n - d - 1 + a_;
+  }
+
   constexpr auto prev(auto const p, size_type const n) noexcept
   {
     auto const d(p - a_); // >= 0
