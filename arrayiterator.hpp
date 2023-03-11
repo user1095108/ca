@@ -85,24 +85,24 @@ public:
     return d(n_) - d(o.n_);
   }
 
-  constexpr arrayiterator operator+(std::size_t const N) const noexcept
+  constexpr arrayiterator operator+(difference_type const n) const noexcept
   {
-    return {a_, a_->next(n_, N)};
+    return {a_, a_->next(n_, n)};
   }
 
-  constexpr arrayiterator operator-(std::size_t const N) const noexcept
+  constexpr arrayiterator operator-(difference_type const n) const noexcept
   {
-    return {a_, a_->prev(n_, N)};
+    return {a_, a_->prev(n_, n)};
   }
 
-  constexpr auto& operator+=(std::size_t const N) noexcept
+  constexpr auto& operator+=(difference_type const n) noexcept
   {
-    n_ = a_->next(n_, N); return *this;
+    n_ = a_->next(n_, n); return *this;
   }
 
-  constexpr auto& operator-=(std::size_t const N) noexcept
+  constexpr auto& operator-=(difference_type const n) noexcept
   {
-    n_ = a_->prev(n_, N); return *this;
+    n_ = a_->prev(n_, n); return *this;
   }
 
   // comparison
@@ -117,7 +117,7 @@ public:
   }
 
   // member access
-  constexpr auto& operator[](std::size_t const i) const noexcept
+  constexpr auto& operator[](difference_type const i) const noexcept
   {
     return *a_->next(n_, i);
   }
