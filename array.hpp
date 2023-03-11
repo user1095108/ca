@@ -20,8 +20,6 @@ class array
   friend class arrayiterator<T, array>;
   friend class arrayiterator<T const, array>;
 
-  enum : std::size_t { cap = N };
-
 public:
   using value_type = T;
 
@@ -36,6 +34,8 @@ public:
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
+  enum : size_type { cap = N };
+
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
 
