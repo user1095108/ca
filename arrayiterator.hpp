@@ -111,7 +111,7 @@ public:
     return n_ == o.n_;
   }
 
-  constexpr auto operator<(arrayiterator const& o) const noexcept
+  constexpr bool operator<(arrayiterator const& o) const noexcept
   {
     return *this - o < 0;
   }
