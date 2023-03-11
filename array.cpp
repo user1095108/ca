@@ -11,7 +11,7 @@ int main()
   ca.push_back(3);
   ca.push_front(4);
 
-  ca.sort();
+  std::sort(ca.begin(), ca.end());
 
   std::cout << "size: " << ca.size() << std::endl;
   std::cout << "full: " << ca.full() << std::endl;
