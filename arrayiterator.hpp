@@ -19,7 +19,7 @@ class arrayiterator
 
   friend inverse_const_t;
 
-  CA* a_;
+  CA const* a_;
   T* n_;
 
 public:
@@ -34,7 +34,7 @@ public:
   arrayiterator() = default;
 
   constexpr arrayiterator(CA const* const a, T* const n) noexcept:
-    a_(const_cast<CA*>(a)),
+    a_(a),
     n_(n)
   {
   }
@@ -123,7 +123,7 @@ public:
   // member access
   constexpr auto& operator[](std::size_t const i) const noexcept
   {
-    return reference(*a_->next(n_, i));
+    return *a_->next(n_, i);
   }
 
   constexpr auto operator->() const noexcept { return n_; }

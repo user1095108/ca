@@ -39,45 +39,28 @@ private:
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
 
-  constexpr auto next(auto const p) noexcept
-  {
-    return p == &a_[N - 1] ? a_ : p + 1;
-  }
-
   constexpr auto next(auto const p) const noexcept
   {
-    return p == &a_[N - 1] ? a_ : p + 1;
-  }
-
-  constexpr auto prev(auto const p) noexcept
-  {
-    return p == a_ ? &a_[N - 1] : p - 1;
+    return const_cast<decltype(p)>(p == &a_[N - 1] ? a_ : p + 1);
   }
 
   constexpr auto prev(auto const p) const noexcept
   {
-    return p == a_ ? &a_[N - 1] : p - 1;
-  }
-
-  constexpr auto next(auto const p, size_type const n) noexcept
-  {
-    auto const d(&a_[N - 1] - p); // >= 0
-
-    return d >= n ? p + n : n - d - 1 + a_;
+    return const_cast<decltype(p)>(p == a_ ? &a_[N - 1] : p - 1);
   }
 
   constexpr auto next(auto const p, size_type const n) const noexcept
   {
     auto const d(&a_[N - 1] - p); // >= 0
 
-    return d >= n ? p + n : n - d - 1 + a_;
+    return const_cast<decltype(p)>(d >= n ? p + n : n - d - 1 + a_);
   }
 
-  constexpr auto prev(auto const p, size_type const n) noexcept
+  constexpr auto prev(auto const p, size_type const n) const noexcept
   {
     auto const d(p - a_); // >= 0
 
-    return d >= n ? p - n : &a_[N - 1] - (n - d - 1);
+    return const_cast<decltype(p)>(d >= n ? p - n : &a_[N - 1] - (n - d - 1));
   }
 
 public:
