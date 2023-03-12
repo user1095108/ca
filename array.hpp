@@ -13,8 +13,8 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
-template <typename T, std::size_t N, enum Method M = MEMBER>
-  requires ((N > 1) && (N - 1 <= PTRDIFF_MAX))
+template <typename T, std::size_t CAP, enum Method M = MEMBER>
+  requires ((CAP > 0) && (CAP+1 <= PTRDIFF_MAX))
 class array
 {
   friend class arrayiterator<T, array>;
@@ -34,7 +34,7 @@ public:
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
-  enum : size_type { cap = N };
+  enum : size_type { N = CAP+1 };
 
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
@@ -51,16 +51,16 @@ private:
 
   constexpr auto next(auto const p, size_type const n) const noexcept
   {
-    auto const d(&a_[N - 1] - p); // >= 0
+    auto const d(&a_[N] - p); // >= 0
 
-    return const_cast<decltype(p)>(d >= n ? p + n : n - d - 1 + a_);
+    return const_cast<decltype(p)>(d > n ? p + n : n - d + a_);
   }
 
   constexpr auto prev(auto const p, size_type const n) const noexcept
   {
     auto const d(p - a_); // >= 0
 
-    return const_cast<decltype(p)>(d >= n ? p - n : &a_[N - 1] - (n - d - 1));
+    return const_cast<decltype(p)>(d >= n ? p - n : &a_[N] - (n - d));
   }
 
 public:
@@ -232,8 +232,8 @@ public:
   }
 
   //
-  static constexpr size_type capacity() noexcept { return N - 1; }
-  static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
+  static constexpr size_type capacity() noexcept { return CAP; }
+  static constexpr size_type max_size() noexcept { return PTRDIFF_MAX-1; }
 
   //
   constexpr bool empty() const noexcept { return f_ == l_; }
@@ -241,8 +241,7 @@ public:
 
   constexpr size_type size() const noexcept
   {
-    auto const n(l_ - f_); // N - 1 <= PTRDIFF_MAX
-
+    auto const n(l_ - f_); // n is at most N-1 (since a full circular array will have l_ and f_ next to each other) and N - 1 <= N and N <= PTRDIFF_MAX
     return n < decltype(n){} ? N + n : n;
   }
 

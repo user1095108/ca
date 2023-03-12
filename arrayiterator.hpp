@@ -75,7 +75,7 @@ public:
       {
         auto d(p - f);
 
-        if (d < 0) d = &a[CA::cap - 1] - f + (p - a + 1);
+        if (d < 0) d = &a[CA::N] - f + (p - a);
 
         return d;
       }
@@ -117,7 +117,7 @@ public:
       {
         auto d(p - f);
 
-        if (d < 0) d = &a[CA::cap - 1] - f + (p - a + 1);
+        if (d < 0) d = &a[CA::N] - f + (p - a);
 
         return d;
       }
