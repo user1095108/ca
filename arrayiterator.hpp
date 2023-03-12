@@ -73,9 +73,8 @@ public:
   {
     auto const d([f(a_->f_)](auto const p) noexcept
       {
-        auto d(p - f);
+        auto const d(p - f);
 
-        //if (d < 0) d = &a[CA::sz - 1] - f + (p - a + 1); // N - 1 + d + 1
         return d < 0 ? d + difference_type(CA::sz) : d;
       }
     );
