@@ -113,7 +113,18 @@ public:
 
   constexpr bool operator<(arrayiterator const& o) const noexcept
   {
-    return *this - o < 0;
+    auto const d([a(a_->a_), f(a_->f_)](auto const p) noexcept
+      {
+        auto d(p - f);
+
+        if (d < 0) d = (&a[CA::cap - 1] - f) + p - a + 1;
+
+        return d;
+      }
+    );
+
+    //
+    return d(n_) < d(o.n_);
   }
 
   // member access
