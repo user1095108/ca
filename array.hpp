@@ -375,7 +375,7 @@ public:
     return insert(i, std::move(v), {});
   }
 
-  iterator insert(const_iterator i, size_type count, auto&& v)
+  constexpr iterator insert(const_iterator i, size_type count, auto&& v)
     noexcept(noexcept(insert(i, std::declval<decltype(v)>())))
   {
     if (count)
@@ -393,13 +393,13 @@ public:
     }
   }
 
-  iterator insert(const_iterator i, size_type count, value_type&& v)
+  constexpr iterator insert(const_iterator i, size_type count, value_type&& v)
     noexcept(noexcept(insert(i, count, v)))
   {
     return insert(i, count, v);
   }
 
-  iterator insert(const_iterator i,
+  constexpr iterator insert(const_iterator i,
     std::input_iterator auto const j, decltype(j) k)
     noexcept(noexcept(insert(i, *j)))
   {
