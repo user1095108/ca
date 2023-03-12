@@ -69,13 +69,13 @@ public:
   }
 
   // arithmetic
-  constexpr auto operator-(arrayiterator const& o) const noexcept
+  constexpr difference_type operator-(arrayiterator const& o) const noexcept
   {
-    auto const d([f(a_->f_)](auto const p) noexcept
+    auto const d([f(a_->f_)](auto const p) noexcept -> difference_type
       {
-        auto const d(p - f);
+        auto d(p - f);
 
-        // if (d < 0) d = &a[CA::cap - 1] - f + (p - a + 1); // N - 1 + d + 1
+        //if (d < 0) d = &a[CA::cap - 1] - f + (p - a + 1); // N - 1 + d + 1
         return d < 0 ? d + CA::cap : d;
       }
     );
@@ -112,7 +112,7 @@ public:
 
   constexpr bool operator<(arrayiterator const& o) const noexcept
   {
-    auto const d([f(a_->f_)](auto const p) noexcept
+    auto const d([f(a_->f_)](auto const p) noexcept -> difference_type
       {
         auto const d(p - f);
 
