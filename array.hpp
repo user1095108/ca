@@ -51,7 +51,7 @@ private:
 
   constexpr auto next(auto const p, size_type const n) const noexcept
   {
-    auto const d(&a_[N - 1] - p); // >= 0
+    size_type const d(&a_[N - 1] - p); // >= 0
     // n - &a_[N - 1] + p - 1 + a_ = -(N - 1) + n + p - 1 = n + p - N
 
     return const_cast<decltype(p)>(d >= n ? p + n : p + (n - N));
@@ -59,7 +59,7 @@ private:
 
   constexpr auto prev(auto const p, size_type const n) const noexcept
   {
-    auto const d(p - a_); // >= 0
+    size_type const d(p - a_); // >= 0
     // &a_[N - 1] - (n - p + a_ - 1) = N - 1 - n + p + 1 = p + N - n
 
     return const_cast<decltype(p)>(d >= n ? p - n : p + (N - n));
