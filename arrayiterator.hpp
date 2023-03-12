@@ -75,8 +75,8 @@ public:
       {
         auto d(p - f);
 
-        //if (d < 0) d = &a[CA::cap - 1] - f + (p - a + 1); // N - 1 + d + 1
-        return d < 0 ? d + difference_type(CA::cap) : d;
+        //if (d < 0) d = &a[CA::sz - 1] - f + (p - a + 1); // N - 1 + d + 1
+        return d < 0 ? d + difference_type(CA::sz) : d;
       }
     );
 
@@ -116,7 +116,7 @@ public:
       {
         auto const d(p - f);
 
-        return d < 0 ? d + difference_type(CA::cap) : d;
+        return d < 0 ? d + difference_type(CA::sz) : d;
       }
     );
 

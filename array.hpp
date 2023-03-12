@@ -34,7 +34,7 @@ public:
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
-  enum : size_type { cap = N };
+  enum : size_type { sz = N };
 
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
