@@ -24,8 +24,8 @@ class arrayiterator
 
 public:
   using iterator_category = std::random_access_iterator_tag;
-  using difference_type = CA::difference_type;
-  using size_type = CA::size_type;
+  using difference_type = typename CA::difference_type;
+  using size_type = typename CA::size_type;
   using value_type = T;
 
   using pointer = value_type*;
