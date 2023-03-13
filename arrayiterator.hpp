@@ -71,11 +71,11 @@ public:
   // arithmetic
   constexpr auto operator-(arrayiterator const& o) const noexcept
   {
-    auto const d([f(a_->f_)](auto const p) noexcept
+    auto const d([f(a_->f_)](auto const p) noexcept -> difference_type
       {
         auto const d(p - f);
 
-        return d + (d < 0 ? difference_type(CA::N) : difference_type{});
+        return d < 0 ? d + CA::N : d;
       }
     );
 
@@ -111,11 +111,11 @@ public:
 
   constexpr bool operator<(arrayiterator const& o) const noexcept
   {
-    auto const d([f(a_->f_)](auto const p) noexcept
+    auto const d([f(a_->f_)](auto const p) noexcept -> difference_type
       {
         auto const d(p - f);
 
-        return d + (d < 0 ? difference_type(CA::N) : difference_type{});
+        return d < 0 ? d + CA::N : d;
       }
     );
 
