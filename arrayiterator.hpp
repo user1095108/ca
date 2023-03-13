@@ -75,7 +75,7 @@ public:
       {
         auto const d(p - f);
 
-        return d + d < 0 ? difference_type(CA::N) : difference_type{};
+        return d + (d < 0 ? difference_type(CA::N) : difference_type{});
       }
     );
 
@@ -115,7 +115,7 @@ public:
       {
         auto const d(p - f);
 
-        return d + d < 0 ? difference_type(CA::N) : difference_type{};
+        return d + (d < 0 ? difference_type(CA::N) : difference_type{});
       }
     );
 
