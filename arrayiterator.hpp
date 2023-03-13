@@ -24,7 +24,8 @@ class arrayiterator
 
 public:
   using iterator_category = std::random_access_iterator_tag;
-  using difference_type = std::ptrdiff_t;
+  using difference_type = CA::difference_type;
+  using size_type = CA::size_type;
   using value_type = T;
 
   using pointer = value_type*;
@@ -75,7 +76,7 @@ public:
       {
         auto const d(p - f);
 
-        return d < 0 ? d + CA::N : d;
+        return d + (d < 0 ? size_type(CA::N) : size_type{});
       }
     );
 
@@ -115,7 +116,7 @@ public:
       {
         auto const d(p - f);
 
-        return d < 0 ? d + CA::N : d;
+        return d + (d < 0 ? size_type(CA::N) : size_type{});
       }
     );
 
