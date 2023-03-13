@@ -13,8 +13,8 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
-template <typename T, std::size_t N, enum Method M = MEMBER>
-  requires ((N > 1) && (N - 1 <= PTRDIFF_MAX))
+template <typename T, std::size_t CAP, enum Method M = MEMBER>
+  requires ((CAP > 0) && (CAP <= PTRDIFF_MAX)) // CAP = N - 1
 class array
 {
   friend class arrayiterator<T, array>;
@@ -34,7 +34,7 @@ public:
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
-  enum : size_type { sz = N };
+  enum : size_type { N = CAP + 1 };
 
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
@@ -232,7 +232,7 @@ public:
   }
 
   //
-  static constexpr size_type capacity() noexcept { return N - 1; }
+  static constexpr size_type capacity() noexcept { return CAP; } // N - 1
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
   //
@@ -241,7 +241,7 @@ public:
 
   constexpr size_type size() const noexcept
   {
-    auto const n(l_ - f_); // N - 1 <= PTRDIFF_MAX
+    auto const n(l_ - f_); // N - 1 = CAP <= PTRDIFF_MAX
 
     return n < decltype(n){} ? N + n : n;
   }
