@@ -5,6 +5,9 @@
 #include <iterator>
 #include <type_traits>
 
+
+#include "arrayoverrides.hpp" /* behaviour depens on whether NO_CA_ARRAY_OVERRIDES is defined or not */
+
 namespace ca
 {
 
@@ -18,6 +21,8 @@ class arrayiterator
   >;
 
   friend inverse_const_t;
+
+  CA_ARRAYOVERRIDES_FRIENDS;
 
   CA const* a_;
   T* n_;
@@ -140,6 +145,10 @@ public:
   }
 };
 
-}
+} // namespace ca
+
+
 
 #endif // CA_ARRAYITERATOR_HPP
+
+

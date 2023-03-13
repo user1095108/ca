@@ -1,6 +1,10 @@
 #include <iostream>
 
+//#define NO_CA_ARRAY_OVERRIDES // uncommenting this line, will slow the copying into la2
 #include "array.hpp"
+#include <numeric>
+#include <chrono>
+#include <cassert>
 
 int main()
 {
@@ -55,6 +59,18 @@ int main()
   );
 
   std::cout << std::distance(ca.cbegin(), ca.cend()) << " : " << ca.size() << " " << ca[0] << std::endl;
+
+  {
+    ca::array<int, 500000> la; // large array
+    std::generate_n(std::back_inserter(la),la.capacity(),[i=1]() mutable{ return i++; });
+
+    const std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    ca::array<int, la.capacity()> la2(la);
+    const std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
+    assert(la == la2);
+  }
 
   return 0;
 }
