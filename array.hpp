@@ -232,6 +232,11 @@ public:
   }
 
   //
+  constexpr auto data() const noexcept { return a_; }
+  constexpr auto first() const noexcept { return f_; }
+  constexpr auto last() const noexcept { return l_; }
+
+  //
   static constexpr size_type capacity() noexcept { return CAP; } // N - 1
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
