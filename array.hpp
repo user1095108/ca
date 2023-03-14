@@ -548,7 +548,7 @@ template <typename T>
 concept array_concept = is_array<std::remove_cvref_t<T>>::value;
 
 //////////////////////////////////////////////////////////////////////////////
-constexpr void split(array_concept auto& a, auto g)
+constexpr void split(array_concept auto& a, auto&& g)
   noexcept(noexcept(g(a.first(), a.last())))
 {
   auto f(a.first());
