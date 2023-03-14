@@ -72,11 +72,11 @@ public:
     requires((MEMBER == M) || (NEW == M))
   {
     if constexpr(NEW == M) a_ = new T[N];
-    f_ = l_ = a_;
+    l_ = f_ = a_;
   }
 
   constexpr explicit array(T* const a) noexcept requires(USER == M):
-    a_(f_ = l_ = a)
+    a_(l_ = f_ = a)
   {
   }
 
@@ -96,7 +96,7 @@ public:
     if constexpr((MEMBER == M) || (NEW == M))
     {
       if constexpr(NEW == M) a_ = new T[N];
-      f_ = l_ = a_;
+      l_ = f_ = a_;
     }
 
     *this = std::move(o);
@@ -164,7 +164,7 @@ public:
         std::swap(a_, o.a_);
       }
 
-      o.f_ = o.l_ = o.a_;
+      o.l_ = o.f_ = o.a_;
     }
 
     return *this;
@@ -292,8 +292,8 @@ public:
   }
 
   //
-  constexpr void clear() noexcept { f_ = l_; }
-  constexpr void reset() noexcept { f_ = l_ = a_; }
+  constexpr void clear() noexcept { l_ = f_; }
+  constexpr void reset() noexcept { l_ = f_ = a_; }
   constexpr void resize(size_type const n) noexcept { l_ = next(f_, n); }
 
   //
