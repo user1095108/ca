@@ -71,27 +71,27 @@ constexpr OutputIt copy(ca::arrayiterator<T const, CA> first, ca::arrayiterator<
 
 
 template <typename T, typename T2, typename CA, typename CA2>
-constexpr ca::arrayiterator<T2, CA> copy(ca::arrayiterator<T const, CA> first, ca::arrayiterator<T const, CA> last, ca::arrayiterator<T2, CA2> dst)
+constexpr ca::arrayiterator<T2, CA> copy(ca::arrayiterator<T const, CA> beg, ca::arrayiterator<T const, CA> end, ca::arrayiterator<T2, CA2> dst)
 {
-    assert(first.a_ == last.a_);
-    auto const num = last-first;
-    assert(num <= CA2::CAPACITY - dst.a_->size());
+    assert(beg.a_ == end.a_);
+    auto const num = end-beg;
+    assert(num <= CA2::capacity() - dst.a_->size());
 
-    const unsigned char * const e = reinterpret_cast<const unsigned char *>(last.n_);
+    const unsigned char * const e = reinterpret_cast<const unsigned char *>(end.n_);
     ca::CopyToLim args {
-        reinterpret_cast<const unsigned char *>(first.n_),                             // b       (sourc begin)
+        reinterpret_cast<const unsigned char *>(beg.n_),                               // b       (sourc begin)
         reinterpret_cast<const unsigned char *>(e),                                    // lim     (sourc lim)
         reinterpret_cast<      unsigned char *>(dst.n_),                               // b_o     (dest begin)
-        reinterpret_cast<      unsigned char *>(const_cast<T2 *>(dst.a_->a_)),         // start_o (dest &a_[0])
-        reinterpret_cast<const unsigned char *>(               &(dst.a_->a_[CA2::N])), // edge_o  (dest &a_[N])
+        reinterpret_cast<      unsigned char *>(const_cast<T2 *>(dst.a_->data())),         // start_o (dest &a_[0])
+        reinterpret_cast<const unsigned char *>(               &(dst.a_->data()[CA2::N])), // edge_o  (dest &a_[N])
     };
 
     if (e < args.b) {
-        auto const edge = reinterpret_cast<const unsigned char *>(&(first.a_->a_[CA::N]));
+        auto const edge = reinterpret_cast<const unsigned char *>(&(beg.a_->data()[CA::N]));
         args.lim = edge;
         args.b_o = ca::copy_to_lim(args); // copy (end of array) during wrap around
 
-        args.b = reinterpret_cast<const unsigned char *>(first.a_->a_); // b copied up to edge, now set to beginning of array
+        args.b = reinterpret_cast<const unsigned char *>(beg.a_->data()); // b copied up to edge, now set to beginning of array
         args.lim = e;
     }
     decltype(dst.n_) b_o = reinterpret_cast<decltype(b_o)>(ca::copy_to_lim(args)); // copy
@@ -101,11 +101,11 @@ constexpr ca::arrayiterator<T2, CA> copy(ca::arrayiterator<T const, CA> first, c
 
 
 template <typename T, typename CA, typename CA2>
-constexpr std::back_insert_iterator<CA2> copy(ca::arrayiterator<T const, CA> first, ca::arrayiterator<T const, CA> last, std::back_insert_iterator<CA2> dst1)
+constexpr std::back_insert_iterator<CA2> copy(ca::arrayiterator<T const, CA> beg, ca::arrayiterator<T const, CA> end, std::back_insert_iterator<CA2> dst1)
 {
     auto dst = static_cast<ca_back_insert_iterator<CA2> &>(dst1).getContainer();
 
-    dst->l_ = copy(first, last, dst->end()).n_;
+    dst->l_ = copy(beg, end, dst->end()).n_;
 
     return dst1;
 }

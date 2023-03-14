@@ -151,4 +151,3 @@ public:
 
 #endif // CA_ARRAYITERATOR_HPP
 
-

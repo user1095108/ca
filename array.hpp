@@ -35,8 +35,7 @@ public:
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 private:
-  enum : size_type { CAPACITY = CAP,
-                     N        = CAP + 1 };
+  enum : size_type { N = CAP + 1 };
 
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
@@ -201,57 +200,45 @@ public:
     );
   }
 
+  //
+  constexpr auto data() const noexcept { return a_; }
+  constexpr auto first() const noexcept { return f_; }
+  constexpr auto last() const noexcept { return l_; }
+
   // iterators
   constexpr iterator begin() noexcept { return {this, f_}; }
   constexpr iterator end() noexcept { return {this, l_}; }
 
-  constexpr iterator begin_1sthalf() noexcept { return {this, f_}; }
-  constexpr iterator end_1sthalf() noexcept { return {this, l_ < f_ ? &a_[N-1] : l_}; }
-
-  constexpr iterator begin_2ndhalf() noexcept { return {this, a_}; }
-  constexpr iterator end_2ndhalf() noexcept { return {this, l_ < f_ ? l_ : a_}; }
-
-
   constexpr const_iterator begin() const noexcept { return {this, f_}; }
   constexpr const_iterator end() const noexcept { return {this, l_}; }
-
-  constexpr const_iterator begin_1sthalf() const noexcept { return {this, f_}; }
-  constexpr const_iterator end_1sthalf() const noexcept { return {this, l_ < f_ ? &a_[N-1] : l_}; }
-
-  constexpr const_iterator begin_2ndhalf() const noexcept { return {this, a_}; }
-  constexpr const_iterator end_2ndhalf() const noexcept { return {this, l_ < f_ ? l_ : a_}; }
-
 
   constexpr const_iterator cbegin() const noexcept { return {this, f_}; }
   constexpr const_iterator cend() const noexcept { return {this, l_}; }
 
-  constexpr const_iterator cbegin_1sthalf() const noexcept { return {this, f_}; }
-  constexpr const_iterator cend_1sthalf() const noexcept { return {this, l_ < f_ ? &a_[N-1] : l_}; }
-
-  constexpr const_iterator cbegin_2ndhalf() const noexcept { return {this, a_}; }
-  constexpr const_iterator cend_2ndhalf() const noexcept { return {this, l_ < f_ ? l_ : a_}; }
-
   // reverse iterators
-  constexpr reverse_iterator rbegin() noexcept { return reverse_iterator{iterator(this, l_)}; }
-  constexpr reverse_iterator rend() noexcept { return reverse_iterator{iterator(this, f_)}; }
+  constexpr reverse_iterator rbegin() noexcept
+  {
+    return reverse_iterator{iterator(this, l_)};
+  }
 
-  constexpr reverse_iterator rbegin_1sthalf() noexcept { return reverse_iterator{iterator(this, l_)}; }
-  constexpr reverse_iterator rend_1sthalf() noexcept { return reverse_iterator{iterator(this, l_ < f_ ? a_ : f_)}; }
-
-  constexpr reverse_iterator rbegin_2ndhalf() noexcept { return reverse_iterator{iterator(this, &a_[N])}; }
-  constexpr reverse_iterator rend_2ndhalf() noexcept { return reverse_iterator{iterator(this, l_ < f_ ? f_ : a_[N])}; }
+  constexpr reverse_iterator rend() noexcept
+  {
+    return reverse_iterator{iterator(this, f_)};
+  }
 
   // const reverse iterators
-  constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator{const_iterator(this, l_)}; }
-  constexpr const_reverse_iterator crend() const noexcept { return const_reverse_iterator{const_iterator{this, f_}}; }
+  constexpr const_reverse_iterator crbegin() const noexcept
+  {
+    return const_reverse_iterator{const_iterator(this, l_)};
+  }
 
-  constexpr const_reverse_iterator crbegin_1sthalf() const noexcept { return const_reverse_iterator{iterator(this, l_)}; }
-  constexpr const_reverse_iterator crend_1sthalf() const noexcept { return const_reverse_iterator{iterator(this, l_ < f_ ? a_ : f_)}; }
-
-  constexpr const_reverse_iterator crbegin_2ndhalf() const noexcept { return const_reverse_iterator{iterator(this, &a_[N])}; }
-  constexpr const_reverse_iterator crend_2ndhalf() const noexcept { return const_reverse_iterator{iterator(this, l_ < f_ ? f_ : a_[N])}; }
+  constexpr const_reverse_iterator crend() const noexcept
+  {
+    return const_reverse_iterator{const_iterator{this, f_}};
+  }
 
   //
+  static constexpr size_type array_size() noexcept { return N; } // CAP + 1
   static constexpr size_type capacity() noexcept { return CAP; } // N - 1
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
