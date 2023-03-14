@@ -200,9 +200,12 @@ public:
   }
 
   //
-  constexpr auto data() const noexcept { return a_; }
-  constexpr auto first() const noexcept { return f_; }
-  constexpr auto last() const noexcept { return l_; }
+  constexpr T* data() noexcept { return a_; }
+  constexpr T const* data() const noexcept { return a_; }
+  constexpr T* first() noexcept { return f_; }
+  constexpr T const* first() const noexcept { return f_; }
+  constexpr T* last() noexcept { return l_; }
+  constexpr T const* last() const noexcept { return l_; }
 
   // iterators
   constexpr iterator begin() noexcept { return {this, f_}; }
@@ -534,6 +537,24 @@ constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
   requires((NEW == M) || (USER == M))
 {
   lhs.swap(rhs);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename T, std::size_t S, enum Method M>
+inline void split(array<T, S, M> const& a, auto g)
+  noexcept(noexcept(g(a.first(), a.last())))
+{
+  if (auto const f(a.first()), l(a.last()); l - f < 0)
+  {
+    auto const d(a.data());
+
+    g(f, &d[a.array_size()]);
+    g(d, l);
+  }
+  else
+  {
+    g(f, l);
+  }
 }
 
 }
