@@ -237,6 +237,7 @@ public:
   }
 
   //
+  static constexpr size_type array_size() noexcept { return N; } // CAP + 1
   static constexpr size_type capacity() noexcept { return CAP; } // N - 1
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
