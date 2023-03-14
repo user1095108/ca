@@ -16,14 +16,7 @@ int main()
   std::cout << "size: " << ca.size() << std::endl;
   std::cout << "full: " << ca.full() << std::endl;
 
-  std::for_each(
-    ca.cbegin(),
-    ca.cend(),
-    [](auto&& v) noexcept
-    {
-      std::cout << v << std::endl;
-    }
-  );
+  std::copy(ca.cbegin(), ca.cend(), std::ostream_iterator<int>(std::cout, "\n"));
 
   ca.insert(ca.cend(), 5);
   ca.push_back(10);
