@@ -199,6 +199,11 @@ public:
     );
   }
 
+  //
+  constexpr auto data() const noexcept { return a_; }
+  constexpr auto first() const noexcept { return f_; }
+  constexpr auto last() const noexcept { return l_; }
+
   // iterators
   constexpr iterator begin() noexcept { return {this, f_}; }
   constexpr iterator end() noexcept { return {this, l_}; }
@@ -230,11 +235,6 @@ public:
   {
     return const_reverse_iterator{const_iterator{this, f_}};
   }
-
-  //
-  constexpr auto data() const noexcept { return a_; }
-  constexpr auto first() const noexcept { return f_; }
-  constexpr auto last() const noexcept { return l_; }
 
   //
   static constexpr size_type capacity() noexcept { return CAP; } // N - 1
