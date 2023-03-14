@@ -539,9 +539,16 @@ constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
   lhs.swap(rhs);
 }
 
+template <typename> struct is_array : std::false_type {};
+
+template <typename T, std::size_t CAP, enum Method M>
+struct is_array<array<T, CAP, M>> : std::true_type {};
+
+template <typename T>
+concept array_concept = is_array<std::remove_cvref_t<T>>::value;
+
 //////////////////////////////////////////////////////////////////////////////
-template <typename T, std::size_t S, enum Method M>
-constexpr void split(array<T, S, M> const& a, auto g)
+constexpr void split(array_concept auto& a, auto g)
   noexcept(noexcept(g(a.first(), a.last())))
 {
   if (auto const f(a.first()), l(a.last()); l - f < 0)
