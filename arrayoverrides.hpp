@@ -62,9 +62,9 @@ constexpr OutputIt copy(ca::arrayiterator<T const, CA> first, ca::arrayiterator<
     auto const e    = last.n_;
 
     if (e < b) {
-        auto const edge = &(first.a_->a_[CA::N]);
+        auto const edge = &(first.a_->data()[CA::capacity()]);
         dst = std::copy(b, edge, dst);  // copy (end of array) during wrap around
-        b = first.a_->a_;
+        b = first.a_->data();
     }
     return std::copy(b, e, dst); // copy
 }
@@ -79,15 +79,15 @@ constexpr ca::arrayiterator<T2, CA> copy(ca::arrayiterator<T const, CA> beg, ca:
 
     const unsigned char * const e = reinterpret_cast<const unsigned char *>(end.n_);
     ca::CopyToLim args {
-        reinterpret_cast<const unsigned char *>(beg.n_),                               // b       (sourc begin)
-        reinterpret_cast<const unsigned char *>(e),                                    // lim     (sourc lim)
-        reinterpret_cast<      unsigned char *>(dst.n_),                               // b_o     (dest begin)
-        reinterpret_cast<      unsigned char *>(const_cast<T2 *>(dst.a_->data())),         // start_o (dest &a_[0])
-        reinterpret_cast<const unsigned char *>(               &(dst.a_->data()[CA2::N])), // edge_o  (dest &a_[N])
+        reinterpret_cast<const unsigned char *>(beg.n_),                                            // b       (sourc begin)
+        reinterpret_cast<const unsigned char *>(e),                                                 // lim     (sourc lim)
+        reinterpret_cast<      unsigned char *>(dst.n_),                                            // b_o     (dest begin)
+        reinterpret_cast<      unsigned char *>(const_cast<T2 *>(dst.a_->data())),                  // start_o (dest &a_[0])
+        reinterpret_cast<const unsigned char *>(               &(dst.a_->data()[CA2::capacity()])), // edge_o  (dest &a_[N])
     };
 
     if (e < args.b) {
-        auto const edge = reinterpret_cast<const unsigned char *>(&(beg.a_->data()[CA::N]));
+        auto const edge = reinterpret_cast<const unsigned char *>(&(beg.a_->data()[CA::capacity()]));
         args.lim = edge;
         args.b_o = ca::copy_to_lim(args); // copy (end of array) during wrap around
 
