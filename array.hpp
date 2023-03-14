@@ -548,8 +548,7 @@ constexpr void split(array<T, S, M> const& a, auto g)
   {
     auto const d(a.data());
 
-    g(f, &d[a.array_size() - 1]);
-    g(&d[a.array_size() - 1], &d[a.array_size()]);
+    g(f, &d[a.array_size()]); // f > l >= d, therefore f > d
     g(d, l);
   }
   else
