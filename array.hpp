@@ -570,4 +570,7 @@ constexpr void split(array_concept auto& a, auto&& g)
 
 }
 
+
+#include "arrayoverrides.hpp"
+
 #endif // CA_ARRAY_HPP

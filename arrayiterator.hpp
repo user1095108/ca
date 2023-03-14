@@ -4,9 +4,20 @@
 
 #include <iterator>
 #include <type_traits>
+#include <cassert>
 
+#define CA_ARRAYOVERRIDES_FRIENDS                                                                                                                                  \
+    template <typename CA_ARR_T, typename CA_ARR_CA, typename OutputIt>                                                                                            \
+    friend constexpr OutputIt std::copy(ca::arrayiterator<CA_ARR_T const, CA_ARR_CA> first, ca::arrayiterator<CA_ARR_T const, CA_ARR_CA> last, OutputIt d_first ); \
+                                                                                                                                                                   \
+    template <typename CA_ARR_T, typename CA_ARR_T2, typename CA_ARR_CA, typename CA_ARR_CA2>                                                                      \
+    friend constexpr ca::arrayiterator<CA_ARR_T2, CA_ARR_CA> std::copy(ca::arrayiterator<CA_ARR_T const, CA_ARR_CA> first, ca::arrayiterator<CA_ARR_T const, CA_ARR_CA> last, ca::arrayiterator<CA_ARR_T2, CA_ARR_CA2> d_first); \
+                                                                                                                                                                   \
+    template <typename CA_ARR_T, typename CA_ARR_CA, typename CA_ARR_CA2>                                                                                          \
+    friend constexpr std::back_insert_iterator<CA_ARR_CA2> std::copy(ca::arrayiterator<CA_ARR_T const, CA_ARR_CA> first, ca::arrayiterator<CA_ARR_T const, CA_ARR_CA> last, std::back_insert_iterator<CA_ARR_CA2> d_first)
+//                                                          |
+//                                                          !
 
-#include "arrayoverrides.hpp" /* behaviour depens on whether NO_CA_ARRAY_OVERRIDES is defined or not */
 
 namespace ca
 {
@@ -23,6 +34,10 @@ class arrayiterator
   friend inverse_const_t;
 
   CA_ARRAYOVERRIDES_FRIENDS;
+
+
+  template <typename CA_ARR_T, typename CA_ARR_CA>
+  friend constexpr void iterViaRaw(const arrayiterator<CA_ARR_T const, CA_ARR_CA> & beg, const arrayiterator<CA_ARR_T const, CA_ARR_CA> & end, auto&& g);
 
   CA const* a_;
   T* n_;
@@ -143,9 +158,32 @@ public:
   {
     return const_cast<std::remove_const_t<T>*>(n_);
   }
+
 };
 
+
+template <typename T>
+constexpr void iterRawConst(const T *f, const T *l, const T *dataStart, const T *dataEnd, auto&& g)
+{
+  if (l - f < 0)
+  {
+    g(f, dataEnd);
+    f = dataStart;
+  }
+  g(f, l);
+}
+
+template <typename T, typename CA>
+constexpr void iterViaRaw(const arrayiterator<T const, CA> & beg, const arrayiterator<T const, CA> & end, auto&& g)
+{
+  assert(beg.a_ == end.a_);
+
+  auto const d(beg.a_->data());
+  iterRawConst(beg.n_, end.n_, d, &d[CA::array_size()], g);
+}
+
 } // namespace ca
+
 
 
 
