@@ -541,7 +541,7 @@ constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, enum Method M>
-inline void split(array<T, S, M> const& a, auto g)
+constexpr void split(array<T, S, M> const& a, auto g)
   noexcept(noexcept(g(a.first(), a.last())))
 {
   if (auto const f(a.first()), l(a.last()); l - f < 0)
