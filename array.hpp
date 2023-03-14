@@ -293,6 +293,8 @@ public:
 
   //
   constexpr void clear() noexcept { f_ = l_; }
+  constexpr void reset() noexcept { f_ = l_ = {}; }
+  constexpr void resize(size_type const n) noexcept { l_ = next(f_, n); }
 
   //
   constexpr void emplace_back(auto&& ...a)
