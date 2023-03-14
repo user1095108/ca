@@ -73,11 +73,11 @@ public:
     requires((MEMBER == M) || (NEW == M))
   {
     if constexpr(NEW == M) a_ = new T[N];
-    f_ = l_ = a_;
+    l_ = f_ = a_;
   }
 
   constexpr explicit array(T* const a) noexcept requires(USER == M):
-    a_(f_ = l_ = a)
+    a_(l_ = f_ = a)
   {
   }
 
@@ -97,7 +97,7 @@ public:
     if constexpr((MEMBER == M) || (NEW == M))
     {
       if constexpr(NEW == M) a_ = new T[N];
-      f_ = l_ = a_;
+      l_ = f_ = a_;
     }
 
     *this = std::move(o);
@@ -165,7 +165,7 @@ public:
         std::swap(a_, o.a_);
       }
 
-      o.f_ = o.l_ = o.a_;
+      o.l_ = o.f_ = o.a_;
     }
 
     return *this;
@@ -201,9 +201,12 @@ public:
   }
 
   //
-  constexpr auto data() const noexcept { return a_; }
-  constexpr auto first() const noexcept { return f_; }
-  constexpr auto last() const noexcept { return l_; }
+  constexpr T* data() noexcept { return a_; }
+  constexpr T const* data() const noexcept { return a_; }
+  constexpr T* first() noexcept { return f_; }
+  constexpr T const* first() const noexcept { return f_; }
+  constexpr T* last() noexcept { return l_; }
+  constexpr T const* last() const noexcept { return l_; }
 
   // iterators
   constexpr iterator begin() noexcept { return {this, f_}; }
@@ -290,7 +293,9 @@ public:
   }
 
   //
-  constexpr void clear() noexcept { f_ = l_; }
+  constexpr void clear() noexcept { l_ = f_; }
+  constexpr void reset() noexcept { l_ = f_ = a_; }
+  constexpr void resize(size_type const n) noexcept { l_ = next(f_, n); }
 
   //
   constexpr void emplace_back(auto&& ...a)
@@ -535,6 +540,32 @@ constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
   requires((NEW == M) || (USER == M))
 {
   lhs.swap(rhs);
+}
+
+template <typename> struct is_array : std::false_type {};
+
+template <typename T, std::size_t CAP, enum Method M>
+struct is_array<array<T, CAP, M>> : std::true_type {};
+
+template <typename T>
+concept array_concept = is_array<std::remove_cvref_t<T>>::value;
+
+//////////////////////////////////////////////////////////////////////////////
+constexpr void split(array_concept auto& a, auto&& g)
+  noexcept(noexcept(g(a.first(), a.last())))
+{
+  auto f(a.first());
+  auto const l(a.last());
+
+  if (l - f < 0)
+  {
+    auto const d(a.data());
+
+    g(f, &d[a.array_size()]); // f > l >= d, therefore f > d
+    f = d;
+  }
+
+  g(f, l);
 }
 
 }

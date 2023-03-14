@@ -28,12 +28,11 @@ int main()
   std::cout << "size: " << ca.size() << std::endl;
   std::cout << "full: " << ca.full() << std::endl;
 
-  std::for_each(
-    ca.cbegin(),
-    ca.cend(),
-    [](auto&& v) noexcept
+  ca::split(
+    ca,
+    [](auto const b, auto const e)
     {
-      std::cout << v << std::endl;
+      std::copy(b, e, std::ostream_iterator<int>(std::cout, "\n"));
     }
   );
 
