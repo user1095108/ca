@@ -551,17 +551,18 @@ concept array_concept = is_array<std::remove_cvref_t<T>>::value;
 constexpr void split(array_concept auto& a, auto g)
   noexcept(noexcept(g(a.first(), a.last())))
 {
-  if (auto const f(a.first()), l(a.last()); l - f < 0)
+  auto f(a.first());
+  auto const l(a.last());
+
+  if (l - f < 0)
   {
     auto const d(a.data());
 
     g(f, &d[a.array_size()]); // f > l >= d, therefore f > d
-    g(d, l);
+    f = d;
   }
-  else
-  {
-    g(f, l);
-  }
+
+  g(f, l);
 }
 
 }
