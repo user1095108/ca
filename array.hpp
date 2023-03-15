@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "arrayiterator.hpp"
+#include "arraycontribfwd.hpp"
 
 namespace ca
 {
@@ -19,7 +20,7 @@ class array
 {
   friend class arrayiterator<T, array>;
   friend class arrayiterator<T const, array>;
-  CA_ARRAYOVERRIDES_FRIENDS;
+  CA_ARRAYCONTRIB_FRIENDS;
 
 public:
   using value_type = T;
@@ -561,9 +562,124 @@ constexpr void split(std::random_access_iterator auto const b, decltype(b) e,
   g(f, l);
 }
 
+
+template<typename T, typename T2>
+struct argsIterRawDstRange
+{
+  T2       *dst_b;
+  T2 const *dst_e;
+  T2       *dst_data_b;
+  T2 const *dst_data_e;
+  T  const *src_b;
+};
+
+template <typename T, typename T2>
+constexpr void iterRawDstRange(argsIterRawDstRange<T, T2> &args, auto&& g)
+{
+  if (args.dst_e - args.dst_b < 0)
+  {
+      /*  src: yyyyyyyyyyyyyyy------------------------------yyyyyyyyyyyyy
+                              |                             |
+                              args.dst_e                    args.dst_b
+
+          Want to copy e.g. 28 values from src to dst -> into the places marked y (in dst).
+          So first copy to dst from args.dst_b to end (13 y's in diagram)
+
+          src: yyyyyyyyyyyyyyy------------------------------yyyyyyyyyyyyy
+               |              |                             |            |
+               |              args.dst_e                    args.dst_b   |
+               args.dst_data_b                                           args.dst_data_e
+      */
+      const auto src_e = args.src_b + (args.dst_data_e - args.dst_b);
+      g(args.src_b, src_e, args.dst_b);
+      args.src_b = src_e;
+      args.dst_b = args.dst_data_b;
+  }
+  /* copy (possibly remaining) linear region
+
+     from args.src_b to args.dst_e
+
+         src: yyyyyyyyyyyyyyy------------------------------yyyyyyyyyyyyy
+              |              |
+              |              args.dst_e
+              args.dst_b
+  */
+  const auto src_e = args.src_b + (args.dst_e - args.dst_b);
+  g(args.src_b, src_e, args.dst_b);
 }
 
 
-#include "arrayoverrides.hpp"
+
+template <typename T, typename CA, typename T2, typename CA2>
+constexpr auto iterViaRaw(const arrayiterator<T const, CA> & src_beg, const arrayiterator<T const, CA> & src_end, const arrayiterator<T2 , CA2> & dst, auto && g)
+{
+  /*assert(src_beg.a_ == src_end.a_);
+
+    // -> requires the following friend declaration in class arrayiterator:
+
+    // template <typename CA_ARR_T, typename CA_ARR_CA, typename CA_ARR_T2, typename CA_ARR_CA2>
+    // friend constexpr auto iterViaRaw(const arrayiterator<CA_ARR_T const, CA_ARR_CA> & src_beg, const arrayiterator<CA_ARR_T const, CA_ARR_CA> & src_end, const arrayiterator<CA_ARR_T2 , CA_ARR_CA2> & dst, auto && g);
+  */
+  auto const src_e = src_end.n();    // src_e       - src end
+
+  auto       dst_data_b = const_cast<T2*>(dst.a());
+
+  argsIterRawDstRange<T, T2> args{
+    dst.n(),                         // dst_b       - dst begin
+    nullptr,                         // dst_e       - dst end
+    dst_data_b,                      // dst_data_b  - dst data()
+    &dst_data_b[CA::array_size()],   // dst_data_e  - dst data()[N]
+    src_beg.n(),                     // src_b       - src begin
+  };
+
+  auto ret = dst;
+
+  if (src_e - args.src_b < 0)
+  {
+      /* Want to copy from args.src_b to src_e
+
+          src: xxxxxxxxxxxxxxxx--------------xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                               |             |
+                               src_e         args.src_b
+
+          So first copy from args.src_b to end (28 x's in diagram)
+
+          src: xxxxxxxxxxxxxxxx--------------xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+               |               |             |                           |
+               |               src_e         args.src_b                  |
+               src_data_b                                                src_data_e
+
+      */
+      auto       src_data_b = src_beg.a();                   // src data()
+      auto const src_data_e = &src_data_b[CA::array_size()]; // src data()[N]
+
+      auto const srcNumTillLim  = src_data_e - args.src_b;
+      ret += srcNumTillLim;
+      args.dst_e = ret.n();
+      iterRawDstRange(args, g);
+      args.src_b = src_data_b;
+  }
+  /* copy (possibly remaining) linear region
+
+     from args.src_b to src_e
+
+          src: xxxxxxxxxxxxxxxx--------------xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+               |               |
+               |               src_e
+               args.src_b
+
+  */
+  auto const srcNumTillLim  = src_e - args.src_b;
+  ret += srcNumTillLim;
+  args.dst_e = ret.n();
+  iterRawDstRange(args, g);
+
+  return ret;
+}
+
+}
+
+#include "arraycontrib.hpp"
+
 
 #endif // CA_ARRAY_HPP

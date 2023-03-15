@@ -1,6 +1,6 @@
 #include <iostream>
 
-//#define NO_CA_ARRAY_OVERRIDES // uncommenting this line, will slow the copying into la2
+//#define NO_CA_ARRAY_CONTRIB // uncommenting this line, will slow the copying into la2
 #include "array.hpp"
 #include <numeric>
 #include <chrono>
