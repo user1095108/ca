@@ -553,7 +553,7 @@ constexpr void split(std::random_access_iterator auto const b, decltype(b) e,
   {
     auto const d(b.a());
 
-    g(f, &d[b.array_size()]); // f > l >= d, therefore f > d
+    g(f, &d[std::remove_const_t<decltype(b)>::N]); // f > l >= d, f > d
     f = d;
   }
 
