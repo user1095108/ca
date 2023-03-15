@@ -25,7 +25,8 @@ int main()
   std::cout << "full: " << ca.full() << std::endl;
 
   ca::split(
-    ca,
+    ca.begin(),
+    ca.end(),
     [](auto const b, auto const e)
     {
       std::copy(b, e, std::ostream_iterator<int>(std::cout, "\n"));

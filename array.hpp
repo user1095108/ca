@@ -550,17 +550,17 @@ template <typename T>
 concept array_concept = is_array<std::remove_cvref_t<T>>::value;
 
 //////////////////////////////////////////////////////////////////////////////
-constexpr void split(array_concept auto& a, auto&& g)
-  noexcept(noexcept(g(a.first(), a.last())))
+constexpr void split(std::random_access_iterator auto b, decltype(b) const e,
+  auto&& g)
+  noexcept(noexcept(g(b.n(), b.n())))
 {
-  auto f(a.first());
-  auto const l(a.last());
+  auto f(b.n()), l(e.n());
 
   if (l - f < 0)
   {
-    auto const d(a.data());
+    auto const d(b.a());
 
-    g(f, &d[a.array_size()]); // f > l >= d, therefore f > d
+    g(f, &d[b.ca()->array_size()]); // f > l >= d, therefore f > d
     f = d;
   }
 

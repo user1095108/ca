@@ -110,7 +110,7 @@ public:
     return n_ == o.n_;
   }
 
-  constexpr bool operator<(arrayiterator const& o) const noexcept
+  constexpr auto operator<=>(arrayiterator const& o) const noexcept
   {
     auto const d([f(a_->f_)](auto const p) noexcept -> difference_type
       {
@@ -121,7 +121,7 @@ public:
     );
 
     //
-    return d(n_) < d(o.n_);
+    return d(n_) <=> d(o.n_);
   }
 
   // member access
@@ -134,11 +134,25 @@ public:
   constexpr auto& operator*() const noexcept { return *n_; }
 
   //
+  constexpr auto ca() const noexcept { return a_; }
+
+  constexpr auto a() const noexcept
+  {
+    return const_cast<std::remove_const_t<T>*>(a_->a_);
+  }
+
   constexpr auto n() const noexcept
   {
     return const_cast<std::remove_const_t<T>*>(n_);
   }
 };
+
+template <typename T, typename CA>
+constexpr auto operator+(typename CA::difference_type const n,
+  arrayiterator<T, CA> const i) noexcept
+{
+  return i + n;
+}
 
 }
 
