@@ -147,6 +147,7 @@ public:
   }
 };
 
+//////////////////////////////////////////////////////////////////////////////
 template <typename T, typename CA>
 constexpr auto operator+(typename CA::difference_type const n,
   arrayiterator<T, CA> const i) noexcept
