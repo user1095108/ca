@@ -550,7 +550,7 @@ template <typename T>
 concept array_concept = is_array<std::remove_cvref_t<T>>::value;
 
 //////////////////////////////////////////////////////////////////////////////
-constexpr void split(std::random_access_iterator auto b, decltype(b) const e,
+constexpr void split(std::random_access_iterator auto const b, decltype(b) e,
   auto&& g)
   noexcept(noexcept(g(b.n(), b.n())))
 {
