@@ -134,7 +134,7 @@ public:
   constexpr auto& operator*() const noexcept { return *n_; }
 
   //
-  constexpr auto ca() const noexcept { return a_; }
+  static constexpr auto array_size() noexcept { return CA::N; }
 
   constexpr auto a() const noexcept
   {

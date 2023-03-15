@@ -554,13 +554,14 @@ constexpr void split(std::random_access_iterator auto b, decltype(b) const e,
   auto&& g)
   noexcept(noexcept(g(b.n(), b.n())))
 {
-  auto f(b.n()), l(e.n());
+  auto f(b.n());
+  auto const l(e.n());
 
   if (l - f < 0)
   {
     auto const d(b.a());
 
-    g(f, &d[b.ca()->array_size()]); // f > l >= d, therefore f > d
+    g(f, &d[b.array_size()]); // f > l >= d, therefore f > d
     f = d;
   }
 
