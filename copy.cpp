@@ -17,7 +17,7 @@ int main()
     {
       auto const sz0(std::size_t(e - b));
       auto const l(d.last());
-      auto const sz1(std::size_t(&d.data()[d.array_size() - 1] - l) + 1);
+      auto const sz1(std::size_t(&d.data()[d.array_size() - 1] - l));
 
       if (d.resize(d.size() + sz0); sz1 < sz0)
       {
