@@ -19,9 +19,7 @@ int main()
       auto const l(d.last());
       auto const sz1(std::size_t(&d.data()[d.array_size() - 1] - l) + 1);
 
-      d.resize(d.size() + sz0);
-
-      if (sz1 < sz0)
+      if (d.resize(d.size() + sz0); sz1 < sz0)
       {
         auto const df(sz0 - sz1);
         std::copy(b, e - df, l);
