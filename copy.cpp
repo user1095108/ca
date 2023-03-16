@@ -15,9 +15,9 @@ int main()
     s.end(),
     [&](auto const b, decltype(b) e) noexcept
     {
-      auto const sz0(std::size_t(e - b));
+      auto const sz0(e - b);
       auto const l(d.last());
-      auto const sz1(std::size_t(&d.data()[d.array_size() - 1] - l));
+      auto const sz1(&d.data()[d.array_size() - 1] - l);
 
       if (d.resize(d.size() + sz0); sz1 < sz0)
       {
