@@ -14,7 +14,7 @@ namespace ca
 enum Method { MEMBER, NEW, USER };
 
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
-  requires ((CAP > 0) && (CAP <= PTRDIFF_MAX)) // CAP = N - 1
+  requires ((CAP > 0) && (CAP < PTRDIFF_MAX)) // CAP = N - 1
 class array
 {
   friend class arrayiterator<T, array>;

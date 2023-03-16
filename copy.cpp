@@ -1,5 +1,6 @@
 #include <iostream>
 #include <numeric>
+#include <cassert>
 
 #include "array.hpp"
 
@@ -13,24 +14,24 @@ int main()
   ca::split(
     s.begin(),
     s.end(),
-    [&](auto const b, decltype(b) e) noexcept
+    [&](auto b, auto const e) noexcept
     {
       auto const sz0(e - b);
-      auto const l(d.last());
+      auto l(d.last());
       auto const sz1(&d.data()[d.array_size() - 1] - l);
 
-      if (d.resize(d.size() + sz0); sz1 < sz0)
+      d.resize(d.size() + sz0);
+      if (sz1 < sz0)
       {
-        auto const ds(sz0 - sz1);
-        std::copy(b, e - ds, l);
-        std::copy(e - ds, e, d.data());
+        auto const lim = b + sz1;
+        std::copy(b, lim, l);
+        b = lim;
+        l = d.data();
       }
-      else
-      {
-        std::copy(b, e, l);
-      }
+      std::copy(b, e, l);
     }
   );
+  assert(s == d);
 
   std::copy(d.crbegin(), d.crend(), std::ostream_iterator<int>(std::cout, "\n"));
 
