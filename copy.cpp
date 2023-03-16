@@ -18,17 +18,19 @@ int main()
       std::size_t const sz0(e - b);
       auto const l(d.last());
       auto const sz1(std::size_t(&d.data()[d.array_size() - 1] - l) + 1);
+      std::size_t ds;
 
       if (d.resize(d.size() + sz0); sz1 < sz0)
       {
-        auto const ds(sz0 - sz1);
-        std::copy(b, e - ds, l);
+        ds = sz0 - sz1;
         std::copy(e - ds, e, d.data());
       }
       else
       {
-        std::copy(b, e, l);
+        ds = {};
       }
+
+      std::copy(b, e - ds, l);
     }
   );
 
