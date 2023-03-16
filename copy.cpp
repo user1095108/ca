@@ -21,9 +21,9 @@ int main()
 
       if (d.resize(d.size() + sz0); sz1 < sz0)
       {
-        auto const df(sz0 - sz1);
-        std::copy(b, e - df, l);
-        std::copy(e - df, e, d.data());
+        auto const ds(sz0 - sz1);
+        std::copy(b, e - ds, l);
+        std::copy(e - ds, e, d.data());
       }
       else
       {
