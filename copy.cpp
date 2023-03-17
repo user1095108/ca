@@ -12,8 +12,8 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
   std::size_t r{};
 
   ca::split(
-    s.begin(),
-    s.end(),
+    s.cbegin(),
+    s.cend(),
     [&](auto const b, decltype(b) e) noexcept
     {
       auto const sz0(r += std::min(std::size_t(e-b), d.capacity()-d.size()));
