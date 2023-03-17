@@ -294,6 +294,7 @@ public:
   //
   constexpr void clear() noexcept { l_ = f_; }
   constexpr void reset() noexcept { l_ = f_ = a_; }
+
   constexpr void resize(size_type const n) noexcept { l_ = next(f_, n); }
 
   //
