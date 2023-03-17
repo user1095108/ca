@@ -438,7 +438,9 @@ public:
 
   //
   constexpr void pop_back() noexcept { l_ = prev(l_); }
+  constexpr void pop_back(size_type const n) noexcept { l_ = prev(l_, n); }
   constexpr void pop_front() noexcept { f_ = next(f_); }
+  constexpr void pop_front(size_type const n) noexcept { f_ = next(f_, n); }
 
   //
   constexpr void push_back(value_type&& v)
