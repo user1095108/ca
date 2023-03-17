@@ -19,13 +19,19 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
       auto const n0(r += std::min(std::size_t(e-b), d.capacity() - d.size()));
       auto const l(d.last());
       auto const n1(std::size_t(&d.data()[d.array_size() - 1] - l) + 1);
+      std::size_t minn;
 
       if (d.resize(d.size() + n0); n1 < n0)
       {
+        minn = n1;
         std::copy(b + n1, b + n0, d.data());
       }
+      else
+      {
+        minn = n0;
+      }
 
-      std::copy(b, b + std::min(n0, n1), l);
+      std::copy(b, b + minn, l);
     }
   );
 
