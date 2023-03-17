@@ -16,7 +16,7 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
     s.end(),
     [&](auto const b, decltype(b) e) noexcept
     {
-      auto const sz0(std::min(std::size_t(e - b), d.capacity() - d.size()));
+      auto const sz0(r += std::min(std::size_t(e-b), d.capacity()-d.size()));
       auto const l(d.last());
       auto const sz1(std::size_t(&d.data()[d.array_size() - 1] - l) + 1);
 
@@ -26,8 +26,6 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
       }
 
       std::copy(b, b + std::min(sz0, sz1), l);
-
-      r += sz0;
     }
   );
 
