@@ -22,8 +22,7 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
 
       if (d.resize(d.size() + n0); n1 < n0)
       {
-        e = b + n1;
-        std::copy(e, b + n0, d.data());
+        std::copy(e = b + n1, b + n0, d.data());
       }
       else
       {
