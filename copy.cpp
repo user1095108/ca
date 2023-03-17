@@ -16,16 +16,16 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
     s.cend(),
     [&](auto const b, decltype(b) e) noexcept
     {
-      auto const sz0(r += std::min(std::size_t(e-b), d.capacity()-d.size()));
+      auto const n0(r += std::min(std::size_t(e-b), d.capacity() - d.size()));
       auto const l(d.last());
-      auto const sz1(std::size_t(&d.data()[d.array_size() - 1] - l) + 1);
+      auto const n1(std::size_t(&d.data()[d.array_size() - 1] - l) + 1);
 
-      if (d.resize(d.size() + sz0); sz1 < sz0)
+      if (d.resize(d.size() + n0); n1 < n0)
       {
-        std::copy(b + sz1, b + sz0, d.data());
+        std::copy(b + n1, b + n0, d.data());
       }
 
-      std::copy(b, b + std::min(sz0, sz1), l);
+      std::copy(b, b + std::min(n0, n1), l);
     }
   );
 
