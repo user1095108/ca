@@ -22,10 +22,10 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
 
       if (d.resize(d.size() + sz0); sz1 < sz0)
       {
-        std::copy(e - (sz0 - sz1), e, d.data());
+        std::copy(b + sz1, b + sz0, d.data());
       }
 
-      std::copy(b, b + sz1, l);
+      std::copy(b, b + std::min(sz0, sz1), l);
 
       r += sz0;
     }
