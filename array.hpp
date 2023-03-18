@@ -72,7 +72,7 @@ public:
     requires((MEMBER == M) || (NEW == M))
   {
     if constexpr(NEW == M) a_ = new T[N];
-    l_ = f_ = a_;
+    reset();
   }
 
   constexpr explicit array(T* const a) noexcept requires(USER == M):
@@ -96,7 +96,7 @@ public:
     if constexpr((MEMBER == M) || (NEW == M))
     {
       if constexpr(NEW == M) a_ = new T[N];
-      l_ = f_ = a_;
+      reset();
     }
 
     *this = std::move(o);
@@ -164,7 +164,7 @@ public:
         std::swap(a_, o.a_);
       }
 
-      o.l_ = o.f_ = o.a_;
+      o.reset();
     }
 
     return *this;
