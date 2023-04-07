@@ -319,7 +319,8 @@ public:
   constexpr iterator erase(const_iterator const i)
     noexcept(std::is_nothrow_move_assignable_v<value_type>)
   {
-    if (iterator const j(this, i.n()), nxt(std::next(j)); end() == nxt)
+    if (iterator const j(this, i.n()), nxt(std::next(j));
+      end() == nxt) [[unlikely]]
     {
       return {this, l_ = prev(l_)};
     }
@@ -348,12 +349,12 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    if (full()) pop_front();
+    if (full()) [[unlikely]] pop_front();
 
     //
     T* n;
 
-    if (iterator const j(this, i.n()); end() == j)
+    if (iterator const j(this, i.n()); end() == j) [[unlikely]]
     {
       l_ = next(n = l_);
     }
@@ -389,7 +390,7 @@ public:
   constexpr iterator insert(const_iterator i, size_type count, auto&& v)
     noexcept(noexcept(insert(i, std::declval<decltype(v)>())))
   {
-    if (count)
+    if (count) [[likely]]
     {
       auto const r(insert(i, v));
       i = std::next(r);
@@ -398,7 +399,7 @@ public:
 
       return r;
     }
-    else
+    else [[unlikely]]
     {
       return {a_, i.n()};
     }
@@ -414,11 +415,11 @@ public:
     std::input_iterator auto const j, decltype(j) k)
     noexcept(noexcept(insert(i, *j)))
   {
-    if (j == k)
+    if (j == k) [[unlikely]]
     {
       return {a_, i.n()};
     }
-    else
+    else [[likely]]
     {
       auto const r(emplace(i, *j));
       i = std::next(r);
@@ -449,7 +450,7 @@ public:
   {
     auto const l(l_);
     *l = std::move(v);
-    if ((l_ = next(l)) == f_) pop_front();
+    if ((l_ = next(l)) == f_) [[unlikely]] pop_front();
   }
 
   constexpr void push_back(auto&& v)
@@ -458,7 +459,7 @@ public:
   {
     auto const l(l_);
     *l = std::forward<decltype(v)>(v);
-    if ((l_ = next(l)) == f_) pop_front();
+    if ((l_ = next(l)) == f_) [[unlikely]] pop_front();
   }
 
   constexpr void push_front(value_type&& v)
