@@ -2,7 +2,7 @@
 # define CA_ARRAY_HPP
 # pragma once
 
-#include <climits> // PTRDIFF_MAX
+#include <cstdint> // PTRDIFF_MAX
 #include <algorithm> // std::move()
 #include <initializer_list>
 
