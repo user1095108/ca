@@ -448,18 +448,16 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    auto const l(l_);
-    *l = std::move(v);
-    if ((l_ = next(l)) == f_) [[unlikely]] pop_front();
+    *l_ = std::move(v);
+    if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
   }
 
   constexpr void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    auto const l(l_);
-    *l = std::forward<decltype(v)>(v);
-    if ((l_ = next(l)) == f_) [[unlikely]] pop_front();
+    *l_ = std::forward<decltype(v)>(v);
+    if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
   }
 
   constexpr void push_front(value_type&& v)
