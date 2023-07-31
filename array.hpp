@@ -395,7 +395,7 @@ public:
       auto const r(insert(i, v));
       i = std::next(r);
 
-      for (--count; count; --count) i = std::next(insert(i, v));
+      while (--count) i = std::next(insert(i, v));
 
       return r;
     }
