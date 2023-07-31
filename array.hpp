@@ -526,10 +526,8 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 {
   typename array<T, S, M>::size_type r{};
 
-  for (auto i(c.begin()); i.n() != c.l_;)
-  {
-    i = pred(*i) ? (++r, c.erase(i)) : std::next(i);
-  }
+  for (auto i(c.begin()); i.n() != c.l_;
+    pred(*i) ? ++r, i = c.erase(i) : ++i);
 
   return r;
 }
