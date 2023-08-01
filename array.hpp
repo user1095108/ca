@@ -391,7 +391,7 @@ public:
     noexcept(noexcept(insert(i, std::declval<decltype(v)>())))
   {
     if (count) [[likely]]
-    {
+    { // i is invalidated after insert, but r is valid
       auto const r(insert(i, v));
       i = std::next(r);
 
@@ -421,14 +421,15 @@ public:
       return {a_, i.n()};
     }
     else [[likely]]
-    {
+    { // i is invalidated after insert, but r is valid
       auto const r(emplace(i, *j));
       i = std::next(r);
 
       std::for_each(
         std::next(j),
         k,
-        [&](auto&& v) noexcept(noexcept(insert(i, *j)))
+        [&](auto&& v)
+          noexcept(noexcept(insert(i, std::forward<decltype(v)>(v))))
         {
           i = std::next(insert(i, std::forward<decltype(v)>(v)));
         }
@@ -549,7 +550,7 @@ constexpr void split(std::random_access_iterator auto const b, decltype(b) e,
   auto f(b.n());
   auto const l(e.n());
 
-  if (l - f < 0)
+  if (l < f)
   {
     auto const d(b.a());
 
