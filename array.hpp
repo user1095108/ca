@@ -317,6 +317,12 @@ public:
     push_back(T{std::forward<decltype(a)>(a)...});
   }
 
+  constexpr void emplace_back(value_type a)
+    noexcept(noexcept(push_back(std::move(a))))
+  {
+    push_back(std::move(a));
+  }
+
   constexpr void emplace_front(auto&& a)
     noexcept(noexcept(push_front(std::forward<decltype(a)>(a))))
     requires(std::is_assignable_v<value_type&, decltype(a)>)
@@ -330,17 +336,29 @@ public:
     push_front(T{std::forward<decltype(a)>(a)...});
   }
 
-  constexpr void emplace(const_iterator const i, auto&& a)
+  constexpr void emplace_front(value_type a)
+    noexcept(noexcept(push_front(std::move(a))))
+  {
+    push_front(std::move(a));
+  }
+
+  constexpr auto emplace(const_iterator const i, auto&& a)
     noexcept(noexcept(insert(i, std::forward<decltype(a)>(a))))
     requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
-    insert(i, std::forward<decltype(a)>(a));
+    return insert(i, std::forward<decltype(a)>(a));
   }
 
-  constexpr iterator emplace(const_iterator const i, auto&& ...a)
+  constexpr auto emplace(const_iterator const i, auto&& ...a)
     noexcept(noexcept(insert(i, std::declval<T>())))
   {
-    insert(i, T{std::forward<decltype(a)>(a)...});
+    return insert(i, T{std::forward<decltype(a)>(a)...});
+  }
+
+  constexpr auto emplace(const_iterator const i, value_type a)
+    noexcept(noexcept(insert(i, std::move(a))))
+  {
+    return insert(i, std::move(a));
   }
 
   //
