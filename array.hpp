@@ -388,7 +388,8 @@ public:
     return insert<0>(i, std::move(v));
   }
 
-  constexpr iterator insert(const_iterator i, size_type count, value_type v)
+  constexpr iterator insert(const_iterator i, size_type count,
+    value_type const& v)
     noexcept(noexcept(insert(i, v)))
   {
     if (count) [[likely]]
