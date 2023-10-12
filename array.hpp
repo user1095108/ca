@@ -306,7 +306,6 @@ public:
   // emplacing is a bad idea in this container, avoid if possible
   constexpr void emplace_back(auto&& a)
     noexcept(noexcept(push_back(std::forward<decltype(a)>(a))))
-    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     push_back(std::forward<decltype(a)>(a));
   }
@@ -325,7 +324,6 @@ public:
 
   constexpr void emplace_front(auto&& a)
     noexcept(noexcept(push_front(std::forward<decltype(a)>(a))))
-    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     push_front(std::forward<decltype(a)>(a));
   }
@@ -344,7 +342,6 @@ public:
 
   constexpr auto emplace(const_iterator const i, auto&& a)
     noexcept(noexcept(insert(i, std::forward<decltype(a)>(a))))
-    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     return insert(i, std::forward<decltype(a)>(a));
   }
@@ -488,18 +485,18 @@ public:
 
   //
   template <int = 0>
-  constexpr void push_back(auto&& v)
-    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
-    requires(std::is_assignable_v<value_type&, decltype(v)>)
+  constexpr void push_back(auto&& a)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(a)>)
+    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
-    *l_ = std::forward<decltype(v)>(v);
+    *l_ = std::forward<decltype(a)>(a);
     if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
   }
 
-  constexpr void push_back(value_type v)
-    noexcept(noexcept(push_back<0>(std::move(v))))
+  constexpr void push_back(value_type a)
+    noexcept(noexcept(push_back<0>(std::move(a))))
   {
-    push_back<0>(std::move(v));
+    push_back<0>(std::move(a));
   }
 
   template <int = 0>
