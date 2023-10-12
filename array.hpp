@@ -17,6 +17,7 @@ template <typename T, std::size_t CAP, enum Method M = MEMBER>
   requires(
     (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
     std::is_default_constructible_v<T> &&
+    !std::is_reference_v<T> &&
     (
       std::is_assignable_v<T&, T const&> ||
       std::is_assignable_v<T&, T&&>
@@ -116,9 +117,9 @@ public:
     std::copy(i, j, std::back_inserter(*this));
   }
 
-  template <typename U>
-  constexpr array(std::initializer_list<U> l)
-    noexcept(noexcept(array(l.begin(), l.end()))):
+  constexpr array(std::initializer_list<value_type> l)
+    noexcept(noexcept(array(l.begin(), l.end())))
+    requires(std::is_copy_constructible_v<value_type>):
     array(l.begin(), l.end())
   {
   }
@@ -178,9 +179,9 @@ public:
     return *this;
   }
 
-  template <typename U>
-  constexpr array& operator=(std::initializer_list<U> l)
+  constexpr array& operator=(std::initializer_list<value_type> l)
     noexcept(noexcept(assign(l)))
+    requires(std::is_copy_constructible_v<value_type>)
   {
     assign(l);
     return *this;
@@ -291,9 +292,9 @@ public:
     std::copy(i, j, std::back_inserter(*this));
   }
 
-  template <typename U>
-  constexpr void assign(std::initializer_list<U> l)
+  constexpr void assign(std::initializer_list<value_type> l)
     noexcept(noexcept(assign(l.begin(), l.end())))
+    requires(std::is_copy_constructible_v<value_type>)
   {
     assign(l.begin(), l.end());
   }
