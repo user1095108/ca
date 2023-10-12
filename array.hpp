@@ -136,12 +136,11 @@ public:
 
   //
   constexpr array& operator=(array const& o)
-    noexcept(noexcept(std::copy(o.cbegin(), o.cend(), begin())))
+    noexcept(noexcept(std::is_nothrow_copy_assignable_v<value_type>))
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
     clear();
     std::copy(o.cbegin(), o.cend(), begin());
-
     return *this;
   }
 
