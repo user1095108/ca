@@ -103,13 +103,14 @@ public:
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(push_back(*i))):
+    noexcept(noexcept(std::copy(i, j, std::back_inserter(*this)))):
     array()
   {
     std::copy(i, j, std::back_inserter(*this));
   }
 
-  constexpr array(std::initializer_list<value_type> l)
+  template <typename U>
+  constexpr array(std::initializer_list<U> l)
     noexcept(noexcept(array(l.begin(), l.end()))):
     array(l.begin(), l.end())
   {
@@ -127,7 +128,7 @@ public:
 
   //
   constexpr array& operator=(array const& o)
-    noexcept(std::is_nothrow_copy_assignable_v<value_type>)
+    noexcept(noexcept(std::copy(o.cbegin(), o.cend(), begin())))
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
     clear();
@@ -144,7 +145,7 @@ public:
     requires(
       std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
     )
-  {
+  { // self-assign neglected
     if constexpr(MEMBER == M)
     {
       clear();
@@ -170,12 +171,11 @@ public:
     return *this;
   }
 
-  constexpr array& operator=(std::initializer_list<value_type> l)
+  template <typename U>
+  constexpr array& operator=(std::initializer_list<U> l)
     noexcept(noexcept(assign(l)))
-    requires(std::is_copy_constructible_v<value_type>)
   {
     assign(l);
-
     return *this;
   }
 
@@ -278,14 +278,14 @@ public:
   //
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(*i)>)
-    requires(std::is_assignable_v<T, decltype(*i)>)
+    requires(std::is_assignable_v<value_type&, decltype(*i)>)
   {
     clear();
-
     std::copy(i, j, std::back_inserter(*this));
   }
 
-  constexpr void assign(std::initializer_list<value_type> l)
+  template <typename U>
+  constexpr void assign(std::initializer_list<U> l)
     noexcept(noexcept(assign(l.begin(), l.end())))
   {
     assign(l.begin(), l.end());
@@ -303,16 +303,34 @@ public:
     push_back(T{std::forward<decltype(a)>(a)...});
   }
 
+  constexpr void emplace_back(value_type v)
+    noexcept(noexcept(push_back(std::move(v))))
+  {
+    push_back(std::move(v));
+  }
+
   constexpr void emplace_front(auto&& ...a)
     noexcept(noexcept(push_front(std::declval<T>())))
   {
     push_front(T{std::forward<decltype(a)>(a)...});
   }
 
-  constexpr iterator emplace(const_iterator const i, auto&& ...a)
-    noexcept(noexcept(emplace(std::declval<T>())))
+  constexpr void emplace_front(value_type v)
+    noexcept(noexcept(push_front(std::move(v))))
   {
-    return insert(i, T{std::forward<decltype(a)>(a)...});
+    push_front(std::move(v));
+  }
+
+  constexpr iterator emplace(const_iterator const i, auto&& ...a)
+    noexcept(noexcept(insert(i, std::declval<T>())))
+  {
+    insert(i, T{std::forward<decltype(a)>(a)...});
+  }
+
+  constexpr void emplace(const_iterator const i, value_type v)
+    noexcept(noexcept(insert(i, std::move(v))))
+  {
+    insert(i, std::move(v));
   }
 
   //
