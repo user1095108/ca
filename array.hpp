@@ -119,7 +119,7 @@ public:
 
   constexpr array(std::initializer_list<value_type> l)
     noexcept(noexcept(array(l.begin(), l.end())))
-    requires(std::is_copy_constructible_v<value_type>):
+    requires(std::is_copy_assignable_v<value_type>):
     array(l.begin(), l.end())
   {
   }
@@ -181,7 +181,7 @@ public:
 
   constexpr array& operator=(std::initializer_list<value_type> l)
     noexcept(noexcept(assign(l)))
-    requires(std::is_copy_constructible_v<value_type>)
+    requires(std::is_copy_assignable_v<value_type>)
   {
     assign(l);
     return *this;
@@ -294,7 +294,7 @@ public:
 
   constexpr void assign(std::initializer_list<value_type> l)
     noexcept(noexcept(assign(l.begin(), l.end())))
-    requires(std::is_copy_constructible_v<value_type>)
+    requires(std::is_copy_assignable_v<value_type>)
   {
     assign(l.begin(), l.end());
   }
