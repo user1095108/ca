@@ -345,7 +345,8 @@ public:
   }
 
   //
-  constexpr iterator insert(const_iterator const i, auto&& v, char = {})
+  template <int = 0>
+  constexpr iterator insert(const_iterator const i, auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
@@ -381,14 +382,14 @@ public:
     return {this, n};
   }
 
-  constexpr iterator insert(const_iterator const i, value_type&& v)
-    noexcept(noexcept(insert(i, std::move(v), {})))
+  auto insert(const_iterator const i, value_type v)
+    noexcept(noexcept(insert<0>(i, std::move(v))))
   {
-    return insert(i, std::move(v), {});
+    return insert<0>(i, std::move(v));
   }
 
-  constexpr iterator insert(const_iterator i, size_type count, auto&& v)
-    noexcept(noexcept(insert(i, std::declval<decltype(v)>())))
+  constexpr iterator insert(const_iterator i, size_type count, value_type v)
+    noexcept(noexcept(insert(i, v)))
   {
     if (count) [[likely]]
     { // i is invalidated after insert, but r is valid
@@ -403,13 +404,6 @@ public:
     {
       return {a_, i.n()};
     }
-  }
-
-  constexpr iterator insert(const_iterator const i, size_type const count,
-    value_type&& v)
-    noexcept(noexcept(insert(i, count, v)))
-  {
-    return insert(i, count, v);
   }
 
   constexpr iterator insert(const_iterator i,
@@ -446,14 +440,7 @@ public:
   constexpr void pop_front(size_type const n) noexcept { f_ = next(f_, n); }
 
   //
-  constexpr void push_back(value_type&& v)
-    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
-    requires(std::is_assignable_v<value_type&, decltype(v)>)
-  {
-    *l_ = std::move(v);
-    if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
-  }
-
+  template <int = 0>
   constexpr void push_back(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
@@ -462,18 +449,24 @@ public:
     if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
   }
 
-  constexpr void push_front(value_type&& v)
-    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
-    requires(std::is_assignable_v<value_type&, decltype(v)>)
+  constexpr void push_back(value_type v)
+    noexcept(noexcept(push_back<0>(std::move(v))))
   {
-    *(full() ? f_ : f_ = prev(f_)) = std::move(v);
+    push_back<0>(std::move(v));
   }
 
+  template <int = 0>
   constexpr void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     *(full() ? f_ : f_ = prev(f_)) = std::forward<decltype(v)>(v);
+  }
+
+  constexpr void push_front(value_type v)
+    noexcept(noexcept(push_front<0>(std::move(v))))
+  {
+    push_front<0>(std::move(v));
   }
 
   //
