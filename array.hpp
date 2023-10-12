@@ -296,11 +296,11 @@ public:
   constexpr void reset() noexcept { l_ = f_ = a_; }
   constexpr void resize(size_type const n) noexcept { l_ = next(f_, n); }
 
-  //
-  constexpr void emplace_back(auto&& ...a)
-    noexcept(noexcept(push_back(std::declval<T>())))
+  // emplacing is a bad idea in this container, avoid if possible
+  constexpr void emplace_back(value_type const& v)
+    noexcept(noexcept(push_back(v)))
   {
-    push_back(T{std::forward<decltype(a)>(a)...});
+    push_back(v);
   }
 
   constexpr void emplace_back(value_type&& v)
@@ -309,10 +309,16 @@ public:
     push_back(std::move(v));
   }
 
-  constexpr void emplace_front(auto&& ...a)
-    noexcept(noexcept(push_front(std::declval<T>())))
+  constexpr void emplace_back(auto&& ...a)
+    noexcept(noexcept(push_back(std::declval<T>())))
   {
-    push_front(T{std::forward<decltype(a)>(a)...});
+    push_back(T{std::forward<decltype(a)>(a)...});
+  }
+
+  constexpr void emplace_front(value_type const& v)
+    noexcept(noexcept(push_front(v)))
+  {
+    push_front(v);
   }
 
   constexpr void emplace_front(value_type&& v)
@@ -321,16 +327,28 @@ public:
     push_front(std::move(v));
   }
 
-  constexpr iterator emplace(const_iterator const i, auto&& ...a)
-    noexcept(noexcept(insert(i, std::declval<T>())))
+  constexpr void emplace_front(auto&& ...a)
+    noexcept(noexcept(push_front(std::declval<T>())))
   {
-    insert(i, T{std::forward<decltype(a)>(a)...});
+    push_front(T{std::forward<decltype(a)>(a)...});
+  }
+
+  constexpr void emplace(const_iterator const i, value_type const& v)
+    noexcept(noexcept(insert(i, v)))
+  {
+    insert(i, v);
   }
 
   constexpr void emplace(const_iterator const i, value_type&& v)
     noexcept(noexcept(insert(i, std::move(v))))
   {
     insert(i, std::move(v));
+  }
+
+  constexpr iterator emplace(const_iterator const i, auto&& ...a)
+    noexcept(noexcept(insert(i, std::declval<T>())))
+  {
+    insert(i, T{std::forward<decltype(a)>(a)...});
   }
 
   //
