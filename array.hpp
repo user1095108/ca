@@ -111,7 +111,7 @@ public:
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(std::copy(i, j, std::back_inserter(*this)))):
+    noexcept(noexcept(std::is_nothrow_assignable_v<value_type&, decltype(*i)>)):
     array()
   {
     std::copy(i, j, std::back_inserter(*this));
