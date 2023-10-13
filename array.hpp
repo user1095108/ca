@@ -140,7 +140,7 @@ public:
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
     clear();
-    std::copy(o.cbegin(), o.cend(), begin());
+    std::copy(o.cbegin(), o.cend(), std::back_inserter(*this));
     return *this;
   }
 
@@ -265,12 +265,12 @@ public:
   //
   constexpr auto& operator[](size_type const i) noexcept
   {
-    return *next(f_, i % size());
+    return *next(f_, i);
   }
 
   constexpr auto const& operator[](size_type const i) const noexcept
   {
-    return *next(f_, i % size());
+    return *next(f_, i);
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
