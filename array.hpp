@@ -18,10 +18,7 @@ template <typename T, std::size_t CAP, enum Method M = MEMBER>
     (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
     !std::is_reference_v<T> &&
     std::is_default_constructible_v<T> &&
-    (
-      std::is_assignable_v<T&, T const&> ||
-      std::is_assignable_v<T&, T&&>
-    )
+    (std::is_copy_assignable_v<T> || std::is_move_assignable_v<T>)
   ) // CAP = N - 1
 class array
 {
