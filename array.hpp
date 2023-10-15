@@ -14,7 +14,7 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
-struct emplace_t{};
+struct push_t{};
 
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
   requires(
@@ -111,11 +111,11 @@ public:
     *this = std::move(o);
   }
 
-  array(emplace_t, auto&& ...a)
-    noexcept(noexcept((emplace_back(std::forward<decltype(a)>(a)), ...))):
+  array(push_t, auto&& ...a)
+    noexcept(noexcept((push_back(std::forward<decltype(a)>(a)), ...))):
     array()
   {
-    (emplace_back(std::forward<decltype(a)>(a)), ...);
+    (push_back(std::forward<decltype(a)>(a)), ...);
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
