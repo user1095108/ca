@@ -147,7 +147,7 @@ public:
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
     clear();
-    std::copy(o.cbegin(), o.cend(), std::back_inserter(*this));
+    std::copy(o.begin(), o.end(), std::back_inserter(*this));
     return *this;
   }
 
