@@ -69,26 +69,35 @@ private:
   }
 
 public:
-  constexpr array()
+  constexpr array(auto&& ...a)
     noexcept(
-      ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(new T[N]))
+      (((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
+      ((NEW == M) && noexcept(new T[N]))) &&
+      noexcept((push_back(std::forward<decltype(a)>(a)), ...))
     )
-    requires((MEMBER == M) || (NEW == M))
+    requires(
+      ((MEMBER == M) || (NEW == M)) &&
+      (1 < sizeof...(a)) ||
+      !std::is_same_v<std::remove_cvref_t<decltype((a, ...))>, array>
+    )
   {
     if constexpr(NEW == M) a_ = new T[N];
     reset();
+    (push_back(std::forward<decltype(a)>(a)), ...);
   }
 
-  constexpr explicit array(T* const a) noexcept requires(USER == M):
+  constexpr explicit array(T* const a, auto&& ...b)
+    noexcept(noexcept((push_back(std::forward<decltype(b)>(b)), ...)))
+    requires((USER == M)):
     a_(l_ = f_ = a)
   {
+    (push_back(std::forward<decltype(b)>(b)), ...);
   }
 
   constexpr array(array const& o)
-    noexcept(noexcept(array(o.cbegin(), o.cend())))
+    noexcept(noexcept(array(o.begin(), o.end())))
     requires(std::is_copy_assignable_v<value_type>):
-    array(o.cbegin(), o.cend())
+    array(o.begin(), o.end())
   {
   }
 
@@ -186,6 +195,7 @@ public:
   //
   friend constexpr bool operator==(array const& l, array const& r)
     noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
+    requires(requires{std::equal(l.begin(), l.end(), r.begin(), r.end());})
   {
     return std::equal(l.begin(), l.end(), r.begin(), r.end());
   }
@@ -196,6 +206,12 @@ public:
           l.begin(), l.end(), r.begin(), r.end()
         )
       )
+    )
+    requires(requires{
+        std::lexicographical_compare_three_way(
+          l.begin(), l.end(), r.begin(), r.end()
+        );
+      }
     )
   {
     return std::lexicographical_compare_three_way(
