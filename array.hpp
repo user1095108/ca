@@ -172,7 +172,7 @@ public:
 
       if constexpr(USER == M)
       {
-        a_ = o.a_; o.a_ = {}; // potential null pointer problem
+        a_ = o.a_; // o.a_ stays unchanged
       }
       else
       {
