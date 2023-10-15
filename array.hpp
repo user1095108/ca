@@ -4,6 +4,7 @@
 
 #include <cstdint> // PTRDIFF_MAX
 #include <algorithm> // std::move()
+#include <compare> // std::three_way_comparable
 #include <initializer_list>
 
 #include "arrayiterator.hpp"
@@ -210,8 +211,8 @@ public:
     requires(std::three_way_comparable<T>)
   {
     return std::lexicographical_compare_three_way(
-      l.begin(), l.end(), r.begin(), r.end()
-    );
+        l.begin(), l.end(), r.begin(), r.end()
+      );
   }
 
   //
@@ -566,10 +567,7 @@ constexpr auto erase(array<T, S, M>& c, T k)
 
 template <typename T, std::size_t S, enum Method M>
 constexpr auto erase_if(array<T, S, M>& c, auto pred)
-  noexcept(
-    noexcept(pred(std::declval<T>())) &&
-    noexcept(c.erase(c.begin()))
-  )
+  noexcept(noexcept(pred(std::declval<T>()), c.erase(c.begin())))
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
