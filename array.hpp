@@ -195,7 +195,7 @@ public:
   //
   friend constexpr bool operator==(array const& l, array const& r)
     noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
-    requires(requires{std::equal(l.begin(), l.end(), r.begin(), r.end());})
+    requires(requires{std::declval<T>() == std::declval<T>();})
   {
     return std::equal(l.begin(), l.end(), r.begin(), r.end());
   }
@@ -207,12 +207,7 @@ public:
         )
       )
     )
-    requires(requires{
-        std::lexicographical_compare_three_way(
-          l.begin(), l.end(), r.begin(), r.end()
-        );
-      }
-    )
+    requires(std::three_way_comparable<T>)
   {
     return std::lexicographical_compare_three_way(
       l.begin(), l.end(), r.begin(), r.end()
