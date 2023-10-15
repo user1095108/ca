@@ -14,6 +14,8 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
+struct emplace_t{};
+
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
   requires(
     (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
@@ -70,29 +72,21 @@ private:
   }
 
 public:
-  constexpr array(auto&& ...a)
+  constexpr array()
     noexcept(
-      (((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(new T[N]))) &&
-      noexcept((push_back(std::forward<decltype(a)>(a)), ...))
+      ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
+      ((NEW == M) && noexcept(new T[N]))
     )
-    requires(
-      ((MEMBER == M) || (NEW == M)) &&
-      (1 < sizeof...(a)) ||
-      !std::is_same_v<std::remove_cvref_t<decltype((a, ...))>, array>
-    )
+    requires((MEMBER == M) || (NEW == M))
   {
     if constexpr(NEW == M) a_ = new T[N];
     reset();
-    (push_back(std::forward<decltype(a)>(a)), ...);
   }
 
-  constexpr explicit array(T* const a, auto&& ...b)
-    noexcept(noexcept((push_back(std::forward<decltype(b)>(b)), ...)))
-    requires((USER == M)):
+  constexpr explicit array(T* const a) noexcept
+    requires(USER == M):
     a_(l_ = f_ = a)
   {
-    (push_back(std::forward<decltype(b)>(b)), ...);
   }
 
   constexpr array(array const& o)
@@ -115,6 +109,13 @@ public:
     }
 
     *this = std::move(o);
+  }
+
+  array(emplace_t, auto&& ...a)
+    noexcept(noexcept((emplace_back(std::forward<decltype(a)>(a)), ...))):
+    array()
+  {
+    (emplace_back(std::forward<decltype(a)>(a)), ...);
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
@@ -292,6 +293,19 @@ public:
   constexpr auto const& front() const noexcept { return *f_; }
 
   //
+  template <int = 0>
+  void assign(size_type count, auto const& v)
+    noexcept(noexcept(clear(), push_back(v)))
+  {
+    clear(); while (count--) push_back(v);
+  }
+
+  void assign(size_type count, value_type const& v)
+    noexcept(noexcept(assign<0>(count, v)))
+  {
+    assign<0>(count, v);
+  }
+
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(*i)>)
     requires(std::is_assignable_v<value_type&, decltype(*i)>)
