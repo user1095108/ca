@@ -111,7 +111,7 @@ public:
     *this = std::move(o);
   }
 
-  array(push_t, auto&& ...a)
+  constexpr array(push_t, auto&& ...a)
     noexcept(noexcept((push_back(std::forward<decltype(a)>(a)), ...))):
     array()
   {
