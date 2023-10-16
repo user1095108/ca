@@ -197,7 +197,6 @@ public:
   //
   friend constexpr bool operator==(array const& l, array const& r)
     noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
-    requires(requires{std::declval<T>() == std::declval<T>();})
   {
     return std::equal(l.begin(), l.end(), r.begin(), r.end());
   }
