@@ -299,7 +299,7 @@ public:
     clear(); while (count--) push_back(v);
   }
 
-  void assign(size_type count, value_type const& v)
+  void assign(size_type const count, value_type const& v)
     noexcept(noexcept(assign<0>(count, v)))
   {
     assign<0>(count, v);
