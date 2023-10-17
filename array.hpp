@@ -126,8 +126,7 @@ public:
   }
 
   constexpr array(std::initializer_list<value_type> l)
-    noexcept(noexcept(array(l.begin(), l.end())))
-    requires(std::is_copy_assignable_v<value_type>):
+    noexcept(noexcept(array(l.begin(), l.end()))):
     array(l.begin(), l.end())
   {
   }
@@ -295,6 +294,7 @@ public:
   template <int = 0>
   void assign(size_type count, auto const& v)
     noexcept(noexcept(clear(), push_back(v)))
+    requires(std::is_constructible_v<value_type, decltype(v)>)
   {
     clear(); while (count--) push_back(v);
   }
@@ -328,6 +328,7 @@ public:
   // emplacing is a bad idea in this container, avoid if possible
   constexpr void emplace_back(auto&& a)
     noexcept(noexcept(push_back(std::forward<decltype(a)>(a))))
+    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     push_back(std::forward<decltype(a)>(a));
   }
@@ -346,6 +347,7 @@ public:
 
   constexpr void emplace_front(auto&& a)
     noexcept(noexcept(push_front(std::forward<decltype(a)>(a))))
+    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     push_front(std::forward<decltype(a)>(a));
   }
@@ -364,6 +366,7 @@ public:
 
   constexpr auto emplace(const_iterator const i, auto&& a)
     noexcept(noexcept(insert(i, std::forward<decltype(a)>(a))))
+    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     return insert(i, std::forward<decltype(a)>(a));
   }
@@ -572,7 +575,7 @@ constexpr auto erase(array<T, S, M>& c, auto&& k)
 }
 
 template <typename T, std::size_t S, enum Method M>
-constexpr auto erase(array<T, S, M>& c, T k)
+constexpr auto erase(array<T, S, M>& c, std::type_identity_t<T> k)
   noexcept(noexcept(erase<0>(c, std::move(k))))
 {
   return erase<0>(c, std::move(k));
