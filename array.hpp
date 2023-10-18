@@ -315,7 +315,6 @@ public:
 
   constexpr void assign(std::initializer_list<value_type> l)
     noexcept(noexcept(assign(l.begin(), l.end())))
-    requires(std::is_copy_assignable_v<value_type>)
   {
     assign(l.begin(), l.end());
   }
@@ -548,22 +547,11 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-template <int = 0, typename T, std::size_t S, enum Method M>
+template <typename T, std::size_t S, enum Method M>
 constexpr auto erase(array<T, S, M>& c, auto&& k)
-  noexcept(noexcept(
-      erase_if(
-        c,
-        [](T const&) noexcept(noexcept(
-            std::equal_to()(std::declval<T>(), std::declval<decltype(k)>())
-          )
-        )
-        {
-          return true;
-        }
-      )
-    )
-  )
-  requires(requires{std::equal_to()(std::declval<T>(), k);})
+  noexcept(noexcept(std::equal_to()(std::declval<T>(), k)))
+  requires(requires{std::equal_to()(std::declval<T>(), k);} &&
+    !std::same_as<T, std::remove_cvref_t<decltype(k)>>)
 {
   return erase_if(
       c,
@@ -575,10 +563,16 @@ constexpr auto erase(array<T, S, M>& c, auto&& k)
 }
 
 template <typename T, std::size_t S, enum Method M>
-constexpr auto erase(array<T, S, M>& c, std::type_identity_t<T> k)
-  noexcept(noexcept(erase<0>(c, std::move(k))))
+constexpr auto erase(array<T, S, M>& c, std::type_identity_t<T> const& k)
+  noexcept(noexcept(std::equal_to()(std::declval<T>(), k)))
 {
-  return erase<0>(c, std::move(k));
+  return erase_if(
+      c,
+      [&](auto&& v) noexcept(noexcept(std::equal_to()(v, k)))
+      {
+        return std::equal_to()(v, k);
+      }
+    );
 }
 
 template <typename T, std::size_t S, enum Method M>
