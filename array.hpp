@@ -547,11 +547,10 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename T, std::size_t S, enum Method M>
+template <int = 0, typename T, std::size_t S, enum Method M>
 constexpr auto erase(array<T, S, M>& c, auto&& k)
   noexcept(noexcept(std::equal_to()(std::declval<T>(), k)))
-  requires(requires{std::equal_to()(std::declval<T>(), k);} &&
-    !std::same_as<T, std::remove_cvref_t<decltype(k)>>)
+  requires(requires{std::equal_to()(std::declval<T>(), k);})
 {
   return erase_if(
       c,
@@ -563,16 +562,10 @@ constexpr auto erase(array<T, S, M>& c, auto&& k)
 }
 
 template <typename T, std::size_t S, enum Method M>
-constexpr auto erase(array<T, S, M>& c, std::type_identity_t<T> const& k)
-  noexcept(noexcept(std::equal_to()(std::declval<T>(), k)))
+constexpr auto erase(array<T, S, M>& c, T const& k)
+  noexcept(noexcept(erase<0>(c, k)))
 {
-  return erase_if(
-      c,
-      [&](auto&& v) noexcept(noexcept(std::equal_to()(v, k)))
-      {
-        return std::equal_to()(v, k);
-      }
-    );
+  return erase<0>(c, k);
 }
 
 template <typename T, std::size_t S, enum Method M>
