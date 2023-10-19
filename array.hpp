@@ -299,10 +299,10 @@ public:
     clear(); while (count--) push_back(v);
   }
 
-  void assign(size_type const count, value_type const& v)
-    noexcept(noexcept(assign<0>(count, v)))
+  void assign(size_type const count, value_type v)
+    noexcept(noexcept(assign<0>(count, std::move(v))))
   {
-    assign<0>(count, v);
+    assign<0>(count, std::move(v));
   }
 
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
