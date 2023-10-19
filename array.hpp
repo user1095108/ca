@@ -456,7 +456,7 @@ public:
   }
 
   template <int = 0>
-  constexpr iterator insert(const_iterator i, size_type const count,
+  constexpr iterator insert(const_iterator i, size_type count,
     auto const& v)
     noexcept(noexcept(insert(i, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>)
