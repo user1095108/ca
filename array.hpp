@@ -455,9 +455,11 @@ public:
     return insert<0>(i, std::move(v));
   }
 
-  constexpr iterator insert(const_iterator i, size_type count,
-    value_type const& v)
+  template <int = 0>
+  constexpr iterator insert(const_iterator i, size_type const count,
+    auto const& v)
     noexcept(noexcept(insert(i, v)))
+    requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     if (count) [[likely]]
     { // i is invalidated after insert, but r is valid
@@ -472,6 +474,13 @@ public:
     {
       return {a_, i.n()};
     }
+  }
+
+  constexpr iterator insert(const_iterator i, size_type const count,
+    value_type v)
+    noexcept(noexcept(insert<0>(i, count, std::move(v))))
+  {
+    return insert<0>(i, count, std::move(v));
   }
 
   constexpr iterator insert(const_iterator i,
