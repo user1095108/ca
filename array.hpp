@@ -207,7 +207,6 @@ public:
         )
       )
     )
-    requires(std::three_way_comparable<T>)
   {
     return std::lexicographical_compare_three_way(
         l.begin(), l.end(), r.begin(), r.end()
