@@ -290,14 +290,14 @@ public:
 
   //
   template <int = 0>
-  void assign(size_type count, auto const& v)
+  constexpr void assign(size_type count, auto const& v)
     noexcept(noexcept(clear(), push_back(v)))
     requires(std::is_constructible_v<value_type, decltype(v)>)
   {
     clear(); while (count--) push_back(v);
   }
 
-  void assign(size_type const count, value_type v)
+  constexpr void assign(size_type const count, value_type v)
     noexcept(noexcept(assign<0>(count, v)))
   {
     assign<0>(count, v);
@@ -447,7 +447,7 @@ public:
     return {this, n};
   }
 
-  auto insert(const_iterator const i, value_type v)
+  constexpr auto insert(const_iterator const i, value_type v)
     noexcept(noexcept(insert<0>(i, std::move(v))))
   {
     return insert<0>(i, std::move(v));
