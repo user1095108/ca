@@ -571,9 +571,9 @@ constexpr auto erase(array<T, S, M>& c, auto const& k)
 
 template <typename T, std::size_t S, enum Method M>
 constexpr auto erase(array<T, S, M>& c, T k)
-  noexcept(noexcept(erase<0>(c, std::move(k))))
+  noexcept(noexcept(erase<0>(c, k)))
 {
-  return erase<0>(c, std::move(k));
+  return erase<0>(c, k);
 }
 
 template <typename T, std::size_t S, enum Method M>
