@@ -556,7 +556,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////
 template <int = 0, typename T, std::size_t S, enum Method M>
-constexpr auto erase(array<T, S, M>& c, auto&& k)
+constexpr auto erase(array<T, S, M>& c, auto const& k)
   noexcept(noexcept(std::equal_to()(std::declval<T>(), k)))
   requires(requires{std::equal_to()(std::declval<T>(), k);})
 {
