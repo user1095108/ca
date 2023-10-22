@@ -79,8 +79,7 @@ public:
     )
     requires((MEMBER == M) || (NEW == M))
   {
-    if constexpr(NEW == M) a_ = new T[N];
-    reset();
+    if constexpr(NEW == M) l_ = f_ = a_ = new T[N]; else reset();
   }
 
   constexpr explicit array(T* const a) noexcept
