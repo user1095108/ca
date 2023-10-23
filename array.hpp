@@ -297,7 +297,7 @@ public:
     clear(); while (count--) push_back(v);
   }
 
-  constexpr void assign(size_type const count, value_type v)
+  constexpr void assign(size_type const count, value_type const v)
     noexcept(noexcept(assign<0>(count, v)))
   {
     assign<0>(count, v);
@@ -475,7 +475,7 @@ public:
   }
 
   constexpr iterator insert(const_iterator i, size_type const count,
-    value_type v)
+    value_type const v)
     noexcept(noexcept(insert<0>(i, count, v)))
   {
     return insert<0>(i, count, v);
@@ -569,7 +569,7 @@ constexpr auto erase(array<T, S, M>& c, auto const& k)
 }
 
 template <typename T, std::size_t S, enum Method M>
-constexpr auto erase(array<T, S, M>& c, T k)
+constexpr auto erase(array<T, S, M>& c, T const k)
   noexcept(noexcept(erase<0>(c, k)))
 {
   return erase<0>(c, k);
