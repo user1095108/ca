@@ -12,10 +12,10 @@ template <typename T, typename CA>
 class arrayiterator
 {
   using inverse_const_t = std::conditional_t<
-    std::is_const_v<T>,
-    arrayiterator<std::remove_const_t<T>, CA>,
-    arrayiterator<T const, CA>
-  >;
+      std::is_const_v<T>,
+      arrayiterator<std::remove_const_t<T>, CA>,
+      arrayiterator<T const, CA>
+    >;
 
   friend inverse_const_t;
 
