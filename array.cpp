@@ -8,9 +8,9 @@ int main()
 
   *ca.end() = {}; // end() can be dereferenced and is not constant, it changes
 
-  ca.push_front(1);
-  ca.push_back(2, 3);
-  ca.push_front(4);
+  ca.push_front(1ul);
+  ca.push_back(2ll, 3l); // push multiple values in one go
+  ca.push_front(4u);
 
   std::sort(ca.begin(), ca.end());
 
