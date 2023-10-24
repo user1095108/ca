@@ -49,7 +49,7 @@ int main()
 
   std::cout << std::distance(ca.cbegin(), ca.cend()) << " : " << ca.size() << " " << ca[0] << std::endl;
 
-  erase(ca, 10, 9, 8);
+  erase(ca, 10, 9, 8); // erase as much as you like
 
   return 0;
 }
