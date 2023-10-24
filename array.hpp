@@ -586,18 +586,16 @@ constexpr auto erase(array<T, S, M>& c, auto const& ...k)
   noexcept(noexcept((std::equal_to<>()(std::declval<T&>(), k), ...)))
   requires(requires{(std::equal_to<>()(std::declval<T&>(), k), ...);})
 {
-  return (
-      erase_if(
-        c,
-        [eq(std::equal_to<>()), &k](auto&& v)
-          noexcept(noexcept(
-              std::declval<std::equal_to<>>()(std::forward<decltype(v)>(v), k)
-            )
+  return erase_if(
+      c,
+      [eq(std::equal_to<>()), &k...](auto&& v)
+        noexcept(noexcept(
+            (std::equal_to<>()(std::forward<decltype(v)>(v), k) || ...)
           )
-        {
-          return eq(std::forward<decltype(v)>(v), k);
-        }
-      ) + ...
+        )
+      {
+        return (eq(std::forward<decltype(v)>(v), k) || ...);
+      }
     );
 }
 
