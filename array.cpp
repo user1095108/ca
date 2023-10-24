@@ -6,7 +6,7 @@ int main()
 {
   ca::array<int, 3> ca;
 
-  *ca.end() = {}; // end() can be dereferenced and is not constant, it changes
+  *ca.end() = {}; // end() is not constant and is always dereferencable
 
   ca.push_front(1ul);
   ca.push_back(2ll, 3l); // push multiple values in one go
