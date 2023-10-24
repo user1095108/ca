@@ -7,8 +7,7 @@ int main()
   ca::array<int, 3> ca;
 
   ca.push_front(1);
-  ca.push_back(2);
-  ca.push_back(3);
+  ca.push_back(2, 3);
   ca.push_front(4);
 
   std::sort(ca.begin(), ca.end());
@@ -18,8 +17,7 @@ int main()
 
   std::copy(ca.cbegin(), ca.cend(), std::ostream_iterator<int>(std::cout, "\n"));
 
-  ca.insert(ca.cend(), 5);
-  ca.push_back(10);
+  ca.push_back(5, 10);
 
   std::cout << "size: " << ca.size() << std::endl;
   std::cout << "full: " << ca.full() << std::endl;

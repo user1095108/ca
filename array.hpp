@@ -525,6 +525,15 @@ public:
     if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
   }
 
+  void push_back(auto&& ...v)
+    noexcept(noexcept((push_back<0>(std::forward<decltype(v)>(v)), ...)))
+    requires(
+      std::conjunction_v<std::is_constructible<value_type, decltype(v)>...>
+    )
+  {
+    (push_back<0>(std::forward<decltype(v)>(v)), ...);
+  }
+
   constexpr void push_back(value_type a)
     noexcept(noexcept(push_back<0>(std::move(a))))
   {
@@ -537,6 +546,15 @@ public:
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     *(full() ? f_ : f_ = prev(f_)) = std::forward<decltype(v)>(v);
+  }
+
+  void push_front(auto&& ...v)
+    noexcept(noexcept((push_front<0>(std::forward<decltype(v)>(v)), ...)))
+    requires(
+      std::conjunction_v<std::is_constructible<value_type, decltype(v)>...>
+    )
+  {
+    (push_front<0>(std::forward<decltype(v)>(v)), ...);
   }
 
   constexpr void push_front(value_type v)
@@ -555,28 +573,6 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-template <int = 0, typename T, std::size_t S, enum Method M>
-constexpr auto erase(array<T, S, M>& c, auto const& k)
-  noexcept(noexcept(std::equal_to()(std::declval<T&>(), k)))
-  requires(requires{std::equal_to()(std::declval<T&>(), k);})
-{
-  return erase_if(
-      c,
-      [&](auto&& v)
-        noexcept(noexcept(std::equal_to()(std::forward<decltype(v)>(v), k)))
-      {
-        return std::equal_to()(std::forward<decltype(v)>(v), k);
-      }
-    );
-}
-
-template <typename T, std::size_t S, enum Method M>
-constexpr auto erase(array<T, S, M>& c, T const k)
-  noexcept(noexcept(erase<0>(c, k)))
-{
-  return erase<0>(c, k);
-}
-
 template <typename T, std::size_t S, enum Method M>
 constexpr auto erase_if(array<T, S, M>& c, auto pred)
   noexcept(noexcept(pred(std::declval<T>()), c.erase(c.begin())))
@@ -587,6 +583,31 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
     pred(*i) ? ++r, i = c.erase(i) : ++i);
 
   return r;
+}
+
+template <int = 0, typename T, std::size_t S, enum Method M>
+constexpr auto erase(array<T, S, M>& c, auto const& k)
+  noexcept(noexcept(std::equal_to()(std::declval<T&>(), k)))
+  requires(requires{std::equal_to()(std::declval<T&>(), k);})
+{
+  return erase_if(
+      c,
+      [eq(std::equal_to<>()), &k](auto&& v)
+        noexcept(noexcept(
+            std::declval<std::equal_to<>>()(std::forward<decltype(v)>(v), k)
+          )
+        )
+      {
+        return eq(std::forward<decltype(v)>(v), k);
+      }
+    );
+}
+
+template <typename T, std::size_t S, enum Method M>
+constexpr auto erase(array<T, S, M>& c, T const k)
+  noexcept(noexcept(erase<0>(c, k)))
+{
+  return erase<0>(c, k);
 }
 
 //////////////////////////////////////////////////////////////////////////////
