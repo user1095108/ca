@@ -112,10 +112,10 @@ public:
   }
 
   constexpr array(init_t, auto&& ...a)
-    noexcept(noexcept((push_back(std::forward<decltype(a)>(a)), ...))):
+    noexcept(noexcept(push_back(std::forward<decltype(a)>(a)...))):
     array()
   {
-    (push_back(std::forward<decltype(a)>(a)), ...);
+    push_back(std::forward<decltype(a)>(a)...);
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
