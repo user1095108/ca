@@ -98,9 +98,8 @@ public:
 
   constexpr array(array&& o)
     noexcept(noexcept(*this = std::move(o)))
-    requires(
-      std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
-    )
+    requires(std::is_move_assignable_v<value_type> ||
+      (NEW == M) || (USER == M))
   {
     if constexpr((MEMBER == M) || (NEW == M))
     {
@@ -119,7 +118,8 @@ public:
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(std::is_nothrow_assignable_v<value_type&, decltype(*i)>)):
+    noexcept(noexcept(
+        std::is_nothrow_assignable_v<value_type&, decltype(*i)>)):
     array()
   {
     std::copy(i, j, std::back_inserter(*this));
@@ -132,11 +132,9 @@ public:
   }
 
   constexpr ~array()
-    noexcept(
-      ((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
+    noexcept(((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
       ((NEW == M) && noexcept(delete [] std::declval<T*>())) ||
-      (USER == M)
-    )
+      (USER == M))
   {
     if constexpr(NEW == M) delete [] a_;
   }
@@ -152,13 +150,10 @@ public:
   }
 
   constexpr array& operator=(array&& o)
-    noexcept(
-      std::is_nothrow_move_assignable_v<value_type> ||
-      (NEW == M) || (USER == M)
-    )
-    requires(
-      std::is_move_assignable_v<value_type> || (NEW == M) || (USER == M)
-    )
+    noexcept(std::is_nothrow_move_assignable_v<value_type> ||
+      (NEW == M) || (USER == M))
+    requires(std::is_move_assignable_v<value_type> ||
+      (NEW == M) || (USER == M))
   { // self-assign neglected
     if constexpr(MEMBER == M)
     {
@@ -201,16 +196,11 @@ public:
   }
 
   friend constexpr auto operator<=>(array const& l, array const& r)
-    noexcept(noexcept(
-        std::lexicographical_compare_three_way(
-          l.begin(), l.end(), r.begin(), r.end()
-        )
-      )
-    )
+    noexcept(noexcept(std::lexicographical_compare_three_way(
+      l.begin(), l.end(), r.begin(), r.end())))
   {
     return std::lexicographical_compare_three_way(
-        l.begin(), l.end(), r.begin(), r.end()
-      );
+      l.begin(), l.end(), r.begin(), r.end());
   }
 
   //
