@@ -527,9 +527,7 @@ public:
 
   void push_back(auto&& ...v)
     noexcept(noexcept((push_back<0>(std::forward<decltype(v)>(v)), ...)))
-    requires(
-      std::conjunction_v<std::is_constructible<value_type, decltype(v)>...>
-    )
+    requires(requires{(push_back<0>(std::forward<decltype(v)>(v)), ...);})
   {
     (push_back<0>(std::forward<decltype(v)>(v)), ...);
   }
@@ -550,9 +548,7 @@ public:
 
   void push_front(auto&& ...v)
     noexcept(noexcept((push_front<0>(std::forward<decltype(v)>(v)), ...)))
-    requires(
-      std::conjunction_v<std::is_constructible<value_type, decltype(v)>...>
-    )
+    requires(requires{(push_front<0>(std::forward<decltype(v)>(v)), ...);})
   {
     (push_front<0>(std::forward<decltype(v)>(v)), ...);
   }
