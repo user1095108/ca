@@ -6,6 +6,8 @@ int main()
 {
   ca::array<int, 3> ca;
 
+  *ca.end() = {}; // end() can be dereferenced and is not constant, it changes
+
   ca.push_front(1);
   ca.push_back(2, 3);
   ca.push_front(4);
