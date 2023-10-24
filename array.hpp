@@ -14,7 +14,7 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
-struct push_t{};
+struct init_t{};
 
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
   requires(
@@ -111,7 +111,7 @@ public:
     *this = std::move(o);
   }
 
-  constexpr array(push_t, auto&& ...a)
+  constexpr array(init_t, auto&& ...a)
     noexcept(noexcept((push_back(std::forward<decltype(a)>(a)), ...))):
     array()
   {
