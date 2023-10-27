@@ -58,18 +58,16 @@ private:
     return const_cast<decltype(p)>(p == a_ ? &a_[N - 1] : p - 1);
   }
 
-  constexpr auto next(auto const p, size_type const n) const noexcept
-  { // N is the period
-    size_type const d(&a_[N - 1] - p); // >= 0
-
-    return const_cast<decltype(p)>(d >= n ? p + n : p - (N - n));
+  constexpr auto next(auto const p, difference_type const n) const noexcept
+  { // 0 <= n <= N, N is the period
+    auto const t(difference_type(N) - n);
+    return const_cast<decltype(p)>(p - a_ < t ? p + n : p - t);
   }
 
-  constexpr auto prev(auto const p, size_type const n) const noexcept
-  {
-    size_type const d(p - a_); // >= 0
-
-    return const_cast<decltype(p)>(d >= n ? p - n : p + (N - n));
+  constexpr auto prev(auto const p, difference_type const n) const noexcept
+  { // 0 <= n <= N
+    return const_cast<decltype(p)>(p - a_ >= n ?
+      p - n : p + (difference_type(N) - n));
   }
 
 public:
