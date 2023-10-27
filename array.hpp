@@ -61,13 +61,13 @@ private:
   constexpr auto next(auto const p, difference_type const n) const noexcept
   { // 0 <= n <= N, N is the period
     auto const t(difference_type(N) - n);
-    return const_cast<decltype(p)>(p - a_ < t ? p + n : p - t);
+    return const_cast<decltype(p)>(p + (p - a_ < t ? n : -t));
   }
 
   constexpr auto prev(auto const p, difference_type const n) const noexcept
   { // 0 <= n <= N
-    return const_cast<decltype(p)>(p - a_ >= n ?
-      p - n : p + (difference_type(N) - n));
+    return const_cast<decltype(p)>(
+      p + (p - a_ < n ? difference_type(N) - n : -n));
   }
 
   constexpr auto adv(auto const p, difference_type const n) const noexcept
