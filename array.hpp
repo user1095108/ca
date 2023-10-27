@@ -58,16 +58,12 @@ private:
     return const_cast<decltype(p)>(p == a_ ? &a_[N - 1] : p - 1);
   }
 
-  constexpr auto next(auto const p, difference_type const n) const noexcept
-  { // 0 <= n <= N, N is the period
-    auto const t(difference_type(N) - n);
-    return const_cast<decltype(p)>(p - a_ < t ? p + n : p - t);
-  }
-
-  constexpr auto prev(auto const p, difference_type const n) const noexcept
-  { // 0 <= n <= N
-    return const_cast<decltype(p)>(p - a_ >= n ?
-      p - n : p + (difference_type(N) - n));
+  constexpr auto adv(auto const p, difference_type const n) const noexcept
+  {
+    auto const o(p - a_);
+    auto const u(difference_type(N) - n);
+    return const_cast<decltype(p)>(
+      p + (o < -n ? difference_type(N) + n : o < u ? n : -u));
   }
 
 public:
@@ -259,12 +255,12 @@ public:
   //
   constexpr auto& operator[](size_type const i) noexcept
   {
-    return *next(f_, i);
+    return *adv(f_, i);
   }
 
   constexpr auto const& operator[](size_type const i) const noexcept
   {
-    return *next(f_, i);
+    return *adv(f_, i);
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
@@ -308,7 +304,7 @@ public:
   //
   constexpr void clear() noexcept { l_ = f_; }
   constexpr void reset() noexcept { l_ = f_ = a_; }
-  constexpr void resize(size_type const n) noexcept { l_ = next(f_, n); }
+  constexpr void resize(size_type const n) noexcept { l_ = adv(f_, n); }
 
   // emplacing is a bad idea in this container, avoid if possible
   constexpr void emplace_back(auto&& a)
@@ -498,9 +494,9 @@ public:
 
   //
   constexpr void pop_back() noexcept { l_ = prev(l_); }
-  constexpr void pop_back(size_type const n) noexcept { l_ = prev(l_, n); }
+  constexpr void pop_back(size_type const n) noexcept { l_ = adv(l_, -n); }
   constexpr void pop_front() noexcept { f_ = next(f_); }
-  constexpr void pop_front(size_type const n) noexcept { f_ = next(f_, n); }
+  constexpr void pop_front(size_type const n) noexcept { f_ = adv(f_, n); }
 
   //
   template <int = 0>
