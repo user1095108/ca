@@ -150,7 +150,8 @@ public:
     requires(requires{std::begin(c), std::end(c);} &&
       !std::same_as<array, std::remove_cvref_t<decltype(c)>> &&
       !std::same_as<std::initializer_list<value_type>,
-        std::remove_cvref_t<decltype(c)>>)
+        std::remove_cvref_t<decltype(c)>>):
+    array()
   {
     if constexpr(std::is_rvalue_reference_v<decltype(c)>)
     {
