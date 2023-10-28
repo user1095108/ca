@@ -559,11 +559,18 @@ public:
   }
 
   //
-  constexpr void swap(array& o) noexcept requires((NEW == M) || (USER == M))
+  constexpr void swap(array& o) noexcept
   {
-    std::swap(f_, o.f_);
-    std::swap(l_, o.l_);
-    std::swap(a_, o.a_);
+    if constexpr((NEW == M) || (USER == M))
+    {
+      std::swap(f_, o.f_);
+      std::swap(l_, o.l_);
+      std::swap(a_, o.a_);
+    }
+    else
+    {
+      std::swap(*this, o);
+    }
   }
 };
 
@@ -607,7 +614,6 @@ constexpr auto erase(array<T, S, M>& c, T const k)
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, enum Method M>
 constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
-  requires((NEW == M) || (USER == M))
 {
   lhs.swap(rhs);
 }
