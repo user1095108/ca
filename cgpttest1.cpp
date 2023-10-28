@@ -701,6 +701,28 @@ void test2() {
   magicBox.pop_back();
   assert(magicBox.empty());
   }
+
+  {
+  ca::array<int, 10> d;
+
+  // Fill the deque with numbers from 0 to 9
+  for(int i = 0; i < 10; ++i) d.push_back(i);
+
+  // Get an iterator to the first element
+  auto it = d.begin();
+
+  // Advance the iterator by 5 positions
+  std::advance(it, 5);
+  assert(*it == 5);
+
+  // Advance the iterator by 2 positions
+  std::advance(it, 2);
+  assert(*it == 7);
+
+  // Move the iterator back by 3 positions
+  std::advance(it, -3);
+  assert(*it == 4);
+  }
 }
 
 int main() {
