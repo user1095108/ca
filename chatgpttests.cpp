@@ -753,10 +753,10 @@ void test2() {
   ca::array<int, 10> dq2{6, 7, 8, 9, 10};
 
   // Create a third deque to hold the merged result
-  ca::array<int, 10> mdq;
+  ca::array<int, 10> mdq(10);
 
   // Merge the two deques
-  std::merge(dq1.begin(), dq1.end(), dq2.begin(), dq2.end(), std::back_inserter(mdq));
+  std::merge(dq1.begin(), dq1.end(), dq2.begin(), dq2.end(), mdq.begin());
 
   // Expected merged deque
   assert((mdq == ca::array<int, 10>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
