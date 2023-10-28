@@ -262,7 +262,6 @@ public:
     return *this;
   }
 
-
   //
   friend constexpr bool operator==(array const& l, array const& r)
     noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
