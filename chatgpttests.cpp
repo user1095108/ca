@@ -788,6 +788,16 @@ void test2() {
   // Check if the deque is now in its original order.
   assert(std::equal(deque.begin(), deque.end(), originalDeque.begin()));
   }
+
+  {
+  ca::array<int, 10> a(5, 10);
+
+  // Check that the array has the correct size
+  assert(a.size() == 5);
+
+  // Check that all elements in the array are 10
+  for (const auto& e: l) assert(e == 10);
+  }
 }
 
 int main() {
