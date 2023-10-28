@@ -72,10 +72,16 @@ private:
 
   constexpr auto adv(auto const p, difference_type const n) const noexcept
   {
-    auto const o(p - a_);
-    auto const u(difference_type(N) - n);
-    return const_cast<decltype(p)>(
-      p + (o < -n ? difference_type(N) + n : o < u ? n : -u));
+    if (auto const o(p - a_); o < -n)
+    {
+      return const_cast<decltype(p)>(p + (difference_type(N) + n));
+    }
+    else
+    {
+      auto const u(difference_type(N) - n);
+
+      return const_cast<decltype(p)>(p + (o < u ? n : -u));
+    }
   }
 
 public:
