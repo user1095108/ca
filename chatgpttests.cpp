@@ -1,5 +1,7 @@
 #include <cassert>
 #include <iostream>
+#include <random>
+
 #include "array.hpp" // Replace with the actual container header
 
 // Include your testing framework of choice (e.g., Google Test or Catch2)
@@ -718,6 +720,73 @@ void test2() {
   // Move the iterator back by 3 positions
   std::advance(it, -3);
   assert(*it == 4);
+  }
+
+  {
+  ca::array<int, 10> d = {1, 2, 3, 4, 5};
+  d.erase(std::remove_if(d.begin(), d.end(), [](int n){ return n % 2 == 0; }), d.end());
+  for (int n : d) assert(n % 2 != 0);
+  }
+
+  {
+  ca::array<int, 10> d = {1, 2, 3, 4, 5};
+  ca::erase_if(d, [](int n){ return n % 2 == 0; });
+  for (int n : d) assert(n % 2 != 0);
+  }
+
+  {
+  ca::array<int, 20> dq{1, 2, 2, 3, 3, 3, 4, 4, 4, 4};
+  dq.erase(std::unique(dq.begin(), dq.end()), dq.end());
+  assert((dq == ca::array<int, 20>{1, 2, 3, 4}));
+  }
+
+  {
+  ca::array<int, 10> d = {1, 2, 3, 4};
+  ca::array<int, 10> l = {-1, -2, -3};
+  auto pos = std::next(d.begin(), 2);
+  d.insert(pos, l.begin(), l.end());
+  assert((d == ca::array<int, 10>{1, 2, -1, -2, -3, 3, 4}));
+  }
+
+  {
+  ca::array<int, 10> dq1{1, 2, 3, 4, 5};
+  ca::array<int, 10> dq2{6, 7, 8, 9, 10};
+
+  // Create a third deque to hold the merged result
+  ca::array<int, 10> mdq;
+
+  // Merge the two deques
+  std::merge(dq1.begin(), dq1.end(), dq2.begin(), dq2.end(), std::back_inserter(mdq));
+
+  // Expected merged deque
+  assert((mdq == ca::array<int, 10>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+
+  // Reverse the merged deque
+  std::reverse(mdq.begin(), mdq.end());
+
+  // Expected reversed deque
+  assert((mdq == ca::array<int, 10>{10, 9, 8, 7, 6, 5, 4, 3, 2, 1}));
+  }
+
+  {
+  ca::array<int, 10> originalDeque{1, 2, 3, 4, 5};
+  auto deque{originalDeque};
+
+  // Generate a random permutation of the deque's elements.
+  std::shuffle(deque.begin(), deque.end(), std::mt19937{std::random_device{}()});
+
+  // Rotate the deque by a random amount greater than zero.
+  std::rotate(deque.begin(), deque.begin() + 1 + std::rand() % (deque.size() - 1), deque.end());
+
+  // Split the deque into two halves.
+  auto mid = deque.begin() + deque.size() / 2;
+
+  // Reverse the second half of the deque.
+  std::reverse(mid, deque.end());
+  std::sort(deque.begin(), deque.end());
+
+  // Check if the deque is now in its original order.
+  assert(std::equal(deque.begin(), deque.end(), originalDeque.begin()));
   }
 }
 

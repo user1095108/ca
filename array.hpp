@@ -140,7 +140,13 @@ public:
     array(l.begin(), l.end())
   {
   }
-
+ 
+  constexpr explicit array(size_type const c)
+    noexcept(noexcept(resize(c)))
+  {
+    resize(c);
+  }
+ 
   explicit constexpr array(auto&& c)
     noexcept((std::is_rvalue_reference_v<decltype(c)> &&
       noexcept(std::move(std::begin(c), std::end(c),
