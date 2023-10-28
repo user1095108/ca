@@ -78,7 +78,6 @@ private:
     else
     {
       auto const u(N - n);
-
       return const_cast<decltype(p)>(o < u ? p + n : p - u);
     }
   }
