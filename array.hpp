@@ -406,7 +406,9 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    while (a != b) { a = erase(a); } return a;
+    for (auto n(std::distance(a, b)); n; --n) a = erase(a);
+
+    return {this, a.n()};
   }
 
   //
@@ -487,7 +489,7 @@ public:
   {
     if (j == k) [[unlikely]]
     {
-      return {a_, i.n()};
+      return {this, i.n()};
     }
     else [[likely]]
     { // i is invalidated after insert, but r is valid
