@@ -8,76 +8,76 @@
 void test1() {
   {
   // Create an instance of your container
-  ca::array<int, 20> container;
+  ca::array<int, 20> dq;
 
   // Test adding elements to the container
-  container.push_back(1, 2, 3);
+  dq.push_back(1, 2, 3);
 
   // Test the size of the container
-  assert(container.size() == 3);
+  assert(dq.size() == 3);
 
   // Test accessing elements by index
-  assert(container[0] == 1);
-  assert(container[1] == 2);
-  assert(container[2] == 3);
+  assert(dq[0] == 1);
+  assert(dq[1] == 2);
+  assert(dq[2] == 3);
 
   // Test modifying elements
-  container[1] = 42;
-  assert(container[1] == 42);
+  dq[1] = 42;
+  assert(dq[1] == 42);
 
   // Test removing elements
-  container.pop_back();
-  assert(container.size() == 2);
+  dq.pop_back();
+  assert(dq.size() == 2);
 
   // Add more test cases for your container's methods (e.g., clear, resize, etc.)
 
   // Test iterator functionality
-  auto it = container.begin();
+  auto it = dq.begin();
   assert(*it == 1);
   ++it;
   assert(*it == 42);
   ++it;
-  assert(it == container.end());
+  assert(it == dq.end());
 
   // Test edge cases
-  container.clear();
-  assert(container.empty());
-  assert(container.size() == 0);
+  dq.clear();
+  assert(dq.empty());
+  assert(dq.size() == 0);
 
   // Additional test cases:
 
   // Test inserting elements at a specific position
-  container.push_back(4);
-  container.insert(container.begin() + 1, 5);
-  assert(container.size() == 2);
-  assert(container[0] == 4);
-  assert(container[1] == 5);
+  dq.push_back(4);
+  dq.insert(dq.begin() + 1, 5);
+  assert(dq.size() == 2);
+  assert(dq[0] == 4);
+  assert(dq[1] == 5);
 
   // Test erasing elements at a specific position
-  container.erase(container.begin());
-  assert(container.size() == 1);
-  assert(container[0] == 5);
+  dq.erase(dq.begin());
+  assert(dq.size() == 1);
+  assert(dq[0] == 5);
 
   // Test resizing the container
-  container.resize(5);
-  assert(container.size() == 5);
+  dq.resize(5);
+  assert(dq.size() == 5);
 
   // Test swapping containers
-  decltype(container) otherContainer;
+  decltype(dq) otherContainer;
   otherContainer.push_back(6);
   otherContainer.push_back(7);
-  container.swap(otherContainer);
-  assert(container.size() == 2);
+  dq.swap(otherContainer);
+  assert(dq.size() == 2);
   assert(otherContainer.size() == 5);
 
   // Test copying a container
-  decltype(container) copiedContainer = container;
+  decltype(dq) copiedContainer = dq;
   assert(copiedContainer.size() == 2);
   assert(copiedContainer[0] == 6);
 
   // Test range-based for loop
   int sum = 0;
-  for (const auto& item : container) {
+  for (const auto& item : dq) {
       sum += item;
   }
 
