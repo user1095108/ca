@@ -601,8 +601,7 @@ void test2() {
   }
 
   {
-  std::string str = "racecar";
-  ca::array<char, 10> palindrome(str.begin(), str.end());
+  ca::array<char, 10> palindrome(std::string_view("racecar"));
 
   while(palindrome.size() > 1) {
     assert(palindrome.front() == palindrome.back());
