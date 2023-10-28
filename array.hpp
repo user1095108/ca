@@ -142,7 +142,7 @@ public:
   {
   }
 
-  constexpr array(auto&& c)
+  explicit constexpr array(auto&& c)
     noexcept((std::is_rvalue_reference_v<decltype(c)> &&
       noexcept(std::move(std::begin(c), std::end(c),
         std::back_inserter(*this)))) ||
