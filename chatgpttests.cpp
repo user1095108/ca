@@ -8,10 +8,7 @@
 void test1() {
   {
   // Create an instance of your container
-  ca::array<int, 20> dq;
-
-  // Test adding elements to the container
-  dq.push_back(1, 2, 3);
+  ca::array<int, 20> dq(ca::init_t{}, 1, 2, 3);
 
   // Test the size of the container
   assert(dq.size() == 3);

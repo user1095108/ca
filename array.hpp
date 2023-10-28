@@ -61,7 +61,8 @@ private:
   constexpr auto next(auto const p, difference_type const n) const noexcept
   { // 0 <= n < N, N is the period
     auto const u(N - n);
-    return const_cast<decltype(p)>(p - a_ < u ? p + n : p - u);
+    return const_cast<decltype(p)>(size_type(p - a_) < u ?
+      p + n : p - u);
   }
 
   constexpr auto prev(auto const p, difference_type const n) const noexcept
@@ -71,7 +72,7 @@ private:
 
   constexpr auto adv(auto const p, difference_type const n) const noexcept
   { // -N < n < N
-    if (auto const o(p - a_); o < -n)
+    if (size_type const o(p - a_); difference_type(o) < -n)
     {
       return const_cast<decltype(p)>(p + (N + n));
     }
@@ -163,11 +164,13 @@ public:
     }
   }
 
+  constexpr ~array() requires(NEW != M) = default;
+
   constexpr ~array()
-    noexcept(((MEMBER == M) && std::is_nothrow_destructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(delete [] std::declval<T*>())) || (USER == M))
+    noexcept(noexcept(delete [] std::declval<T*>()))
+    requires(NEW == M)
   {
-    if constexpr(NEW == M) delete [] a_;
+    delete [] a_;
   }
 
   //
