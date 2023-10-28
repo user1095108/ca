@@ -141,7 +141,7 @@ public:
   {
   }
 
-  constexpr array(auto&& c)
+  explicit constexpr array(auto&& c)
     noexcept((std::is_rvalue_reference_v<decltype(c)> &&
       noexcept(std::move(std::begin(c), std::end(c),
         std::back_inserter(*this)))) ||
@@ -223,14 +223,16 @@ public:
 
   auto& operator=(auto&& c)
     noexcept((std::is_rvalue_reference_v<decltype(c)> &&
-      noexcept(std::move(std::begin(c), std::end(c),
+      noexcept(clear(), std::move(std::begin(c), std::end(c),
         std::back_inserter(*this)))) ||
-      noexcept(std::copy(std::begin(c), std::end(c),
+      noexcept(clear(), std::copy(std::begin(c), std::end(c),
         std::back_inserter(*this))))
     requires(requires{std::begin(c), std::end(c), std::size(c);} &&
       !std::same_as<array, std::remove_cvref_t<decltype(c)>> &&
       !std::same_as<std::initializer_list<value_type>,
-        std::remove_cvref_t<decltype(c)>>)
+        std::remove_cvref_t<decltype(c)>> &&
+      (std::is_constructible_v<T, decltype(*std::begin(c))> ||
+      std::is_constructible_v<T, decltype(std::move(*std::begin(c)))>))
   {
     clear();
 
@@ -245,6 +247,7 @@ public:
 
     return *this;
   }
+
 
   //
   friend constexpr bool operator==(array const& l, array const& r)
