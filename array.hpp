@@ -59,28 +59,27 @@ private:
   }
 
   constexpr auto next(auto const p, difference_type const n) const noexcept
-  { // 0 <= n <= N, N is the period
-    auto const t(difference_type(N) - n);
-    return const_cast<decltype(p)>(p + (p - a_ < t ? n : -t));
+  { // 0 <= n < N, N is the period
+    auto const u(N - n);
+    return const_cast<decltype(p)>(p - a_ < u ? p + n : p - u);
   }
 
   constexpr auto prev(auto const p, difference_type const n) const noexcept
-  { // 0 <= n <= N
-    return const_cast<decltype(p)>(
-      p + (p - a_ < n ? difference_type(N) - n : -n));
+  { // 0 <= n < N
+    return const_cast<decltype(p)>(p - a_ < n ? p + (N - n) : p - n);
   }
 
   constexpr auto adv(auto const p, difference_type const n) const noexcept
-  { // -N <= n <= N
+  { // -N < n < N
     if (auto const o(p - a_); o < -n)
     {
-      return const_cast<decltype(p)>(p + (difference_type(N) + n));
+      return const_cast<decltype(p)>(p + (N + n));
     }
     else
     {
-      auto const u(difference_type(N) - n);
+      auto const u(N - n);
 
-      return const_cast<decltype(p)>(p + (o < u ? n : -u));
+      return const_cast<decltype(p)>(o < u ? p + n : p - u);
     }
   }
 
