@@ -796,7 +796,7 @@ void test2() {
   assert(a.size() == 5);
 
   // Check that all elements in the array are 10
-  for (const auto& e: l) assert(e == 10);
+  for (const auto& e: a) assert(e == 10);
   }
 }
 

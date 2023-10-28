@@ -471,7 +471,10 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    for (auto n(std::distance(a, b)); n; --n) a = erase(a);
+    auto n(b.n() - a.n());
+    if (n < 0) n += N;
+
+    while (n--) a = erase(a);
 
     return {this, a.n()};
   }
