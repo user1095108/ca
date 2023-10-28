@@ -129,8 +129,7 @@ public:
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(
-      std::is_nothrow_assignable_v<value_type&, decltype(*i)>)):
+    noexcept(noexcept(std::copy(i, j, std::back_inserter(*this)))):
     array()
   {
     std::copy(i, j, std::back_inserter(*this));
@@ -142,13 +141,13 @@ public:
   {
   }
 
-  explicit constexpr array(auto&& c)
+  constexpr array(auto&& c)
     noexcept((std::is_rvalue_reference_v<decltype(c)> &&
       noexcept(std::move(std::begin(c), std::end(c),
         std::back_inserter(*this)))) ||
       noexcept(std::copy(std::begin(c), std::end(c),
         std::back_inserter(*this))))
-    requires(requires{std::begin(c), std::end(c);} &&
+    requires(requires{std::begin(c), std::end(c), std::size(c);} &&
       !std::same_as<array, std::remove_cvref_t<decltype(c)>> &&
       !std::same_as<std::initializer_list<value_type>,
         std::remove_cvref_t<decltype(c)>>):
@@ -219,6 +218,31 @@ public:
     requires(std::is_copy_assignable_v<value_type>)
   {
     assign(l);
+    return *this;
+  }
+
+  auto& operator=(auto&& c)
+    noexcept((std::is_rvalue_reference_v<decltype(c)> &&
+      noexcept(std::move(std::begin(c), std::end(c),
+        std::back_inserter(*this)))) ||
+      noexcept(std::copy(std::begin(c), std::end(c),
+        std::back_inserter(*this))))
+    requires(requires{std::begin(c), std::end(c), std::size(c);} &&
+      !std::same_as<array, std::remove_cvref_t<decltype(c)>> &&
+      !std::same_as<std::initializer_list<value_type>,
+        std::remove_cvref_t<decltype(c)>>)
+  {
+    clear();
+
+    if constexpr(std::is_rvalue_reference_v<decltype(c)>)
+    {
+      std::move(std::begin(c), std::end(c), std::back_inserter(*this));
+    }
+    else
+    {
+      std::copy(std::begin(c), std::end(c), std::back_inserter(*this));
+    }
+
     return *this;
   }
 
