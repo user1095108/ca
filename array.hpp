@@ -167,10 +167,10 @@ public:
         std::back_inserter(*this)))) ||
       noexcept(std::copy(std::begin(c), std::end(c),
         std::back_inserter(*this))))
-    requires((requires{std::begin(c), std::end(c), std::size(c);} &&
+    requires(requires{std::begin(c), std::end(c), std::size(c);} &&
       !std::same_as<array, std::remove_cvref_t<decltype(c)>> &&
       !std::same_as<std::initializer_list<value_type>,
-        std::remove_cvref_t<decltype(c)>>) &&
+        std::remove_cvref_t<decltype(c)>> &&
       (std::is_assignable_v<T&, decltype(*std::begin(c))> ||
       std::is_assignable_v<T&, decltype(std::move(*std::begin(c)))>)):
     array()
