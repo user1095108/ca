@@ -83,6 +83,12 @@ private:
     }
   }
 
+  static constexpr size_type distance(auto const a, decltype(a) b) noexcept
+  {
+    auto const n(b - a); // N - 1 = CAP <= PTRDIFF_MAX
+    return n < decltype(n){} ? N + n : n;
+  }
+
 public:
   constexpr array()
     noexcept(
@@ -326,12 +332,7 @@ public:
   constexpr bool empty() const noexcept { return f_ == l_; }
   constexpr bool full() const noexcept { return next(l_) == f_; }
 
-  constexpr size_type size() const noexcept
-  {
-    auto const n(l_ - f_); // N - 1 = CAP <= PTRDIFF_MAX
-
-    return n < decltype(n){} ? N + n : n;
-  }
+  constexpr size_type size() const noexcept { return distance(f_, l_); }
 
   //
   constexpr auto& operator[](size_type const i) noexcept
@@ -471,10 +472,7 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    auto n(b.n() - a.n());
-    if (n < 0) n += N;
-
-    while (n--) a = erase(a);
+    for (auto n(distance(a.n(), b.n())); n; --n) a = erase(a);
 
     return {this, a.n()};
   }
