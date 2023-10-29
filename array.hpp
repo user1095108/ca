@@ -455,7 +455,7 @@ public:
     {
       return {this, l_ = prev(l_)};
     }
-    else if (size_type(std::distance(begin(), j)) <= size() / 2)
+    else if (distance(f_, j.n()) <= size() / 2)
     {
       f_ = std::move_backward(begin(), j, nxt).n();
 
