@@ -492,7 +492,7 @@ public:
     {
       l_ = next(n = l_);
     }
-    else if (size_type(std::distance(begin(), j)) <= size() / 2)
+    else if (distance(f_, j.n()) <= size() / 2)
     {
       auto const f(f_);
       f_ = prev(f);
