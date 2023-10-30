@@ -646,17 +646,18 @@ public:
 
   //
   constexpr void swap(array& o) noexcept
+    noexcept(noexcept(std::swap(*this, o)))
+    requires(MEMBER == M)
   {
-    if constexpr((NEW == M) || (USER == M))
-    {
-      std::swap(f_, o.f_);
-      std::swap(l_, o.l_);
-      std::swap(a_, o.a_);
-    }
-    else
-    {
-      std::swap(*this, o);
-    }
+    std::swap(*this, o);
+  }
+
+  constexpr void swap(array& o) noexcept
+    requires((NEW == M) || (USER == M))
+  {
+    std::swap(f_, o.f_);
+    std::swap(l_, o.l_);
+    std::swap(a_, o.a_);
   }
 };
 
