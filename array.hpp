@@ -132,13 +132,13 @@ public:
       if constexpr(USER == M)
       {
         a_ = o.a_; // o.a_ stays unchanged
+        o.clear();
       }
       else
       {
         std::swap(a_, o.a_);
+        o.reset();
       }
-
-      o.reset();
     }
   }
 
@@ -239,13 +239,13 @@ public:
       if constexpr(USER == M)
       {
         a_ = o.a_; // o.a_ stays unchanged
+        o.clear();
       }
       else
       {
         std::swap(a_, o.a_);
+        o.reset();
       }
-
-      o.reset();
     }
 
     return *this;
