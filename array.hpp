@@ -647,7 +647,7 @@ public:
   //
   constexpr void split(auto&& g) const
     noexcept(noexcept(g(f_, f_)))
-  { // split the deque into 2 contiguous regions
+  { // split the [f_, l_] range into 2 contiguous regions
     T const* f(f_);
 
     if (l_ < f)
