@@ -170,7 +170,7 @@ public:
   }
 
   constexpr explicit array(size_type const c, value_type const& v)
-    noexcept(noexcept(array(c), push_back(v))):
+    noexcept(noexcept(array(c), std::fill(f_, l_, v))):
     array(c)
   {
     std::fill(f_, l_, v);
