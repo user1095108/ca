@@ -171,9 +171,9 @@ public:
 
   constexpr explicit array(size_type c, value_type const& v)
     noexcept(noexcept(array(), push_back(v))):
-    array()
+    array(c)
   {
-    while (c--) push_back(v);
+    std::fill(f_, l_, v);
   }
  
   explicit constexpr array(auto&& c)
