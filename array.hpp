@@ -645,7 +645,7 @@ public:
   }
 
   //
-  constexpr void swap(array& o) noexcept
+  constexpr void swap(array& o)
     noexcept(noexcept(std::swap(*this, o)))
     requires(MEMBER == M)
   {
