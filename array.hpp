@@ -163,7 +163,7 @@ public:
   }
  
   constexpr explicit array(size_type const c)
-    noexcept(noexcept(resize(c))):
+    noexcept(noexcept(array(), resize(c))):
     array()
   {
     resize(c);
