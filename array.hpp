@@ -114,17 +114,32 @@ public:
   }
 
   constexpr array(array&& o)
-    noexcept(noexcept(*this = std::move(o)))
-    requires(std::is_move_assignable_v<value_type> ||
-      (NEW == M) || (USER == M))
+    noexcept((NEW == M) || (USER == M) ||
+      noexcept(std::move(o.begin(), o.end(), std::back_inserter(*this))))
+    requires((NEW == M) || (USER == M) ||
+      std::is_move_assignable_v<value_type>):
+    array()
   {
-    if constexpr((MEMBER == M) || (NEW == M))
+    if constexpr(MEMBER == M)
     {
-      if constexpr(NEW == M) a_ = new T[N];
-      reset();
+      std::move(o.begin(), o.end(), std::back_inserter(*this));
+      o.clear();
     }
+    else
+    {
+      f_ = o.f_; l_ = o.l_;
 
-    *this = std::move(o);
+      if constexpr(USER == M)
+      {
+        a_ = o.a_; // o.a_ stays unchanged
+      }
+      else
+      {
+        std::swap(a_, o.a_);
+      }
+
+      o.reset();
+    }
   }
 
   constexpr array(init_t, auto&& ...a)
@@ -196,7 +211,8 @@ public:
 
   //
   constexpr array& operator=(array const& o)
-    noexcept(noexcept(std::is_nothrow_copy_assignable_v<value_type>))
+    noexcept(noexcept(
+      std::copy(o.begin(), o.end(), std::back_inserter(*this))))
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
     clear();
@@ -205,10 +221,10 @@ public:
   }
 
   constexpr array& operator=(array&& o)
-    noexcept(std::is_nothrow_move_assignable_v<value_type> ||
-      (NEW == M) || (USER == M))
-    requires(std::is_move_assignable_v<value_type> ||
-      (NEW == M) || (USER == M))
+    noexcept((NEW == M) || (USER == M) ||
+      noexcept(std::move(o.begin(), o.end(), std::back_inserter(*this))))
+    requires((NEW == M) || (USER == M) ||
+      std::is_move_assignable_v<value_type>)
   { // self-assign neglected
     if constexpr(MEMBER == M)
     {
@@ -372,7 +388,7 @@ public:
   }
 
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
-    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(*i)>)
+    noexcept(noexcept(clear(), std::copy(i, j, std::back_inserter(*this))))
     requires(std::is_assignable_v<value_type&, decltype(*i)>)
   {
     clear();
