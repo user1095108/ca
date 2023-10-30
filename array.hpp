@@ -169,13 +169,13 @@ public:
     resize(c);
   }
 
-  constexpr explicit array(size_type c, value_type const& v)
+  constexpr explicit array(size_type const c, value_type const& v)
     noexcept(noexcept(array(), push_back(v))):
     array(c)
   {
     std::fill(f_, l_, v);
   }
- 
+
   explicit constexpr array(auto&& c)
     noexcept((std::is_rvalue_reference_v<decltype(c)> &&
       noexcept(std::move(std::begin(c), std::end(c),
