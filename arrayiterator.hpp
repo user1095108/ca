@@ -75,8 +75,8 @@ public:
   constexpr auto operator-(arrayiterator const& o) const noexcept
   {
     decltype(n_) const f(a_->f_);
-    return difference_type(a_->distance(f, n_)) -
-      difference_type(a_->distance(f, o.n_));
+    return difference_type(CA::distance(f, n_)) -
+      difference_type(CA::distance(f, o.n_));
   }
 
   constexpr arrayiterator operator+(difference_type const n) const noexcept
@@ -108,7 +108,7 @@ public:
   constexpr auto operator<=>(arrayiterator const& o) const noexcept
   {
     decltype(n_) const f(a_->f_);
-    return a_->distance(f, n_) <=> a_->distance(f, o.n_);
+    return CA::distance(f, n_) <=> CA::distance(f, o.n_);
   }
 
   // member access
