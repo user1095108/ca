@@ -31,8 +31,6 @@ public:
   using pointer = value_type*;
   using reference = value_type&;
 
-  enum : size_type { N = CA::N };
-
 public:
   arrayiterator() = default;
 
@@ -121,11 +119,6 @@ public:
   constexpr auto& operator*() const noexcept { return *n_; }
 
   //
-  constexpr auto a() const noexcept
-  {
-    return const_cast<std::remove_const_t<T>*>(a_->a_);
-  }
-
   constexpr auto n() const noexcept
   {
     return const_cast<std::remove_const_t<T>*>(n_);

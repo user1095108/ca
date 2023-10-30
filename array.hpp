@@ -645,6 +645,21 @@ public:
   }
 
   //
+  constexpr void split(auto&& g) const
+    noexcept(noexcept(g(f_, f_)))
+  { // split the deque into 2 contiguous regions
+    T const* f(f_);
+
+    if (l_ < f)
+    {
+      g(f, &a_[N]); // f > l >= d, f > d
+      f = a_;
+    }
+
+    g(f, const_cast<decltype(f)>(l_));
+  }
+
+  //
   constexpr void swap(array& o)
     noexcept(noexcept(std::swap(*this, o)))
     requires(MEMBER == M)
@@ -703,25 +718,6 @@ template <typename T, std::size_t S, enum Method M>
 constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
 {
   lhs.swap(rhs);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-constexpr void split(std::random_access_iterator auto const b, decltype(b) e,
-  auto&& g)
-  noexcept(noexcept(g(b.n(), b.n())))
-{
-  auto f(b.n());
-  auto const l(e.n());
-
-  if (l < f)
-  {
-    auto const d(b.a());
-
-    g(f, &d[std::remove_const_t<decltype(b)>::N]); // f > l >= d, f > d
-    f = d;
-  }
-
-  g(f, l);
 }
 
 }

@@ -11,10 +11,8 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
 {
   std::size_t r{};
 
-  ca::split(
-    s.cbegin(),
-    s.cend(),
-    [&](auto const b, std::remove_const_t<decltype(b)> e) noexcept
+  s.split(
+    [&](auto const b, auto e) noexcept
     {
       auto const l(d.last());
 
