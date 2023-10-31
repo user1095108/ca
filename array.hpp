@@ -341,9 +341,8 @@ public:
     return const_reverse_iterator{const_iterator{this, f_}};
   }
 
-  //
-  static constexpr size_type array_size() noexcept { return N; } // CAP + 1
-  static constexpr size_type capacity() noexcept { return CAP; } // N - 1
+  // CAP = N - 1, N = CAP + 1
+  static constexpr size_type capacity() noexcept { return CAP; }
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
   //
