@@ -646,7 +646,7 @@ public:
   //
   constexpr void split(auto&& g) const
     noexcept(noexcept(g(f_, f_)))
-  { // split the [f_, l_) range into 2 contiguous ranges
+  { // split the [f_, l_) range into 1 or 2 contiguous ranges
     l_ < f_ ? // f_ > l_ >= a_, f_ > a
       g(f_, decltype(f_)(&a_[N])), g(decltype(f_)(a_), l_) :
       g(f_, l_);

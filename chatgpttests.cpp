@@ -642,6 +642,29 @@ void test2() {
   }
 
   {
+  ca::array<int, 10> deque;
+
+  // Push elements into the deque
+  deque.push_back(1);
+  deque.push_front(2);
+  deque.push_back(3);
+
+  // Use assert to check for results
+  assert(deque.size() == 3);
+  assert(deque[0] == 2);
+  assert(deque[1] == 1);
+  assert(deque[2] == 3);
+
+  // Erase an element
+  deque.erase(deque.begin() + 1);
+
+  // Use assert to check for results again
+  assert(deque.size() == 2);
+  assert(deque[0] == 2);
+  assert(deque[1] == 3);
+  }
+
+  {
   ca::array<std::string, 10> line;
 
   // People join the line
