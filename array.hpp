@@ -554,12 +554,12 @@ public:
   {
     if (count) [[likely]]
     { // i is invalidated after insert, but r is valid
-      auto const r(i = insert(i, v));
-      ++i;
+      auto const r(insert(i, v));
+      ++(i = r);
 
       while (--count) ++(i = insert(i, v));
 
-      return {this, r.n()};
+      return r;
     }
     else [[unlikely]]
     {
@@ -584,8 +584,8 @@ public:
     }
     else [[likely]]
     { // i is invalidated after insert, but r is valid
-      auto const r(i = emplace(i, *j));
-      ++i;
+      auto const r(emplace(i, *j));
+      ++(i = r);
 
       std::for_each(
         std::next(j),
@@ -597,7 +597,7 @@ public:
         }
       );
 
-      return {this, r.n()};
+      return r;
     }
   }
 
