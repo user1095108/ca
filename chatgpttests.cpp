@@ -821,6 +821,36 @@ void test2() {
   // Check that all elements in the array are 10
   for (const auto& e: a) assert(e == 10);
   }
+
+  {
+  ca::array<int, 20> myDeque = {1, 2, 3, 4, 5};
+
+  // Testing insert() at the beginning of the deque
+  auto it = myDeque.insert(myDeque.begin(), 0);
+  assert(myDeque.size() == 6);
+  assert(*it == 0);
+  assert(myDeque.front() == 0);
+
+  // Testing insert() in the middle of the deque
+  it = myDeque.insert(myDeque.begin() + 3, 6);
+  assert(myDeque.size() == 7);
+  assert(*it == 6);
+  assert(myDeque[3] == 6);
+
+  // Testing insert() at the end of the deque
+  it = myDeque.insert(myDeque.end(), 7);
+  assert(myDeque.size() == 8);
+  assert(*it == 7);
+  assert(myDeque.back() == 7);
+
+  // Testing insert() with multiple elements
+  ca::array<int, 20> otherDeque = {8, 9, 10};
+  myDeque.insert(myDeque.begin() + 2, otherDeque.begin(), otherDeque.end());
+  assert(myDeque.size() == 11);
+  assert(myDeque[2] == 8);
+  assert(myDeque[3] == 9);
+  assert(myDeque[4] == 10);
+  }
 }
 
 int main() {
