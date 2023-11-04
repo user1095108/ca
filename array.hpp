@@ -177,7 +177,7 @@ public:
     std::fill(f_, l_, v);
   }
 
-  constexpr explicit array(size_type const c, value_type const& v)
+  constexpr explicit array(size_type const c, value_type const v)
     noexcept(noexcept(array(c, v, init_t{}))):
     array(c, v, init_t{})
   {
