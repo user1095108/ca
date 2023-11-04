@@ -504,7 +504,7 @@ public:
   //
   template <int = 0>
   constexpr iterator insert(const_iterator const i, auto&& v)
-    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
+    noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     if (full()) [[unlikely]] pop_front();
