@@ -472,7 +472,7 @@ public:
 
   //
   constexpr iterator erase(const_iterator const i)
-    noexcept(std::is_nothrow_move_assignable_v<value_type>)
+    noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
     if (iterator const j(this, i.n()), nxt(std::next(j));
       end() == nxt) [[unlikely]]
@@ -546,8 +546,7 @@ public:
   }
 
   template <int = 0>
-  constexpr iterator insert(const_iterator i, size_type count,
-    auto const& v)
+  constexpr iterator insert(const_iterator i, size_type count, auto const& v)
     noexcept(noexcept(insert(i, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
