@@ -554,16 +554,16 @@ public:
   {
     if (count) [[likely]]
     { // i is invalidated after insert, but r is valid
-      auto const r(insert(i, v));
-      i = std::next(r);
+      auto const r(i = insert(i, v));
+      ++i;
 
-      while (--count) i = std::next(insert(i, v));
+      while (--count) ++(i = insert(i, v));
 
-      return r;
+      return {this, r.n()};
     }
     else [[unlikely]]
     {
-      return {a_, i.n()};
+      return {this, i.n()};
     }
   }
 
@@ -584,8 +584,8 @@ public:
     }
     else [[likely]]
     { // i is invalidated after insert, but r is valid
-      auto const r(emplace(i, *j));
-      i = std::next(r);
+      auto const r(i = emplace(i, *j));
+      ++i;
 
       std::for_each(
         std::next(j),
@@ -593,11 +593,11 @@ public:
         [&](auto&& v)
           noexcept(noexcept(insert(i, std::forward<decltype(v)>(v))))
         {
-          i = std::next(insert(i, std::forward<decltype(v)>(v)));
+          ++(i = insert(i, std::forward<decltype(v)>(v)));
         }
       );
 
-      return r;
+      return {this, r.n()};
     }
   }
 
