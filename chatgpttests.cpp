@@ -259,7 +259,7 @@ void test2() {
   }
 
   {
-  ca::array<int, 20> dq;
+  ca::array<int, 20, ca::NEW> dq;
 
   // Test push_back and push_front
   dq.push_back(2);
@@ -285,7 +285,7 @@ void test2() {
   assert(dq.size() == 5);
 
   // Test swap
-  ca::array<int, 20> dq2 = {6, 7, 8, 9, 10};
+  ca::array<int, 20, ca::NEW> dq2 = {6, 7, 8, 9, 10};
   dq.swap(dq2);
   assert(dq.front() == 6);
   }
