@@ -169,14 +169,21 @@ public:
     resize(c);
   }
 
-  constexpr explicit array(size_type const c, value_type const& v)
-    noexcept(noexcept(array(c), std::fill(f_, l_, v))):
+  constexpr explicit array(size_type const c, auto const& v, init_t = {})
+    noexcept(noexcept(array(c), std::fill(f_, l_, v)))
+    requires(std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
   {
     std::fill(f_, l_, v);
   }
 
-  explicit constexpr array(auto&& c)
+  constexpr explicit array(size_type const c, value_type const& v)
+    noexcept(noexcept(array(c, v, init_t{}))):
+    array(c, v, init_t{})
+  {
+  }
+
+  constexpr explicit array(auto&& c)
     noexcept((std::is_rvalue_reference_v<decltype(c)> &&
       noexcept(std::move(std::begin(c), std::end(c),
         std::back_inserter(*this)))) ||
