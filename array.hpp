@@ -48,6 +48,11 @@ private:
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
 
+  static constexpr auto assign(auto& ...a) noexcept
+  { // assign idiom
+    return [&](auto const ...v) noexcept { ((a = v), ...); };
+  }
+
   constexpr auto next(auto const p) const noexcept
   {
     return const_cast<decltype(p)>(p == &a_[N - 1] ? a_ : p + 1);
@@ -136,8 +141,7 @@ public:
       }
       else
       {
-        std::swap(a_, o.a_);
-        o.reset();
+        assign(a_, o.a_, o.f_, o.l_)(o.a_, a_, a_, a_);
       }
     }
   }
@@ -250,8 +254,7 @@ public:
       }
       else
       {
-        std::swap(a_, o.a_);
-        o.reset();
+        assign(a_, o.a_, o.f_, o.l_)(o.a_, a_, a_, a_);
       }
     }
 
@@ -671,9 +674,7 @@ public:
   constexpr void swap(array& o) noexcept
     requires((NEW == M) || (USER == M))
   {
-    std::swap(f_, o.f_);
-    std::swap(l_, o.l_);
-    std::swap(a_, o.a_);
+    assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, f_, l_, a_);
   }
 };
 
