@@ -583,7 +583,7 @@ public:
     }
     else [[likely]]
     { // i is invalidated after insert, but r is valid
-      auto const r(emplace(i, *j));
+      auto const r(insert(i, *j));
       ++(i = r);
 
       std::for_each(
