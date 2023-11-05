@@ -132,16 +132,14 @@ public:
     }
     else
     {
-      f_ = o.f_; l_ = o.l_;
-
       if constexpr(USER == M)
       {
-        a_ = o.a_; // o.a_ stays unchanged
+        f_ = o.f_; l_ = o.l_; a_ = o.a_; // o.a_ stays unchanged
         o.clear();
       }
       else
-      {
-        assign(a_, o.a_, o.f_, o.l_)(o.a_, a_, a_, a_);
+      { // swap & o.reset()
+        assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
       }
     }
   }
@@ -245,16 +243,14 @@ public:
     }
     else
     {
-      f_ = o.f_; l_ = o.l_;
-
       if constexpr(USER == M)
       {
-        a_ = o.a_; // o.a_ stays unchanged
+        f_ = o.f_; l_ = o.l_; a_ = o.a_; // o.a_ stays unchanged
         o.clear();
       }
       else
-      {
-        assign(a_, o.a_, o.f_, o.l_)(o.a_, a_, a_, a_);
+      { // swap & o.reset()
+        assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
       }
     }
 
