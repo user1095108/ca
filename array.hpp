@@ -717,10 +717,7 @@ constexpr auto erase(array<T, S, M>& c, T const k)
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, enum Method M>
-constexpr void swap(array<T, S, M>& lhs, decltype(lhs) rhs) noexcept
-{
-  lhs.swap(rhs);
-}
+constexpr void swap(array<T, S, M>& l, decltype(l) r) noexcept { l.swap(r); }
 
 }
 
