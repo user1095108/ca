@@ -48,7 +48,7 @@ private:
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
 
-  static constexpr auto assign(auto& ...a) noexcept
+  static constexpr auto assign_(auto& ...a) noexcept
   { // assign idiom
     return [&](auto const ...v) noexcept { ((a = v), ...); };
   }
@@ -139,7 +139,7 @@ public:
       }
       else
       { // swap & o.reset()
-        assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+        assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
       }
     }
   }
@@ -224,8 +224,8 @@ public:
       std::copy(o.begin(), o.end(), std::back_inserter(*this))))
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
-    clear();
-    std::copy(o.begin(), o.end(), std::back_inserter(*this));
+    clear(); std::copy(o.begin(), o.end(), std::back_inserter(*this));
+
     return *this;
   }
 
@@ -250,7 +250,7 @@ public:
       }
       else
       { // swap & o.reset()
-        assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+        assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
       }
     }
 
@@ -261,8 +261,7 @@ public:
     noexcept(noexcept(assign(l)))
     requires(std::is_copy_assignable_v<value_type>)
   {
-    assign(l);
-    return *this;
+    assign(l); return *this;
   }
 
   auto& operator=(auto&& c)
@@ -395,8 +394,7 @@ public:
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
     noexcept(noexcept(clear(), std::copy(i, j, std::back_inserter(*this))))
   {
-    clear();
-    std::copy(i, j, std::back_inserter(*this));
+    clear(); std::copy(i, j, std::back_inserter(*this));
   }
 
   constexpr void assign(std::initializer_list<value_type> l)
@@ -670,7 +668,7 @@ public:
   constexpr void swap(array& o) noexcept
     requires((NEW == M) || (USER == M))
   {
-    assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, f_, l_, a_);
+    assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, f_, l_, a_);
   }
 };
 
