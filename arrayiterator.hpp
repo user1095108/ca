@@ -11,13 +11,8 @@ namespace ca
 template <typename T, typename CA>
 class arrayiterator
 {
-  using inverse_const_t = std::conditional_t<
-      std::is_const_v<T>,
-      arrayiterator<std::remove_const_t<T>, CA>,
-      arrayiterator<T const, CA>
-    >;
-
-  friend inverse_const_t;
+  using iterator_t = arrayiterator<std::remove_const_t<T>, CA>;
+  friend arrayiterator<T const, CA>;
 
   CA const* a_;
   T* n_;
@@ -44,7 +39,7 @@ public:
   constexpr arrayiterator(arrayiterator&&) = default;
 
   // iterator -> const_iterator conversion
-  constexpr arrayiterator(inverse_const_t const& o) noexcept
+  constexpr arrayiterator(iterator_t const& o) noexcept
     requires(std::is_const_v<T>):
     a_(o.a_),
     n_(o.n_)
