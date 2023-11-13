@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <random>
 
 #include "array.hpp" // Replace with the actual container header
@@ -850,6 +851,27 @@ void test2() {
   assert(myDeque[2] == 8);
   assert(myDeque[3] == 9);
   assert(myDeque[4] == 10);
+  }
+
+  {
+  ca::array<std::unique_ptr<int>, 10> myDeque;
+  for (int i = 0; i < 10; i++) {
+    myDeque.push_back(std::make_unique<int>(i));
+    //myDeque.emplace_back(new int(i));
+  }
+
+  // Step 2: Choose an element to erase
+  auto it = myDeque.begin() + 5; // choose the 6th element to erase
+
+  // Step 3: Erase the element
+  myDeque.erase(it);
+
+  // Step 4: Use assert to verify the element has been erased
+  // Here we check that the size of the deque has been reduced by 1
+  assert(myDeque.size() == 9);
+
+  // Also, we can check that the 6th element is now what used to be the 7th
+  assert(*myDeque[5] == 6);
   }
 }
 
