@@ -504,14 +504,15 @@ public:
     if (full()) [[unlikely]] pop_front();
 
     //
-    auto n(i.n());
+    auto const n(i.n());
+    iterator j(this, n);
 
-    if (iterator const j(this, n); distance(f_, n) <= distance(n, l_))
+    if (distance(f_, n) <= distance(n, l_))
     {
       auto const f(f_);
       f_ = prev(f);
 
-      n = std::move({this, f}, j, begin()).n(); // [f, j) is moved
+      j = std::move({this, f}, j, begin()); // [f, j) is moved
     }
     else
     {
@@ -522,9 +523,8 @@ public:
     }
 
     //
-    *n = std::forward<decltype(v)>(v);
-
-    return {this, n};
+    *j = std::forward<decltype(v)>(v);
+    return j;
   }
 
   constexpr auto insert(const_iterator const i, value_type v)
