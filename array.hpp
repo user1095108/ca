@@ -473,21 +473,17 @@ public:
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
     if (iterator const j(this, i.n()), nxt(std::next(j));
-      end() == nxt) [[unlikely]]
-    {
-      return {this, l_ = prev(l_)};
-    }
-    else if (distance(f_, j.n()) <= size() / 2)
-    {
-      f_ = std::move_backward(begin(), j, nxt).n();
-
-      return nxt;
-    }
-    else
+      distance(nxt.n(), l_) <= distance(f_, j.n()))
     {
       l_ = std::move(nxt, end(), j).n();
 
-      return j;
+      return j; // *nxt is moved to *j
+    }
+    else
+    {
+      f_ = std::move_backward(begin(), j, nxt).n();
+
+      return nxt; // *nxt is not moved
     }
   }
 
@@ -508,27 +504,21 @@ public:
     if (full()) [[unlikely]] pop_front();
 
     //
-    T* n;
+    auto n(i.n());
 
-    if (iterator const j(this, i.n()); end() == j) [[unlikely]]
-    {
-      l_ = next(n = l_);
-    }
-    else if (distance(f_, j.n()) <= size() / 2)
+    if (iterator const j(this, n); distance(f_, n) <= distance(n, l_))
     {
       auto const f(f_);
       f_ = prev(f);
 
-      n = std::move({this, f}, j, begin()).n();
+      n = std::move({this, f}, j, begin()).n(); // [f, j) is moved
     }
     else
     {
-      n = j.n();
-
       auto const l(l_);
       l_ = next(l);
 
-      std::move_backward(j, {this, l}, end());
+      std::move_backward(j, {this, l}, end()); // [j, l) is moved
     }
 
     //
