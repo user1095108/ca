@@ -504,10 +504,9 @@ public:
     if (full()) [[unlikely]] pop_front();
 
     //
-    auto const n(i.n());
-    iterator j(this, n);
+    iterator j(this, i.n());
 
-    if (distance(f_, n) <= distance(n, l_))
+    if (distance(f_, i.n()) <= distance(i.n(), l_))
     {
       auto const f(f_);
       f_ = prev(f);
