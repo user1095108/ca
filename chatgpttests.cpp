@@ -864,7 +864,7 @@ void test2() {
   auto it = myDeque.begin() + 5; // choose the 6th element to erase
 
   // Step 3: Erase the element
-  myDeque.erase(it);
+  it = myDeque.erase(it);
 
   // Step 4: Use assert to verify the element has been erased
   // Here we check that the size of the deque has been reduced by 1
@@ -872,6 +872,7 @@ void test2() {
 
   // Also, we can check that the 6th element is now what used to be the 7th
   assert(*myDeque[5] == 6);
+  assert(**it == 6);
   }
 }
 
