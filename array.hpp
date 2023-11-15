@@ -568,6 +568,7 @@ public:
     if (j != k) [[unlikely]]
     { // i is invalidated after insert, but r is valid
       ++(i = insert(i, *j));
+      ++n;
 
       std::for_each(
         std::next(j),
