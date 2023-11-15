@@ -563,14 +563,11 @@ public:
     std::input_iterator auto const j, decltype(j) k)
     noexcept(noexcept(insert(i, *j)))
   {
-    if (j == k) [[unlikely]]
-    {
-      return {this, i.n()};
-    }
-    else [[likely]]
+    size_type n{};
+
+    if (j != k) [[unlikely]]
     { // i is invalidated after insert, but r is valid
-      auto const r(insert(i, *j));
-      ++(i = r);
+      ++(i = insert(i, *j));
 
       std::for_each(
         std::next(j),
@@ -579,11 +576,12 @@ public:
           noexcept(noexcept(insert(i, std::forward<decltype(v)>(v))))
         {
           ++(i = insert(i, std::forward<decltype(v)>(v)));
+          ++n;
         }
       );
-
-      return r;
     }
+
+    return {this, prev(i.n(), n)};
   }
 
   //
