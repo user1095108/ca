@@ -14,7 +14,7 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
-struct init_t{};
+struct multi_t{};
 
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
   requires(
@@ -143,7 +143,7 @@ public:
     }
   }
 
-  constexpr array(init_t, auto&& ...a)
+  constexpr array(multi_t, auto&& ...a)
     noexcept(noexcept(push_back(std::forward<decltype(a)>(a)...))):
     array()
   {
@@ -170,7 +170,7 @@ public:
     resize(c);
   }
 
-  constexpr explicit array(size_type const c, auto const& v, init_t = {})
+  constexpr explicit array(size_type const c, auto const& v, multi_t = {})
     noexcept(noexcept(array(c), std::fill(f_, l_, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
@@ -179,8 +179,8 @@ public:
   }
 
   constexpr explicit array(size_type const c, value_type const v)
-    noexcept(noexcept(array(c, v, init_t{}))):
-    array(c, v, init_t{})
+    noexcept(noexcept(array(c, v, multi_t{}))):
+    array(c, v, multi_t{})
   {
   }
 
@@ -530,6 +530,25 @@ public:
     noexcept(noexcept(insert<0>(i, std::move(v))))
   {
     return insert<0>(i, std::move(v));
+  }
+
+  template <int = 0>
+  constexpr iterator insert(multi_t, const_iterator i, auto&& ...a)
+    noexcept(noexcept((insert(i, std::forward<decltype(a)>(a)), ...)))
+    requires(requires{(insert(i, std::forward<decltype(a)>(a)), ...);})
+  {
+    (++(i = insert(i, std::forward<decltype(a)>(a))), ...);
+
+    return {this, prev(i.n(), sizeof...(a))};
+  }
+
+  constexpr iterator insert(multi_t, const_iterator i, value_type a)
+    noexcept(noexcept(insert(i, std::move(a))))
+    requires(requires{insert(i, std::move(a));})
+  {
+    ++(i = insert(i, std::move(a)));
+
+    return {this, prev(i.n())};
   }
 
   template <int = 0>
