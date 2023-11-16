@@ -490,7 +490,7 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    for (auto n(distance(a.n(), b.n())); n; --n) a = erase(a);
+    for (auto n(distance(a.n(), b.n())); n--;) a = erase(a);
 
     return {this, a.n()};
   }
