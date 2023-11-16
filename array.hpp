@@ -544,7 +544,6 @@ public:
 
   constexpr auto insert(multi_t, const_iterator const i, value_type a)
     noexcept(noexcept(insert<0>(multi_t{}, i, std::move(a))))
-    requires(requires{insert<0>(multi_t{}, i, std::move(a));})
   {
     return insert<0>(multi_t{}, i, std::move(a));
   }
