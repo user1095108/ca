@@ -533,23 +533,13 @@ public:
   }
 
   template <int = 0>
-  constexpr iterator insert(const_iterator i, size_type count, auto const& v)
-    noexcept(noexcept(insert(i, v)))
+  constexpr iterator insert(const_iterator i, size_type const count,
+    auto const& v) noexcept(noexcept(insert(i, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    if (count) [[likely]]
-    { // i is invalidated after insert, but r is valid
-      auto const r(insert(i, v));
-      ++(i = r);
+    for (auto n(count); n--;) ++(i = insert(i, v));
 
-      while (--count) ++(i = insert(i, v));
-
-      return r;
-    }
-    else [[unlikely]]
-    {
-      return {this, i.n()};
-    }
+    return {this, prev(i.n(), count)};
   }
 
   constexpr iterator insert(const_iterator i, size_type const count,
@@ -565,22 +555,16 @@ public:
   {
     size_type n{};
 
-    if (j != k) [[unlikely]]
-    { // i is invalidated after insert, but r is valid
-      ++(i = insert(i, *j));
-      ++n;
-
-      std::for_each(
-        std::next(j),
-        k,
-        [&](auto&& v)
-          noexcept(noexcept(insert(i, std::forward<decltype(v)>(v))))
-        {
-          ++(i = insert(i, std::forward<decltype(v)>(v)));
-          ++n;
-        }
-      );
-    }
+    std::for_each(
+      j,
+      k,
+      [&](auto&& v)
+        noexcept(noexcept(insert(i, std::forward<decltype(v)>(v))))
+      {
+        ++n;
+        ++(i = insert(i, std::forward<decltype(v)>(v)));
+      }
+    );
 
     return {this, prev(i.n(), n)};
   }
