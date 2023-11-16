@@ -558,7 +558,7 @@ public:
     return {this, prev(i.n(), count)};
   }
 
-  constexpr iterator insert(const_iterator i, size_type const count,
+  constexpr auto insert(const_iterator i, size_type const count,
     value_type const v)
     noexcept(noexcept(insert<0>(i, count, v)))
   {
