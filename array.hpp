@@ -542,13 +542,11 @@ public:
     return {this, prev(i.n(), sizeof...(a))};
   }
 
-  constexpr iterator insert(multi_t, const_iterator i, value_type a)
-    noexcept(noexcept(insert(i, std::move(a))))
-    requires(requires{insert(i, std::move(a));})
+  constexpr auto insert(multi_t, const_iterator i, value_type a)
+    noexcept(noexcept(insert<0>(multi_t{}, i, std::move(a))))
+    requires(requires{insert<0>(multi_t{}, i, std::move(a));})
   {
-    ++(i = insert(i, std::move(a)));
-
-    return {this, prev(i.n())};
+    return insert<0>(multi_t{}, i, std::move(a));
   }
 
   template <int = 0>
