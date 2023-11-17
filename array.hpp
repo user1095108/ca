@@ -96,7 +96,15 @@ public:
 public:
   constexpr array()
     noexcept(std::is_nothrow_default_constructible_v<T[N]>)
-    requires(MEMBER == M): a_()
+    requires((MEMBER == M) && !std::is_constant_evaluated())
+  {
+    f_ = l_ = a_;
+  }
+
+  constexpr array()
+    noexcept(std::is_nothrow_default_constructible_v<T[N]>)
+    requires((MEMBER == M) && std::is_constant_evaluated()):
+    a_{}
   {
     f_ = l_ = a_;
   }
