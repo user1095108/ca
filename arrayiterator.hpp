@@ -57,45 +57,45 @@ public:
   }
 
   // increment, decrement
-  constexpr auto& operator++() noexcept { n_ = a_->next(n_); return *this; }
-  constexpr auto& operator--() noexcept { n_ = a_->prev(n_); return *this; }
+  constexpr auto& operator++() noexcept { n_ = a_->next_(n_); return *this; }
+  constexpr auto& operator--() noexcept { n_ = a_->prev_(n_); return *this; }
 
   constexpr arrayiterator operator++(int) noexcept
   {
-    auto const n(n_); n_ = a_->next(n); return {a_, n};
+    auto const n(n_); n_ = a_->next_(n); return {a_, n};
   }
 
   constexpr arrayiterator operator--(int) noexcept
   {
-    auto const n(n_); n_ = a_->prev(n); return {a_, n};
+    auto const n(n_); n_ = a_->prev_(n); return {a_, n};
   }
 
   // arithmetic
   constexpr auto operator-(arrayiterator const& o) const noexcept
   {
     decltype(n_) const f(a_->f_);
-    return difference_type(CA::distance(f, n_)) -
-      difference_type(CA::distance(f, o.n_));
+    return difference_type(CA::distance_(f, n_)) -
+      difference_type(CA::distance_(f, o.n_));
   }
 
   constexpr arrayiterator operator+(difference_type const n) const noexcept
   {
-    return {a_, a_->adv(n_, n)};
+    return {a_, a_->adv_(n_, n)};
   }
 
   constexpr arrayiterator operator-(difference_type const n) const noexcept
   {
-    return {a_, a_->adv(n_, -n)};
+    return {a_, a_->adv_(n_, -n)};
   }
 
   constexpr auto& operator+=(difference_type const n) noexcept
   {
-    n_ = a_->adv(n_, n); return *this;
+    n_ = a_->adv_(n_, n); return *this;
   }
 
   constexpr auto& operator-=(difference_type const n) noexcept
   {
-    n_ = a_->adv(n_, -n); return *this;
+    n_ = a_->adv_(n_, -n); return *this;
   }
 
   // comparison
@@ -107,13 +107,13 @@ public:
   constexpr auto operator<=>(arrayiterator const& o) const noexcept
   {
     decltype(n_) const f(a_->f_);
-    return CA::distance(f, n_) <=> CA::distance(f, o.n_);
+    return CA::distance_(f, n_) <=> CA::distance_(f, o.n_);
   }
 
   // member access
   constexpr auto& operator[](difference_type const n) const noexcept
   {
-    return *a_->adv(n_, n);
+    return *a_->adv_(n_, n);
   }
 
   constexpr auto operator->() const noexcept { return n_; }

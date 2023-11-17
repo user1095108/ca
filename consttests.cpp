@@ -12,7 +12,7 @@ void print()
 template <std::size_t I>
 consteval auto get() noexcept
 {
-  ca::array<int, 10> const ca{1, 2, 3};
+  ca::array<int, 10, ca::NEW> const ca{1, 2, 3};
 
   return ca[I];
 }

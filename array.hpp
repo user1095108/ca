@@ -53,28 +53,28 @@ public:
     return [&](auto const ...v) noexcept { ((a = v), ...); };
   }
 
-  constexpr auto next(auto const p) const noexcept
+  constexpr auto next_(auto const p) const noexcept
   {
     return const_cast<decltype(p)>(p == &a_[N - 1] ? a_ : p + 1);
   }
 
-  constexpr auto prev(auto const p) const noexcept
+  constexpr auto prev_(auto const p) const noexcept
   {
     return const_cast<decltype(p)>(p == a_ ? &a_[N - 1] : p - 1);
   }
 
-  constexpr auto next(auto const p, difference_type const n) const noexcept
+  constexpr auto next_(auto const p, difference_type const n) const noexcept
   { // 0 <= n < N, N is the period
     auto const u(N - n);
     return const_cast<decltype(p)>(size_type(p - a_) < u ? p + n : p - u);
   }
 
-  constexpr auto prev(auto const p, difference_type const n) const noexcept
+  constexpr auto prev_(auto const p, difference_type const n) const noexcept
   { // 0 <= n < N
     return const_cast<decltype(p)>(p - a_ < n ? p + (N - n) : p - n);
   }
 
-  constexpr auto adv(auto const p, difference_type const n) const noexcept
+  constexpr auto adv_(auto const p, difference_type const n) const noexcept
   { // -N < n < N
     if (size_type const o(p - a_); difference_type(o) < -n)
     {
@@ -87,7 +87,7 @@ public:
     }
   }
 
-  static constexpr size_type distance(auto const a, decltype(a) b) noexcept
+  static constexpr size_type distance_(auto const a, decltype(a) b) noexcept
   {
     auto const n(b - a); // N - 1 = CAP <= PTRDIFF_MAX
     return n < decltype(n){} ? N + n : n;
@@ -352,26 +352,26 @@ public:
 
   //
   constexpr bool empty() const noexcept { return f_ == l_; }
-  constexpr bool full() const noexcept { return next(l_) == f_; }
+  constexpr bool full() const noexcept { return next_(l_) == f_; }
 
-  constexpr size_type size() const noexcept { return distance(f_, l_); }
+  constexpr size_type size() const noexcept { return distance_(f_, l_); }
 
   //
   constexpr auto& operator[](size_type const i) noexcept
   {
-    return *next(f_, i);
+    return *next_(f_, i);
   }
 
   constexpr auto const& operator[](size_type const i) const noexcept
   {
-    return *next(f_, i);
+    return *next_(f_, i);
   }
 
   constexpr auto& at(size_type const i) noexcept { return (*this)[i]; }
   constexpr auto& at(size_type const i) const noexcept { return (*this)[i]; }
 
-  constexpr auto& back() noexcept { return *prev(l_); }
-  constexpr auto const& back() const noexcept { return *prev(l_); }
+  constexpr auto& back() noexcept { return *prev_(l_); }
+  constexpr auto const& back() const noexcept { return *prev_(l_); }
 
   constexpr auto& front() noexcept { return *f_; }
   constexpr auto const& front() const noexcept { return *f_; }
@@ -406,7 +406,7 @@ public:
   //
   constexpr void clear() noexcept { l_ = f_; }
   constexpr void reset() noexcept { l_ = f_ = a_; }
-  constexpr void resize(size_type const n) noexcept { l_ = next(f_, n); }
+  constexpr void resize(size_type const n) noexcept { l_ = next_(f_, n); }
 
   // emplacing is a bad idea in this container, avoid if possible
   constexpr void emplace_back(auto&& a)
@@ -474,7 +474,7 @@ public:
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
     if (iterator const j(this, i.n()), nxt(std::next(j));
-      distance(nxt.n(), l_) <= distance(f_, j.n()))
+      distance_(nxt.n(), l_) <= distance_(f_, j.n()))
     {
       l_ = std::move(nxt, end(), j).n();
 
@@ -491,7 +491,7 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    for (auto n(distance(a.n(), b.n())); n--;) a = erase(a);
+    for (auto n(distance_(a.n(), b.n())); n--;) a = erase(a);
 
     return {this, a.n()};
   }
@@ -507,17 +507,17 @@ public:
     //
     iterator j(this, i.n());
 
-    if (distance(f_, i.n()) <= distance(i.n(), l_))
+    if (distance_(f_, i.n()) <= distance_(i.n(), l_))
     {
       auto const f(f_);
-      f_ = prev(f);
+      f_ = prev_(f);
 
       j = std::move({this, f}, j, begin()); // [f, j) is moved
     }
     else
     {
       auto const l(l_);
-      l_ = next(l);
+      l_ = next_(l);
 
       std::move_backward(j, {this, l}, end()); // [j, l) is moved
     }
@@ -583,14 +583,14 @@ public:
       }
     );
 
-    return {this, prev(i.n(), n)};
+    return {this, prev_(i.n(), n)};
   }
 
   //
-  constexpr void pop_back() noexcept { l_ = prev(l_); }
-  constexpr void pop_back(size_type const n) noexcept { l_ = prev(l_, n); }
-  constexpr void pop_front() noexcept { f_ = next(f_); }
-  constexpr void pop_front(size_type const n) noexcept { f_ = next(f_, n); }
+  constexpr void pop_back() noexcept { l_ = prev_(l_); }
+  constexpr void pop_back(size_type const n) noexcept { l_ = prev_(l_, n); }
+  constexpr void pop_front() noexcept { f_ = next_(f_); }
+  constexpr void pop_front(size_type const n) noexcept { f_ = next_(f_, n); }
 
   //
   template <int = 0>
@@ -599,7 +599,7 @@ public:
     requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     *l_ = std::forward<decltype(a)>(a);
-    if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
+    if ((l_ = next_(l_)) == f_) [[unlikely]] pop_front();
   }
 
   constexpr void push_back(auto&& ...v)
@@ -620,7 +620,7 @@ public:
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    *(full() ? f_ : f_ = prev(f_)) = std::forward<decltype(v)>(v);
+    *(full() ? f_ : f_ = prev_(f_)) = std::forward<decltype(v)>(v);
   }
 
   constexpr void push_front(auto&& ...v)
