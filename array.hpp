@@ -211,9 +211,7 @@ public:
 
   constexpr ~array() requires(NEW != M) = default;
 
-  constexpr ~array()
-    noexcept(noexcept(delete [] std::declval<T*>()))
-    requires(NEW == M)
+  constexpr ~array() noexcept(noexcept(delete [] a_)) requires(NEW == M)
   {
     delete [] a_;
   }

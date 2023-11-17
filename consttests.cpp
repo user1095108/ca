@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <functional>
 #include <iostream>
 #include "array.hpp"
 
@@ -9,12 +11,13 @@ void print()
   std::cout << C << std::endl;
 }
 
-template <std::size_t I>
-consteval auto get() noexcept
+consteval auto max_element() noexcept
 {
-  ca::array<int, 10, ca::NEW> const ca{1, 2, 3};
+  ca::array<int, 10, ca::NEW> ca{1, 2, 3};
+  ca.push_back(4, 5, 6, 111);
+  std::sort(ca.begin(), ca.end(), std::greater<>());
 
-  return ca[I];
+  return ca.front();
 }
 
 template <auto C> void test() { }
@@ -22,7 +25,7 @@ template <auto C> void test() { }
 int main()
 {
   print<ca::array<int, 10>{1, 2, 3}.front()>();
-  print<coeff<get<2>()>()>();
+  print<coeff<max_element()>()>();
 
   static constexpr ca::array<int, 10> a{1, 2, 3};
   test<a>();
