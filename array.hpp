@@ -224,30 +224,26 @@ public:
   }
 
   constexpr array& operator=(array&& o)
-    noexcept((NEW == M) || (USER == M) ||
-      noexcept(std::move(o.begin(), o.end(), std::back_inserter(*this))))
-    requires((NEW == M) || (USER == M) ||
-      std::is_move_assignable_v<value_type>)
-  { // self-assign neglected
-    if constexpr(MEMBER == M)
-    {
-      clear();
-      std::move(o.begin(), o.end(), std::back_inserter(*this));
-      o.clear();
-    }
-    else
-    {
-      if constexpr(USER == M)
-      {
-        f_ = o.f_; l_ = o.l_; a_ = o.a_; // o.a_ stays unchanged
-        o.clear();
-      }
-      else
-      { // swap & o.reset()
-        assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
-      }
-    }
+    noexcept(noexcept(
+      o.clear(), std::move(o.begin(), o.end(), std::back_inserter(*this))))
+    requires(MEMBER == M)
+  {
+    clear();
+    std::move(o.begin(), o.end(), std::back_inserter(*this));
+    o.clear();
+    return *this;
+  }
 
+  constexpr array& operator=(array&& o) noexcept requires(NEW == M)
+  { // swap & o.reset()
+    assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+    return *this;
+  }
+
+  constexpr array& operator=(array&& o) noexcept requires(USER == M)
+  {
+    f_ = o.f_; l_ = o.l_; a_ = o.a_; // o.a_ stays unchanged
+    o.clear();
     return *this;
   }
 
