@@ -10,7 +10,7 @@ void print()
 }
 
 template <std::size_t I>
-constexpr auto get_index()
+consteval auto get() noexcept
 {
   ca::array<int, 10> const ca{1, 2, 3};
 
@@ -20,7 +20,7 @@ constexpr auto get_index()
 int main()
 {
   print<ca::array<int, 10>{1, 2, 3}.front()>();
-  print<coeff<get_index<2>()>()>();
+  print<coeff<get<2>()>()>();
 
   return 0;
 }
