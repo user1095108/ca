@@ -119,29 +119,25 @@ public:
   }
 
   constexpr array(array&& o)
-    noexcept((NEW == M) || (USER == M) ||
-      noexcept(std::move(o.begin(), o.end(), std::back_inserter(*this))))
-    requires((NEW == M) || (USER == M) ||
-      std::is_move_assignable_v<value_type>):
+    noexcept(noexcept(
+      o.clear(), std::move(o.begin(), o.end(), std::back_inserter(*this))))
+    requires(MEMBER == M):
     array()
   {
-    if constexpr(MEMBER == M)
-    {
-      std::move(o.begin(), o.end(), std::back_inserter(*this));
-      o.clear();
-    }
-    else
-    {
-      if constexpr(USER == M)
-      {
-        f_ = o.f_; l_ = o.l_; a_ = o.a_; // o.a_ stays unchanged
-        o.clear();
-      }
-      else
-      { // swap & o.reset()
-        assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
-      }
-    }
+    std::move(o.begin(), o.end(), std::back_inserter(*this));
+    o.clear();
+  }
+
+  constexpr array(array&& o) noexcept requires(NEW == M):
+    array()
+  { // swap & o.reset()
+    assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+  }
+
+  constexpr array(array&& o) noexcept requires(USER == M)
+  {
+    f_ = o.f_; l_ = o.l_; a_ = o.a_; // o.a_ stays unchanged
+    o.clear();
   }
 
   constexpr array(multi_t, auto&& ...a)
