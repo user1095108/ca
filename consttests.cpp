@@ -17,12 +17,14 @@ consteval auto get() noexcept
   return ca[I];
 }
 
+template <auto C> void test() { }
+
 int main()
 {
   print<ca::array<int, 10>{1, 2, 3}.front()>();
   print<coeff<get<2>()>()>();
 
   static constexpr ca::array<int, 10> a{1, 2, 3};
-  coeff<a>();
+  test<a>();
   return 0;
 }
