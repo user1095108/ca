@@ -601,7 +601,7 @@ public:
     if ((l_ = next(l_)) == f_) [[unlikely]] pop_front();
   }
 
-  void push_back(auto&& ...v)
+  constexpr void push_back(auto&& ...v)
     noexcept(noexcept((push_back<0>(std::forward<decltype(v)>(v)), ...)))
     requires(requires{(push_back<0>(std::forward<decltype(v)>(v)), ...);})
   {
@@ -622,7 +622,7 @@ public:
     *(full() ? f_ : f_ = prev(f_)) = std::forward<decltype(v)>(v);
   }
 
-  void push_front(auto&& ...v)
+  constexpr void push_front(auto&& ...v)
     noexcept(noexcept((push_front<0>(std::forward<decltype(v)>(v)), ...)))
     requires(requires{(push_front<0>(std::forward<decltype(v)>(v)), ...);})
   {
