@@ -42,7 +42,7 @@ public:
   using const_iterator = arrayiterator<T const, array>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-private:
+//private:
   enum : size_type { N = CAP + 1 };
 
   T* f_, *l_; // pointer to first and last elements of element array
@@ -95,19 +95,20 @@ private:
 
 public:
   constexpr array()
-    noexcept(
-      ((MEMBER == M) && std::is_nothrow_default_constructible_v<T[N]>) ||
-      ((NEW == M) && noexcept(new T[N]))
-    )
-    requires((MEMBER == M) || (NEW == M))
+    noexcept(std::is_nothrow_default_constructible_v<T[N]>)
+    requires(MEMBER == M): a_{}
   {
-    if constexpr(NEW == M) l_ = f_ = a_ = new T[N]; else reset();
+    f_ = l_ = a_;
   }
 
-  constexpr explicit array(T* const a) noexcept
-    requires(USER == M):
-    a_(l_ = f_ = a)
+  constexpr array() noexcept(noexcept(new T[N])) requires(NEW == M)
   {
+    f_ = l_ = a_ = new T[N];
+  }
+
+  constexpr explicit array(T* const a) noexcept requires(USER == M)
+  {
+    f_ = l_ = a_ = a;
   }
 
   constexpr array(array const& o)

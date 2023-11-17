@@ -22,5 +22,7 @@ int main()
   print<ca::array<int, 10>{1, 2, 3}.front()>();
   print<coeff<get<2>()>()>();
 
+  static constexpr ca::array<int, 10> a{1, 2, 3};
+  coeff<a>();
   return 0;
 }
