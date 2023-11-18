@@ -659,7 +659,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  for (auto i(c.begin()); i.n() != c.last();
+  for (auto i(c.cbegin()); i.n() != c.last();
     pred(*i) ? ++r, i = c.erase(i) : ++i);
 
   return r;
@@ -667,17 +667,16 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 
 template <int = 0, typename T, std::size_t S, enum Method M>
 constexpr auto erase(array<T, S, M>& c, auto const& ...k)
-  noexcept(noexcept(c.erase(c.begin()),
-    (std::equal_to<>()(std::declval<T&>(), k), ...)))
-  requires(requires{(std::equal_to<>()(std::declval<T&>(), k), ...);})
+  noexcept(noexcept(c.erase(c.cbegin()),
+    (std::equal_to<>()(*c.cbegin(), k), ...)))
+  requires(requires{(std::equal_to<>()(*c.cbegin(), k), ...);})
 {
   return erase_if(
       c,
-      [eq(std::equal_to<>()), &k...](auto&& v)
-        noexcept(noexcept((std::declval<std::equal_to<>>()(
-          std::forward<decltype(v)>(v), k), ...)))
+      [eq(std::equal_to<>()), &k...](auto const& v)
+        noexcept(noexcept((std::declval<std::equal_to<>>()(v, k), ...)))
       {
-        return (eq(std::forward<decltype(v)>(v), k) || ...);
+        return (eq(v, k) || ...);
       }
     );
 }
