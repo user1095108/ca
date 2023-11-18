@@ -96,16 +96,16 @@ public:
 public:
   constexpr array()
     noexcept(std::is_nothrow_default_constructible_v<T[N]>)
-    requires((MEMBER == M) && !std::is_constant_evaluated())
+    requires(MEMBER == M)
   {
-    f_ = l_ = a_;
-  }
+    if (std::is_constant_evaluated())
+    {
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      {
+        ((a_[I] = T()), ...);
+      }(std::make_index_sequence<N>());
+    }
 
-  constexpr array()
-    noexcept(std::is_nothrow_default_constructible_v<T[N]>)
-    requires((MEMBER == M) && std::is_constant_evaluated()):
-    a_{}
-  {
     f_ = l_ = a_;
   }
 
