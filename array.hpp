@@ -100,7 +100,8 @@ public:
   {
     if (std::is_constant_evaluated())
     {
-      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      [&]<auto ...I>(std::index_sequence<I...>)
+        noexcept(std::is_nothrow_move_assignable_v<T>)
       {
         ((a_[I] = T()), ...);
       }(std::make_index_sequence<N>());
