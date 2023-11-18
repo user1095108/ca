@@ -611,7 +611,7 @@ public:
   constexpr void push_front(auto&& v)
     noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
     requires(std::is_assignable_v<value_type&, decltype(v)>)
-  {
+  { // pop_front() + push_front() = overwrite_front()
     *(full() ? f_ : f_ = prev_(f_)) = std::forward<decltype(v)>(v);
   }
 
