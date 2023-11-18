@@ -874,6 +874,102 @@ void test2() {
   assert(*myDeque[5] == 6);
   assert(**it == 6);
   }
+
+  {
+  // Test erase() with a single element
+  ca::array<int, 10> deque = {1, 2, 3, 4, 5};
+  deque.erase(deque.begin() + 2);
+  assert((deque == ca::array<int, 10>{1, 2, 4, 5}));
+
+  // Test erase() with a range of elements
+  deque = {1, 2, 3, 4, 5};
+  deque.erase(deque.begin() + 1, deque.begin() + 3);
+  assert((deque == ca::array<int, 10>{1, 4, 5}));
+
+  // Test erase() with a range of elements that includes the first element
+  deque = {1, 2, 3, 4, 5};
+  deque.erase(deque.begin(), deque.begin() + 2);
+  assert((deque == ca::array<int, 10>{3, 4, 5}));
+
+  // Test erase() with a range of elements that includes the last element
+  deque = {1, 2, 3, 4, 5};
+  deque.erase(deque.begin() + 3, deque.end());
+  assert((deque == ca::array<int, 10>{1, 2, 3}));
+
+  // Test erase() with a range of elements that includes the first and last elements
+  deque = {1, 2, 3, 4, 5};
+  deque.erase(deque.begin(), deque.end());
+  assert(deque.empty());
+
+  // Test erase() with a range of elements that includes the first and last elements, and the deque is empty
+  deque = {};
+  deque.erase(deque.begin(), deque.end());
+  assert(deque.empty());
+  }
+
+  {
+  // Test swap() with two deques
+  ca::array<int, 10, ca::NEW> deque1 = {1, 2, 3};
+  ca::array<int, 10, ca::NEW> deque2 = {4, 5, 6};
+  deque1.swap(deque2);
+  assert((deque1 == ca::array<int, 10>{4, 5, 6}));
+  assert((deque2 == ca::array<int, 10>{1, 2, 3}));
+
+  // Test swap() with two deques, one of which is empty
+  deque1 = {1, 2, 3};
+  deque2 = {};
+  deque1.swap(deque2);
+  assert(deque1.empty());
+  assert((deque2 == ca::array<int, 10>{1, 2, 3}));
+
+  // Test swap() with two deques, both of which are empty
+  deque1 = {};
+  deque2 = {};
+  deque1.swap(deque2);
+  assert(deque1.empty());
+  assert(deque2.empty());
+
+  // Test swap() with two deques, one of which is a subset of the other
+  deque1 = {1, 2, 3};
+  deque2 = {1, 2, 3, 4, 5};
+  deque1.swap(deque2);
+  assert((deque1 == ca::array<int, 10>{1, 2, 3, 4, 5}));
+  assert((deque2 == ca::array<int, 10>{1, 2, 3}));
+  }
+
+  {
+  // Test insert() with a single element
+  ca::array<int, 10, ca::NEW> deque = {1, 2, 3, 4, 5};
+  deque.insert(deque.begin() + 2, 6);
+  assert((deque == ca::array<int, 10>{1, 2, 6, 3, 4, 5}));
+
+  // Test insert() with a range of elements
+  deque = {1, 2, 3, 4, 5};
+  deque.insert(deque.begin() + 2, {6, 7, 8});
+  assert((deque == ca::array<int, 10>{1, 2, 6, 7, 8, 3, 4, 5}));
+
+  // Test insert() with a range of elements that includes the first element
+  deque = {1, 2, 3, 4, 5};
+  deque.insert(deque.begin(), {6, 7, 8});
+  assert((deque == ca::array<int, 10>{6, 7, 8, 1, 2, 3, 4, 5}));
+
+  // Test insert() with a range of elements that includes the last element
+  deque = {1, 2, 3, 4, 5};
+  deque.insert(deque.end(), {6, 7, 8});
+  assert((deque == ca::array<int, 10>{1, 2, 3, 4, 5, 6, 7, 8}));
+
+  // Test insert() with a range of elements that includes the first and last elements
+  deque = {1, 2, 3, 4, 5};
+  deque.insert(deque.begin(), {6, 7, 8});
+  deque.insert(deque.end(), {9, 10, 11});
+  assert((deque == ca::array<int, 10>{6, 7, 8, 1, 2, 3, 4, 5, 9, 10, 11}));
+
+  // Test insert() with a range of elements that includes the first and last elements, and the deque is empty
+  deque = {};
+  deque.insert(deque.begin(), {6, 7, 8});
+  deque.insert(deque.end(), {9, 10, 11});
+  assert((deque == ca::array<int, 10>{6, 7, 8, 9, 10, 11}));
+  }
 }
 
 int main() {

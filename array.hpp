@@ -292,21 +292,6 @@ public:
   }
 
   //
-  friend constexpr bool operator==(array const& l, array const& r)
-    noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
-  {
-    return std::equal(l.begin(), l.end(), r.begin(), r.end());
-  }
-
-  friend constexpr auto operator<=>(array const& l, array const& r)
-    noexcept(noexcept(std::lexicographical_compare_three_way(
-      l.begin(), l.end(), r.begin(), r.end())))
-  {
-    return std::lexicographical_compare_three_way(
-      l.begin(), l.end(), r.begin(), r.end());
-  }
-
-  //
   constexpr T* data() noexcept { return a_; }
   constexpr T const* data() const noexcept { return a_; }
   constexpr T* first() noexcept { return f_; }
@@ -586,6 +571,13 @@ public:
     return {this, prev_(i.n(), n)};
   }
 
+  constexpr auto insert(const_iterator const i,
+    std::initializer_list<value_type> l)
+    noexcept(noexcept(insert(i, l.begin(), l.end())))
+  {
+    return insert(i, l.begin(), l.end());
+  }
+
   //
   constexpr void pop_back() noexcept { l_ = prev_(l_); }
   constexpr void pop_back(size_type const n) noexcept { l_ = prev_(l_, n); }
@@ -698,6 +690,26 @@ constexpr auto erase(array<T, S, M>& c, T const k)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+template <typename U, typename V, std::size_t S1, enum Method M1,
+  std::size_t S2, enum Method M2>
+constexpr bool operator==(array<U, S1, M1> const& l,
+  array<V, S2, M2> const& r)
+  noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
+{
+  return std::equal(l.begin(), l.end(), r.begin(), r.end());
+}
+
+template <typename U, typename V, std::size_t S1, enum Method M1,
+  std::size_t S2, enum Method M2>
+constexpr auto operator<=>(array<U, S1, M1> const& l,
+  array<V, S2, M2> const& r)
+  noexcept(noexcept(std::lexicographical_compare_three_way(
+    l.begin(), l.end(), r.begin(), r.end())))
+{
+  return std::lexicographical_compare_three_way(
+    l.begin(), l.end(), r.begin(), r.end());
+}
+
 template <typename T, std::size_t S, enum Method M>
 constexpr void swap(array<T, S, M>& l, decltype(l) r) noexcept { l.swap(r); }
 
