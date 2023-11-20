@@ -689,19 +689,19 @@ constexpr auto erase(array<T, S, M>& c, T const k)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename U, typename V, std::size_t S1, enum Method M1,
-  std::size_t S2, enum Method M2>
-constexpr bool operator==(array<U, S1, M1> const& l,
-  array<V, S2, M2> const& r)
+template <typename T1, std::size_t S1, enum Method M1,
+  typename T2, std::size_t S2, enum Method M2>
+constexpr bool operator==(array<T1, S1, M1> const& l,
+  array<T2, S2, M2> const& r)
   noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
 {
   return std::equal(l.begin(), l.end(), r.begin(), r.end());
 }
 
-template <typename U, typename V, std::size_t S1, enum Method M1,
-  std::size_t S2, enum Method M2>
-constexpr auto operator<=>(array<U, S1, M1> const& l,
-  array<V, S2, M2> const& r)
+template <typename T1, std::size_t S1, enum Method M1,
+  typename T2, std::size_t S2, enum Method M2>
+constexpr auto operator<=>(array<T1, S1, M1> const& l,
+  array<T2, S2, M2> const& r)
   noexcept(noexcept(std::lexicographical_compare_three_way(
     l.begin(), l.end(), r.begin(), r.end())))
 {
