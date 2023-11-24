@@ -195,8 +195,7 @@ public:
   {
   }
 
-  template <std::ranges::input_range R>
-  array(from_range_t, R&& rg)
+  constexpr array(from_range_t, std::ranges::input_range auto&& rg)
     noexcept(noexcept(array(std::begin(rg), std::end(rg)))):
     array(std::begin(rg), std::end(rg))
   {
@@ -247,9 +246,14 @@ public:
 
   constexpr array& operator=(std::initializer_list<value_type> l)
     noexcept(noexcept(assign(l)))
-    requires(std::is_copy_assignable_v<value_type>)
   {
     assign(l); return *this;
+  }
+
+  constexpr auto& operator=(std::ranges::input_range auto&& rg)
+    noexcept(noexcept(assign(std::begin(rg), std::end(rg))))
+  {
+    assign(std::begin(rg), std::end(rg)); return *this;
   }
 
   //
@@ -347,6 +351,12 @@ public:
     noexcept(noexcept(assign(l.begin(), l.end())))
   {
     assign(l.begin(), l.end());
+  }
+
+  constexpr void assign(std::ranges::input_range auto&& rg)
+    noexcept(noexcept(assign(std::begin(rg), std::end(rg))))
+  {
+    assign(std::begin(rg), std::end(rg));
   }
 
   //
@@ -541,21 +551,21 @@ public:
 
   //
   template <std::ranges::input_range R>
-  iterator append_range(R&& rg)
+  constexpr iterator append_range(R&& rg)
     noexcept(noexcept(insert(cend(), rg.begin(), rg.end())))
   {
     return insert(cend(), std::begin(rg), std::end(rg));
   }
 
   template <std::ranges::input_range R>
-  iterator insert_range(const_iterator const pos, R&& rg)
+  constexpr iterator insert_range(const_iterator const pos, R&& rg)
     noexcept(noexcept(insert(pos, rg.begin(), rg.end())))
   {
     return insert(pos, std::begin(rg), std::end(rg));
   }
 
   template <std::ranges::input_range R>
-  iterator prepend_range(R&& rg)
+  constexpr iterator prepend_range(R&& rg)
     noexcept(noexcept(insert(cbegin(), rg.begin(), rg.end())))
   {
     return insert(cbegin(), std::begin(rg), std::end(rg));
