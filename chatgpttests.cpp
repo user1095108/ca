@@ -218,9 +218,7 @@ void test1() {
   assert(dq[9] == 200);
   assert(dq[10] == 5);
   }
-}
 
-void test2() {
   {
   ca::array<int, 20> dq1; // default constructor
   assert(dq1.empty()); // should be empty
@@ -970,12 +968,32 @@ void test2() {
   deque.insert(deque.end(), {9, 10, 11});
   assert((deque == ca::array<int, 10>{6, 7, 8, 9, 10, 11}));
   }
+
+  {
+  ca::array<int, 30> arr{1, 2, 3};
+
+  // Create a vector with elements 4, 5, 6
+  std::vector<int> vec{4, 5, 6};
+
+  // Test append_range()
+  arr.append_range(vec);
+  assert((arr == ca::array<int, 30>{1, 2, 3, 4, 5, 6}));
+
+  // Test prepend_range()
+  arr.prepend_range(vec);
+  assert((arr == ca::array<int, 30>{4, 5, 6, 1, 2, 3, 4, 5, 6}));
+
+  // Test insert_range()
+  auto it = arr.begin();
+  std::advance(it, 3); // Move iterator to the 4th element
+  arr.insert_range(it, vec);
+  assert((arr == ca::array<int, 30>{4, 5, 6, 4, 5, 6, 1, 2, 3, 4, 5, 6}));
+  }
 }
 
 int main() {
   // Run the test suite
   test1();
-  test2();
 
   std::cout << "All tests passed!" << std::endl;
 
