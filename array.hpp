@@ -14,7 +14,8 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
-struct multi_t{};
+struct multi_t { explicit multi_t() = default; };
+constexpr multi_t multi {};
 
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
   requires(

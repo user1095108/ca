@@ -11,7 +11,7 @@
 void test1() {
   {
   // Create an instance of your container
-  ca::array<int, 20> dq(ca::multi_t{}, 1, 2, 3);
+  ca::array<int, 20> dq(ca::multi, 1, 2, 3);
 
   // Test the size of the container
   assert(dq.size() == 3);
@@ -554,7 +554,7 @@ void test2() {
 
   {
   // Create a deque with a maximum size of 5
-  ca::array<int, 5> stack(ca::multi_t{}, 1, 2, 3, 4, 5);
+  ca::array<int, 5> stack(ca::multi, 1, 2, 3, 4, 5);
 
   // Check if the stack is full
   assert(stack.size() == 5);
