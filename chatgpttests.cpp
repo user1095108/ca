@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <vector>
 
 #include "array.hpp" // Replace with the actual container header
 
