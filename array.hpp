@@ -196,10 +196,9 @@ public:
 
   template <std::ranges::input_range R>
   array(from_range_t, R&& rg)
-    noexcept(noexcept(
-      std::copy(std::begin(rg), std::end(rg), std::back_inserter(*this))))
+    noexcept(noexcept(array(std::begin(rg), std::end(rg)))):
+    array(std::begin(rg), std::end(rg))
   {
-    std::copy(std::begin(rg), std::end(rg), std::back_inserter(*this));
   }
 
   constexpr ~array() requires(NEW != M) = default;
