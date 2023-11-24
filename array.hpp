@@ -238,10 +238,8 @@ public:
   }
 
   constexpr array& operator=(array&& o) noexcept requires(USER == M)
-  {
-    f_ = o.f_; l_ = o.l_; a_ = o.a_; o.clear(); // o.a_ stays unchanged
-
-    return *this;
+  { // o.a_ stays unchanged
+    f_ = o.f_; l_ = o.l_; a_ = o.a_; o.clear(); return *this;
   }
 
   constexpr array& operator=(std::initializer_list<value_type> l)
