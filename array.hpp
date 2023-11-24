@@ -14,6 +14,9 @@ namespace ca
 
 enum Method { MEMBER, NEW, USER };
 
+struct from_range_t { explicit from_range_t() = default; };
+constexpr from_range_t from_range {};
+
 struct multi_t { explicit multi_t() = default; };
 constexpr multi_t multi {};
 
@@ -191,28 +194,12 @@ public:
   {
   }
 
-  constexpr explicit array(auto&& c)
-    noexcept((std::is_rvalue_reference_v<decltype(c)> &&
-      noexcept(std::move(std::begin(c), std::end(c),
-        std::back_inserter(*this)))) ||
-      noexcept(std::copy(std::begin(c), std::end(c),
-        std::back_inserter(*this))))
-    requires(requires{std::begin(c), std::end(c), std::size(c);} &&
-      !std::same_as<array, std::remove_cvref_t<decltype(c)>> &&
-      !std::same_as<std::initializer_list<value_type>,
-        std::remove_cvref_t<decltype(c)>> &&
-      (std::is_assignable_v<T&, decltype(*std::begin(c))> ||
-      std::is_assignable_v<T&, decltype(std::move(*std::begin(c)))>)):
-    array()
+  template <std::ranges::input_range R>
+  array(from_range_t, R&& rg)
+    noexcept(noexcept(
+      std::copy(std::begin(rg), std::end(rg), std::back_inserter(*this))))
   {
-    if constexpr(std::is_rvalue_reference_v<decltype(c)>)
-    {
-      std::move(std::begin(c), std::end(c), std::back_inserter(*this));
-    }
-    else
-    {
-      std::copy(std::begin(c), std::end(c), std::back_inserter(*this));
-    }
+    std::copy(std::begin(rg), std::end(rg), std::back_inserter(*this));
   }
 
   constexpr ~array() requires(NEW != M) = default;
