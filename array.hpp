@@ -15,10 +15,10 @@ namespace ca
 enum Method { MEMBER, NEW, USER };
 
 struct from_range_t { explicit from_range_t() = default; };
-constexpr from_range_t from_range {};
+constexpr from_range_t from_range{};
 
 struct multi_t { explicit multi_t() = default; };
-constexpr multi_t multi {};
+constexpr multi_t multi{};
 
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
   requires(
