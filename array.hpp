@@ -352,9 +352,9 @@ public:
   }
 
   constexpr void assign_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(assign(std::begin(rg), std::end(rg))))
+    noexcept(noexcept(assign(std::ranges::cbegin(rg), std::ranges::cend(rg))))
   {
-    assign(std::begin(rg), std::end(rg));
+    assign(std::ranges::cbegin(rg), std::ranges::cend(rg));
   }
 
   //
