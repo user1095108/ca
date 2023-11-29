@@ -445,16 +445,16 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    for (auto n(distance_(a.n(), b.n())); n--;) a = erase(a);
+    for (auto n(distance_(a.n(), b.n())); n; --n, a = erase(a));
 
     return {this, a.n()};
   }
 
   //
   template <int = 0>
-  constexpr iterator insert(const_iterator const i, auto&& v)
+  constexpr iterator insert(const_iterator const i, auto&& a)
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
-    requires(std::is_assignable_v<value_type&, decltype(v)>)
+    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     if (full()) [[unlikely]] pop_front();
 
@@ -477,7 +477,7 @@ public:
     }
 
     //
-    *j = std::forward<decltype(v)>(v);
+    *j = std::forward<decltype(a)>(a);
     return j;
   }
 
