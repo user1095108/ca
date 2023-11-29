@@ -586,11 +586,11 @@ public:
     if ((l_ = next_(l_)) == f_) [[unlikely]] pop_front();
   }
 
-  constexpr void push_back(auto&& ...v)
-    noexcept(noexcept((push_back<0>(std::forward<decltype(v)>(v)), ...)))
-    requires(requires{(push_back<0>(std::forward<decltype(v)>(v)), ...);})
+  constexpr void push_back(auto&& ...a)
+    noexcept(noexcept((push_back<0>(std::forward<decltype(a)>(a)), ...)))
+    requires(requires{(push_back<0>(std::forward<decltype(a)>(a)), ...);})
   {
-    (push_back<0>(std::forward<decltype(v)>(v)), ...);
+    (push_back<0>(std::forward<decltype(a)>(a)), ...);
   }
 
   constexpr void push_back(value_type a)
@@ -600,24 +600,24 @@ public:
   }
 
   template <int = 0>
-  constexpr void push_front(auto&& v)
-    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(v)>)
-    requires(std::is_assignable_v<value_type&, decltype(v)>)
+  constexpr void push_front(auto&& a)
+    noexcept(std::is_nothrow_assignable_v<value_type&, decltype(a)>)
+    requires(std::is_assignable_v<value_type&, decltype(a)>)
   { // pop_front() + push_front() = overwrite_front()
-    *(full() ? f_ : f_ = prev_(f_)) = std::forward<decltype(v)>(v);
+    *(full() ? f_ : f_ = prev_(f_)) = std::forward<decltype(a)>(a);
   }
 
-  constexpr void push_front(auto&& ...v)
-    noexcept(noexcept((push_front<0>(std::forward<decltype(v)>(v)), ...)))
-    requires(requires{(push_front<0>(std::forward<decltype(v)>(v)), ...);})
+  constexpr void push_front(auto&& ...a)
+    noexcept(noexcept((push_front<0>(std::forward<decltype(a)>(a)), ...)))
+    requires(requires{(push_front<0>(std::forward<decltype(a)>(a)), ...);})
   {
-    (push_front<0>(std::forward<decltype(v)>(v)), ...);
+    (push_front<0>(std::forward<decltype(a)>(a)), ...);
   }
 
-  constexpr void push_front(value_type v)
-    noexcept(noexcept(push_front<0>(std::move(v))))
+  constexpr void push_front(value_type a)
+    noexcept(noexcept(push_front<0>(std::move(a))))
   {
-    push_front<0>(std::move(v));
+    push_front<0>(std::move(a));
   }
 
   //
