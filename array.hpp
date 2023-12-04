@@ -658,8 +658,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 
 template <int = 0, typename T, std::size_t S, enum Method M>
 constexpr auto erase(array<T, S, M>& c, auto const& ...k)
-  noexcept(noexcept(c.erase(c.cbegin()),
-    (std::equal_to<>()(*c.cbegin(), k), ...)))
+  noexcept(noexcept(c.erase({}), (std::equal_to<>()(*c.cbegin(), k), ...)))
   requires(requires{(std::equal_to<>()(*c.cbegin(), k), ...);})
 {
   return erase_if(
