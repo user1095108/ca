@@ -53,11 +53,6 @@ public:
   T* f_, *l_; // pointer to first and last elements of element array
   std::conditional_t<MEMBER == M, T[N], T*> a_; // element array
 
-  static constexpr auto assign_(auto& ...a) noexcept
-  { // assign idiom
-    return [&](auto const ...v) noexcept { ((a = v), ...); };
-  }
-
   constexpr auto next_(auto const p) const noexcept
   {
     return const_cast<decltype(p)>(p == &a_[N - 1] ? a_ : p + 1);
@@ -145,7 +140,7 @@ public:
   constexpr array(array&& o) noexcept requires(NEW == M):
     array()
   { // swap & o.reset()
-    assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+    ca::assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
   }
 
   constexpr array(array&& o) noexcept requires(USER == M)
@@ -232,7 +227,7 @@ public:
 
   constexpr array& operator=(array&& o) noexcept requires(NEW == M)
   { // swap & o.reset()
-    assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+    ca::assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
 
     return *this;
   }
@@ -639,7 +634,7 @@ public:
   constexpr void swap(array& o) noexcept
     requires((NEW == M) || (USER == M))
   {
-    assign_(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, f_, l_, a_);
+    ca::assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, f_, l_, a_);
   }
 };
 
