@@ -215,8 +215,8 @@ public:
   }
 
   constexpr array& operator=(array&& o)
-    noexcept(noexcept(
-      o.clear(), std::move(o.begin(), o.end(), std::back_inserter(*this))))
+    noexcept(noexcept(o.clear(),
+      std::move(o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M)
   {
     clear(); std::move(o.begin(), o.end(), std::back_inserter(*this));
