@@ -13,14 +13,26 @@ constexpr auto assign(auto& ...a) noexcept
   return [&](auto const ...v) noexcept { ((a = v), ...); };
 }
 
+enum Method { MEMBER, NEW, USER };
+
 template <typename T, typename CA>
 class arrayiterator
 {
   using iterator_t = arrayiterator<std::remove_const_t<T>, CA>;
   friend arrayiterator<T const, CA>;
 
+  template <typename U, std::size_t CAP, enum Method M>
+    requires(
+      (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
+      !std::is_reference_v<U> &&
+      !std::is_const_v<U> &&
+      std::is_default_constructible_v<U> &&
+      (std::is_copy_assignable_v<U> || std::is_move_assignable_v<U>)
+    )
+  friend class array;
+
   CA const* a_;
-  T* n_;
+  std::remove_const_t<T>* n_;
 
 public:
   using iterator_category = std::random_access_iterator_tag;
@@ -36,7 +48,7 @@ public:
 
   constexpr arrayiterator(CA const* const a, T* const n) noexcept:
     a_(a),
-    n_(n)
+    n_(decltype(n_)(n))
   {
   }
 
@@ -125,10 +137,7 @@ public:
   constexpr auto& operator*() const noexcept { return *n_; }
 
   //
-  constexpr auto n() const noexcept
-  {
-    return const_cast<std::remove_const_t<T>*>(n_);
-  }
+  explicit operator bool() const noexcept { return n_ != a_->l_; }
 };
 
 //////////////////////////////////////////////////////////////////////////////

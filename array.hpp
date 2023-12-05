@@ -13,8 +13,6 @@
 namespace ca
 {
 
-enum Method { MEMBER, NEW, USER };
-
 struct from_range_t { explicit from_range_t() = default; };
 inline constexpr from_range_t from_range{};
 
@@ -422,16 +420,16 @@ public:
   constexpr iterator erase(const_iterator const i)
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
-    if (iterator const j(this, i.n()), nxt(std::next(j));
-      distance_(nxt.n(), l_) <= distance_(f_, j.n()))
+    if (iterator const j(this, i.n_), nxt(std::next(j));
+      distance_(nxt.n_, l_) <= distance_(f_, j.n_))
     {
-      l_ = std::move(nxt, end(), j).n();
+      l_ = std::move(nxt, end(), j).n_;
 
       return j; // *nxt is moved to *j
     }
     else
     {
-      f_ = std::move_backward(begin(), j, nxt).n();
+      f_ = std::move_backward(begin(), j, nxt).n_;
 
       return nxt; // *nxt is not moved
     }
@@ -440,9 +438,9 @@ public:
   constexpr iterator erase(const_iterator a, const_iterator const b)
     noexcept(noexcept(erase(a)))
   {
-    for (auto n(distance_(a.n(), b.n())); n; --n, a = erase(a));
+    for (auto n(distance_(a.n_, b.n_)); n; --n, a = erase(a));
 
-    return {this, a.n()};
+    return {this, a.n_};
   }
 
   //
@@ -454,9 +452,9 @@ public:
     if (full()) [[unlikely]] pop_front();
 
     //
-    iterator j(this, i.n());
+    iterator j(this, i.n_);
 
-    if (distance_(f_, i.n()) <= distance_(i.n(), l_))
+    if (distance_(f_, i.n_) <= distance_(i.n_, l_))
     {
       auto const f(f_);
       f_ = prev_(f);
@@ -489,7 +487,7 @@ public:
   {
     (++(i = insert(i, std::forward<decltype(a)>(a))), ...);
 
-    return {this, prev(i.n(), sizeof...(a))};
+    return {this, prev(i.n_, sizeof...(a))};
   }
 
   constexpr auto insert(multi_t, const_iterator const i, value_type a)
@@ -505,7 +503,7 @@ public:
   {
     for (auto n(count); n--;) ++(i = insert(i, v));
 
-    return {this, prev(i.n(), count)};
+    return {this, prev(i.n_, count)};
   }
 
   constexpr auto insert(const_iterator const i, size_type const count,
@@ -531,7 +529,7 @@ public:
       }
     );
 
-    return {this, prev_(i.n(), n)};
+    return {this, prev_(i.n_, n)};
   }
 
   constexpr auto insert(const_iterator const i,
@@ -645,8 +643,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  for (auto i(c.cbegin()); i.n() != c.last();
-    pred(*i) ? ++r, i = c.erase(i) : ++i);
+  for (auto i(c.cbegin()); i; pred(*i) ? ++r, i = c.erase(i) : ++i);
 
   return r;
 }
