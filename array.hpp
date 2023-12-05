@@ -138,7 +138,8 @@ public:
   constexpr array(array&& o) noexcept requires(NEW == M):
     array()
   { // swap & o.reset()
-    ca::assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+    detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
+      (o.f_, o.l_, o.a_, a_, a_, a_);
   }
 
   constexpr array(array&& o) noexcept requires(USER == M)
@@ -225,7 +226,8 @@ public:
 
   constexpr array& operator=(array&& o) noexcept requires(NEW == M)
   { // swap & o.reset()
-    ca::assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, a_, a_, a_);
+    detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
+      (o.f_, o.l_, o.a_, a_, a_, a_);
 
     return *this;
   }
@@ -631,8 +633,9 @@ public:
 
   constexpr void swap(array& o) noexcept
     requires((NEW == M) || (USER == M))
-  {
-    ca::assign(f_, l_, a_, o.f_, o.l_, o.a_)(o.f_, o.l_, o.a_, f_, l_, a_);
+  { // swap state
+    detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
+      (o.f_, o.l_, o.a_, f_, l_, a_);
   }
 };
 
