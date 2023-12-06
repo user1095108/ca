@@ -149,7 +149,7 @@ public:
   }
 
   //
-  explicit operator bool() const noexcept { return n_ != a_->l_; }
+  constexpr explicit operator bool() const noexcept { return n_ != a_->l_; }
 };
 
 //////////////////////////////////////////////////////////////////////////////
