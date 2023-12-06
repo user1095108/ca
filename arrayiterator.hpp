@@ -138,8 +138,8 @@ public:
     return *a_->adv_(n_, n);
   }
 
-  constexpr auto operator->() const noexcept { return n_; }
-  constexpr auto& operator*() const noexcept { return *n_; }
+  constexpr auto operator->() const noexcept { return const_cast<T*>(n_); }
+  constexpr auto& operator*() const noexcept { return *const_cast<T*>(n_); }
 
   //
   explicit operator bool() const noexcept { return n_ != a_->l_; }
