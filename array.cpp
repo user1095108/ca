@@ -39,13 +39,11 @@ int main()
   std::for_each(
     ca.cbegin(),
     ca.cend(),
-    [](auto&& v) noexcept
-    {
-      std::cout << v << std::endl;
-    }
+    [](auto&& v) { std::cout << v << std::endl; }
   );
 
   std::cout << std::distance(ca.cbegin(), ca.cend()) << " : " << ca.size() << " " << ca[0] << std::endl;
+  std::cout << ca::distance(ca.cbegin(), ca.cend()) << " : " << ca.size() << " " << ca[0] << std::endl;
 
   erase(ca, 10, 9, 8); // erase as much as you like
 
