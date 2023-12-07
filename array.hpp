@@ -503,7 +503,7 @@ public:
     auto const& v) noexcept(noexcept(insert(i, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
-    for (auto n(count); n--;) ++(i = insert(i, v));
+    for (auto n(count); n; --n, ++(i = insert(i, v)));
 
     return {this, prev(i.n_, count)};
   }
