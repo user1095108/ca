@@ -38,8 +38,7 @@ class arrayiterator
 
   template <typename A, typename B, typename C>
   friend constexpr auto distance(arrayiterator<A, C> const i,
-    arrayiterator<B, C>) noexcept
-    requires(std::same_as<std::remove_const_t<A>, std::remove_const_t<B>>);
+    arrayiterator<B, C>) noexcept;
 
   CA const* a_;
   std::remove_const_t<T>* n_;
@@ -169,7 +168,6 @@ constexpr auto operator+(typename CA::difference_type const n,
 template <typename T, typename U, typename CA>
 constexpr auto distance(arrayiterator<T, CA> const i,
   arrayiterator<U, CA> const j) noexcept
-  requires(std::same_as<std::remove_const_t<T>, std::remove_const_t<U>>)
 {
   return CA::distance_(i.n_, j.n_);
 }
