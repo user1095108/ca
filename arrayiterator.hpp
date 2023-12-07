@@ -168,7 +168,7 @@ constexpr auto operator+(typename CA::difference_type const n,
 template <typename T, typename CA>
 constexpr auto distance(arrayiterator<T, CA> const i, decltype(i) j) noexcept
 {
-  return i.a_->distance_(i, j);
+  return CA::distance_(i, j);
 }
 
 }
