@@ -990,6 +990,34 @@ void test1() {
   arr.insert_range(it, vec);
   assert((arr == ca::array<int, 30>{4, 5, 6, 4, 5, 6, 1, 2, 3, 4, 5, 6}));
   }
+
+  {
+  ca::array<int, 20> dq = {1, 2, 3, 4, 5};
+
+  // Resize the deque to 3 elements
+  dq.resize(3);
+
+  // Check the size of the deque
+  assert(dq.size() == 3);
+
+  // Check the elements of the deque
+  assert(dq[0] == 1);
+  assert(dq[1] == 2);
+  assert(dq[2] == 3);
+
+  // Resize the deque to 5 elements
+  dq.resize(5, 100);
+
+  // Check the size of the deque
+  assert(dq.size() == 5);
+
+  // Check the elements of the deque
+  assert(dq[0] == 1);
+  assert(dq[1] == 2);
+  assert(dq[2] == 3);
+  assert(dq[3] == 100);
+  assert(dq[4] == 100);
+  }
 }
 
 int main() {
