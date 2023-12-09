@@ -355,7 +355,7 @@ public:
   //
   constexpr void clear() noexcept { l_ = f_; }
   constexpr void reset() noexcept { l_ = f_ = a_; }
-  constexpr void resize(size_type const n) noexcept { l_ = next_(f_, n); }
+  constexpr void resize(size_type const c) noexcept { l_ = next_(f_, c); }
 
   template <int = 0>
   constexpr void resize(size_type const c, auto const& a)
