@@ -1018,6 +1018,34 @@ void test1() {
   assert(dq[3] == 100);
   assert(dq[4] == 100);
   }
+
+  {
+  ca::array<int, 20> myDeque;
+
+  // Adding elements to the deque
+  myDeque.push_back(10);
+  myDeque.push_front(5);
+  myDeque.push_back(20);
+
+  // Checking the size of the deque
+  assert(myDeque.size() == 3);
+
+  // Accessing elements using iterators
+  auto it = myDeque.begin();
+  assert(*it == 5);
+
+  // Modifying elements
+  *it = 15;
+  assert(myDeque.front() == 15);
+
+  // Removing elements
+  myDeque.pop_front();
+  assert(myDeque.front() == 10);
+
+  // Clearing the deque
+  myDeque.clear();
+  assert(myDeque.empty());
+  }
 }
 
 int main() {
