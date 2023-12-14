@@ -175,7 +175,7 @@ public:
     resize(c);
   }
 
-  constexpr explicit array(size_type const c, auto const& v, multi_t = multi)
+  constexpr explicit array(size_type const c, auto const& v, int = 0)
     noexcept(noexcept(array(c), std::fill(f_, l_, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
@@ -184,8 +184,8 @@ public:
   }
 
   constexpr explicit array(size_type const c, value_type const v)
-    noexcept(noexcept(array(c, v, multi))):
-    array(c, v, multi)
+    noexcept(noexcept(array(c, v, 0))):
+    array(c, v, 0)
   {
   }
 
