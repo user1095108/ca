@@ -1046,6 +1046,45 @@ void test1() {
   myDeque.clear();
   assert(myDeque.empty());
   }
+
+  {
+  // Test Case 1: Basic functionality
+  ca::array<int, 20> deque1 = {1, 2, 3};
+  assert(deque1.size() == 3);
+  assert(deque1[0] == 1);
+  assert(deque1[1] == 2);
+  assert(deque1[2] == 3);
+
+  // Test Case 2: Adding elements to the front and back
+  deque1.push_front(0);
+  deque1.push_back(4);
+  assert(deque1.size() == 5);
+  assert(deque1[0] == 0);
+  assert(deque1[4] == 4);
+
+  // Test Case 3: Iterating through the deque
+  int sum = 0;
+  for (const auto& elem : deque1) {
+      sum += elem;
+  }
+  assert(sum == 10);
+
+  // Test Case 4: Erasing elements
+  deque1.erase(deque1.begin() + 2); // Erase element at index 2
+  assert(deque1.size() == 4);
+  assert(deque1[2] == 3);
+
+  // Test Case 5: Clearing the deque
+  deque1.clear();
+  assert(deque1.empty());
+
+  // Test Case 6: Emplace elements
+  deque1.emplace_back(10);
+  deque1.emplace_front(5);
+  assert(deque1.size() == 2);
+  assert(deque1[0] == 5);
+  assert(deque1[1] == 10);
+  }
 }
 
 int main() {
