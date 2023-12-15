@@ -557,14 +557,7 @@ public:
   }
 
   //
-  constexpr iterator append_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(
-      insert(cend(), std::ranges::begin(rg), std::ranges::end(rg))))
-  {
-    return insert(cend(), std::ranges::begin(rg), std::ranges::end(rg));
-  }
-
-  constexpr iterator insert_range(const_iterator const pos,
+  constexpr auto insert_range(const_iterator const pos,
     std::ranges::input_range auto&& rg)
     noexcept(noexcept(
       insert(pos, std::ranges::begin(rg), std::ranges::end(rg))))
@@ -572,11 +565,16 @@ public:
     return insert(pos, std::ranges::begin(rg), std::ranges::end(rg));
   }
 
-  constexpr iterator prepend_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(
-      insert(cbegin(), std::ranges::begin(rg), std::ranges::end(rg))))
+  constexpr auto append_range(std::ranges::input_range auto&& rg)
+    noexcept(noexcept(insert_range(cend(), std::forward<decltype(rg)>(rg))))
   {
-    return insert(cbegin(), std::ranges::begin(rg), std::ranges::end(rg));
+    return insert_range(cend(), std::forward<decltype(rg)>(rg));
+  }
+
+  constexpr auto prepend_range(std::ranges::input_range auto&& rg)
+    noexcept(noexcept(insert_range(cbegin(), std::forward<decltype(rg)>(rg))))
+  {
+    return insert_range(cbegin(), std::forward<decltype(rg)>(rg));
   }
 
   //
