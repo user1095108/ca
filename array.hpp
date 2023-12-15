@@ -673,8 +673,7 @@ constexpr auto erase(array<T, S, M>& c, auto const& ...k)
 {
   return erase_if(
       c,
-      [&k...](auto const& a)
-        noexcept(noexcept((std::declval<std::equal_to<>>()(a, k), ...)))
+      [&k...](auto& a) noexcept(noexcept((std::equal_to<>()(a, k), ...)))
       {
         return (std::equal_to<>()(a, k) || ...);
       }
