@@ -565,7 +565,7 @@ public:
     return insert(pos, std::ranges::begin(rg), std::ranges::end(rg));
   }
 
-  constexpr auto append_range(std::ranges::input_range auto&& rg)
+  constexpr void append_range(std::ranges::input_range auto&& rg)
     noexcept(noexcept(std::copy(std::ranges::begin(rg), std::ranges::end(rg),
       std::back_inserter(*this))))
   {
@@ -573,10 +573,12 @@ public:
       std::back_inserter(*this));
   }
 
-  constexpr auto prepend_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(insert_range(cbegin(), std::forward<decltype(rg)>(rg))))
+  constexpr void prepend_range(std::ranges::input_range auto&& rg)
+    noexcept(noexcept(std::copy(std::ranges::rbegin(rg), std::ranges::rend(rg),
+      std::front_inserter(*this))))
   {
-    return insert_range(cbegin(), std::forward<decltype(rg)>(rg));
+    std::copy(std::ranges::rbegin(rg), std::ranges::rend(rg),
+      std::front_inserter(*this));
   }
 
   //
