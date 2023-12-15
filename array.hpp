@@ -510,7 +510,7 @@ public:
   constexpr auto insert(multi_t, const_iterator const i, value_type a)
     noexcept(noexcept(insert<0>(multi_t{}, i, std::move(a))))
   {
-    return insert<0>(multi_t{}, i, std::move(a));
+    return insert<0>(multi, i, std::move(a));
   }
 
   template <int = 0>
@@ -566,9 +566,11 @@ public:
   }
 
   constexpr auto append_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(insert_range(cend(), std::forward<decltype(rg)>(rg))))
+    noexcept(noexcept(std::copy(std::ranges::begin(rg), std::ranges::end(rg),
+      std::back_inserter(*this))))
   {
-    return insert_range(cend(), std::forward<decltype(rg)>(rg));
+    std::copy(std::ranges::begin(rg), std::ranges::end(rg),
+      std::back_inserter(*this));
   }
 
   constexpr auto prepend_range(std::ranges::input_range auto&& rg)
