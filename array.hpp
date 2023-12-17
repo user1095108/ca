@@ -677,18 +677,16 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, enum Method M>
 constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
-  noexcept(noexcept(c.erase(c.cbegin(), c.cend()),
-    std::remove_if(c.data(), c.data(), pred)))
+  noexcept(noexcept(c.erase(c.cbegin()), pred(*c.cbegin())))
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
   c.split(
-    [&](auto a, decltype(a) const b)
-      noexcept(noexcept(std::remove_if(a, b, pred),
-        c.erase({&c, a}, {&c, b})))
+    [&](T const* a, decltype(a) const b)
+      noexcept(noexcept(pred(*a), c.erase({&c, a})))
     {
-      r += b - (a = std::remove_if(a, b, pred));
-      c.erase({&c, a}, {&c, b});
+      for (; (a != b) && (a != c.last());
+        pred(*a) ? ++r, a = &*c.erase({&c, a}) : ++a);
     }
   );
 
