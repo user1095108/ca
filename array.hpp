@@ -632,12 +632,22 @@ public:
   }
 
   //
-  constexpr void split(auto&& g) const
+  constexpr void split(auto&& g)
     noexcept(noexcept(g(f_, f_)))
   { // split the [f_, l_) range into 1 or 2 contiguous ranges
     l_ < f_ ? // f_ > l_ >= a_, f_ > a
-      g(f_, decltype(f_)(&a_[N])), g(decltype(f_)(a_), l_) :
+      g(f_, &a_[N]), g(&*a_, l_) :
       g(f_, l_);
+  }
+
+  constexpr void split(auto&& g) const
+    noexcept(noexcept(g(f_, f_)))
+  {
+    using ptr_t = decltype(data());
+
+    l_ < f_ ?
+      g(ptr_t(f_), ptr_t(&a_[N])), g(ptr_t(a_), ptr_t(l_)) :
+      g(ptr_t(f_), ptr_t(l_));
   }
 
   //
