@@ -701,12 +701,19 @@ template <typename T, std::size_t S, enum Method M>
 constexpr auto find_if(array<T, S, M> const& c, auto pred)
   noexcept(noexcept(pred(*c.begin())))
 {
-  auto i(c.begin()), j(c.end());
+  auto i(c.end());
 
-  for (; (i != j) && (i != --j); ++i)
-    if (pred(*i)) return i; else if (pred(*j)) return j;
+  c.split(
+    [&](auto a, decltype(a) const b) noexcept
+    {
+      if (!i && ((a = std::find_if(a, b, pred)) != b))
+      {
+        i = typename array<T, S, M>::const_iterator{&c, a};
+      }
+    }
+  );
 
-  return i && pred(*i) ? i : c.end();
+  return i;
 }
 
 template <int = 0, typename T, std::size_t S, enum Method M>
