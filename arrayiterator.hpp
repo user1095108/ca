@@ -26,13 +26,13 @@ class arrayiterator
   using iterator_t = arrayiterator<std::remove_const_t<T>, CA>;
   friend arrayiterator<T const, CA>;
 
-  template <typename U, std::size_t CAP, enum Method M>
+  template <typename U, std::size_t CAP, enum Method>
     requires(
-      (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
       !std::is_reference_v<U> &&
       !std::is_const_v<U> &&
-      std::is_default_constructible_v<U> &&
-      (std::is_copy_assignable_v<U> || std::is_move_assignable_v<U>)
+      std::is_default_constructible_v<U>
+//    (CAP > 0) && (CAP <= PTRDIFF_MAX)
+//    (std::is_copy_assignable_v<U> || std::is_move_assignable_v<U>)
     )
   friend class array;
 
@@ -71,12 +71,6 @@ public:
   // assignment
   constexpr arrayiterator& operator=(arrayiterator const&) = default;
   constexpr arrayiterator& operator=(arrayiterator&&) = default;
-
-  constexpr arrayiterator& operator=(iterator_t const& o) noexcept
-    requires(std::is_const_v<T>)
-  {
-    a_ = o.a_; n_ = o.n_; return *this;
-  }
 
   // increment, decrement
   constexpr auto& operator++() noexcept { n_ = a_->next_(n_); return *this; }

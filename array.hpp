@@ -20,13 +20,13 @@ struct multi_t { explicit multi_t() = default; };
 inline constexpr multi_t multi{};
 
 template <typename T, std::size_t CAP, enum Method M = MEMBER>
-  requires(
-    (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
-    !std::is_reference_v<T> &&
-    !std::is_const_v<T> &&
-    std::is_default_constructible_v<T> &&
-    (std::is_copy_assignable_v<T> || std::is_move_assignable_v<T>)
-  ) // CAP = N - 1
+requires(
+  !std::is_reference_v<T> &&
+  !std::is_const_v<T> &&
+  std::is_default_constructible_v<T>
+//(CAP > 0) && (CAP <= PTRDIFF_MAX)
+//(std::is_copy_assignable_v<T> || std::is_move_assignable_v<T>)
+) // CAP = N - 1
 class array
 {
   friend class arrayiterator<T, array>;
@@ -44,6 +44,8 @@ public:
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_iterator = arrayiterator<T const, array>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+  enum {ca_array_tag};
 
 //private:
   enum : size_type { N = CAP + 1 };
@@ -707,9 +709,9 @@ constexpr auto erase(array<T, S, M>& c, T const k)
   return erase<0>(c, k);
 }
 
-template <typename T, std::size_t S, enum Method M>
-constexpr auto find_if(array<T, S, M> const& c, auto pred)
+constexpr auto find_if(auto&& c, auto pred)
   noexcept(noexcept(pred(*c.begin())))
+  requires(requires{std::remove_cvref_t<decltype(c)>::ca_array_tag;})
 {
   auto i(c.end());
 
@@ -718,7 +720,7 @@ constexpr auto find_if(array<T, S, M> const& c, auto pred)
     {
       if (!i && ((a = std::find_if(a, b, pred)) != b))
       {
-        i = typename array<T, S, M>::const_iterator{&c, a};
+        i = {&c, a};
       }
     }
   );
@@ -726,18 +728,26 @@ constexpr auto find_if(array<T, S, M> const& c, auto pred)
   return i;
 }
 
-template <int = 0, typename T, std::size_t S, enum Method M>
-constexpr auto find(array<T, S, M> const& c, auto const& ...k)
+template <int = 0>
+constexpr auto find(auto&& c, auto const& ...k)
   noexcept(noexcept((std::equal_to<>()(*c.cbegin(), k), ...)))
   requires(requires{(std::equal_to<>()(*c.cbegin(), k), ...);})
 {
   return find_if(
-      c,
-      [&k...](auto& a) noexcept(noexcept((std::equal_to<>()(a, k), ...)))
+      std::forward<decltype(c)>(c),
+      [&k...](auto const& a)
+        noexcept(noexcept((std::equal_to<>()(a, k), ...)))
       {
         return (std::equal_to<>()(a, k) || ...);
       }
     );
+}
+
+template <typename T, std::size_t S, enum Method M>
+constexpr auto find(array<T, S, M>& c, T const k)
+  noexcept(noexcept(find<0>(c, k)))
+{
+  return find<0>(c, k);
 }
 
 template <typename T, std::size_t S, enum Method M>
