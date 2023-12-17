@@ -704,6 +704,51 @@ constexpr auto erase(array<T, S, M>& c, T const k)
   return erase<0>(c, k);
 }
 
+template <typename T, std::size_t S, enum Method M>
+constexpr auto find_if(array<T, S, M> const& c, auto pred)
+  noexcept(noexcept(pred(*c.cbegin())))
+{
+  if (!c.empty())
+  {
+    auto i(c.begin()), j(--c.end());
+
+    while (i != j)
+    {
+      if (pred(*i)) return i; else ++i;
+
+      if (i == j)
+        break;
+      else
+        if (pred(*j)) return j; else --j;
+    }
+
+    if (pred(*i)) return i;
+  }
+
+  return c.end();
+}
+
+template <int = 0, typename T, std::size_t S, enum Method M>
+constexpr auto find(array<T, S, M> const& c, auto const& ...k)
+  noexcept(noexcept((std::equal_to<>()(*c.cbegin(), k), ...)))
+  requires(requires{(std::equal_to<>()(*c.cbegin(), k), ...);})
+{
+  return find_if(
+      c,
+      [&k...](auto& a) noexcept(noexcept((std::equal_to<>()(a, k), ...)))
+      {
+        return (std::equal_to<>()(a, k) || ...);
+      }
+    );
+}
+
+template <typename T, std::size_t S, enum Method M>
+constexpr auto find(array<T, S, M> const& c, T const k)
+  noexcept(noexcept(find<0>(c, k)))
+{
+  return find<0>(c, k);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 template <typename T1, std::size_t S1, enum Method M1,
   typename T2, std::size_t S2, enum Method M2>
