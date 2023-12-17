@@ -703,11 +703,8 @@ constexpr auto find_if(array<T, S, M> const& c, auto pred)
 {
   auto i(c.begin()), j(c.end());
 
-  for (; (i != j) && (i != --j); ++i)
-  {
-    if (pred(*i)) return i;
-    if (pred(*j)) return j;
-  }
+  while ((i != j) && (i != --j))
+    if (pred(*i)) return i; else if (pred(*j)) return j; else ++i;
 
   return i && pred(*i) ? i : c.end();
 }
