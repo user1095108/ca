@@ -663,7 +663,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  if (!c.empty())
+  if (!c.empty()) [[likely]]
   {
     auto i(c.cbegin()), j(--c.cend());
 
