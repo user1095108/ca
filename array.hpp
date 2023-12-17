@@ -663,7 +663,22 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  for (auto i(c.cbegin()); i; pred(*i) ? ++r, i = c.erase(i) : ++i);
+  if (!c.empty())
+  {
+    auto i(c.cbegin()), j(--c.cend());
+
+    while (i != j)
+    {
+      pred(*i) ? ++r, i = c.erase(i) : ++i;
+
+      if (i == j)
+        break;
+      else
+        pred(*j) ? ++r, j = --c.erase(j) : --j;
+    }
+
+    if (pred(*i)) ++r, c.erase(i);
+  }
 
   return r;
 }
