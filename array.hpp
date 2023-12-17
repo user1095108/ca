@@ -720,7 +720,7 @@ constexpr auto find_if(auto&& c, auto pred)
     {
       if (!i && ((a = std::find_if(a, b, pred)) != b))
       {
-        i = {&c, a};
+        i = decltype(c.begin()){&c, a};
       }
     }
   );

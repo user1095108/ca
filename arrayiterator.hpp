@@ -72,6 +72,12 @@ public:
   constexpr arrayiterator& operator=(arrayiterator const&) = default;
   constexpr arrayiterator& operator=(arrayiterator&&) = default;
 
+  constexpr arrayiterator& operator=(iterator_t const& o) noexcept
+    requires(std::is_const_v<T>)
+  {
+    a_ = o.a_; n_ = o.n_; return *this;
+  }
+
   // increment, decrement
   constexpr auto& operator++() noexcept { n_ = a_->next_(n_); return *this; }
   constexpr auto& operator--() noexcept { n_ = a_->prev_(n_); return *this; }
