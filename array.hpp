@@ -670,8 +670,9 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t S, enum Method M>
-constexpr auto erase_if(array<T, S, M>& c, auto pred)
-  noexcept(noexcept(c.erase(c.cbegin()), pred(*c.cbegin())))
+constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
+  noexcept(noexcept(c.erase(c.cbegin(), c.cend()),
+    std::remove_if(c.data(), c.data(), pred)))
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
