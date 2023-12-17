@@ -5,3 +5,6 @@ Every iterator is invalidated after insertion or erasure, including `end()`. Ret
 
 # build instructions
     g++ -std=c++20 -Ofast ca.cpp -o ca
+
+# resources
+* [Open Data Structures](https://opendatastructures.org/)
