@@ -667,15 +667,8 @@ constexpr auto erase_if(array<T, S, M>& c, auto pred)
   {
     auto i(c.cbegin()), j(--c.cend());
 
-    while (i != j)
-    {
-      pred(*i) ? ++r, i = c.erase(i) : ++i;
-
-      if (i == j)
-        break;
-      else
-        pred(*j) ? ++r, j = --c.erase(j) : --j;
-    }
+    for (; (i != j) && (i != (pred(*j) ? ++r, j = --c.erase(j) : --j));
+      pred(*i) ? ++r, i = c.erase(i) : ++i);
 
     if (pred(*i)) ++r, c.erase(i);
   }
