@@ -403,11 +403,14 @@ void test1() {
   ca::array<int, 10> dq = {1, 2, 3, 4, 5};
 
   // Test find
-  auto it = std::find(dq.begin(), dq.end(), 3);
+  auto it = std::find(dq.cbegin(), dq.cend(), 3);
   assert(it != dq.end() && *it == 3);
+  it = ca::find(dq, 3);
+  assert(it && *it == 3);
 
   it = std::find(dq.begin(), dq.end(), 6);
   assert(it == dq.end());
+  assert(!ca::find(dq, 6));
   }
 
   {
