@@ -756,7 +756,7 @@ void test1() {
 
   {
   ca::array<int, 10> d = {1, 2, 3, 4, 5};
-  ca::erase_if(d, [](int n){ return n % 2 == 0; });
+  assert(2 == ca::erase_if(d, [](int n){ return n % 2 == 0; }));
   for (int n : d) assert(n % 2 != 0);
   }
 
