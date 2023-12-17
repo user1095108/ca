@@ -677,9 +677,12 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
   c.split(
-    [&](auto const a, decltype(a) b) noexcept
+    [&](auto a, decltype(a) const b)
+      noexcept(noexcept(std::remove_if(a, b, pred),
+        c.erase({&c, a}, {&c, b})))
     {
-      c.erase({&c, std::remove_if(a, b, pred)}, {&c, b});
+      r += b - (a = std::remove_if(a, b, pred));
+      c.erase({&c, a}, {&c, b});
     }
   );
 
