@@ -1118,6 +1118,58 @@ void test1() {
   assert(d.size() == 9);
   assert((d == ca::array<int, 10>{1, 2, 3, 4, 6, 7, 8, 9, 10}));
   }
+
+  {
+  ca::array<int, 10> dq = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  // Test 1: Erase from beginning to middle
+  dq.erase(dq.begin(), dq.begin() + 5);
+  assert(dq.size() == 5);
+  assert((dq == decltype(dq){6, 7, 8, 9, 10}));
+
+  // Test 2: Erase from middle to end
+  dq.erase(dq.begin() + 1, dq.end());
+  assert(dq.size() == 1);
+  assert(dq.front() == 6);
+
+  // Test 3: Erase entire deque
+  dq.erase(dq.begin(), dq.end());
+  assert(dq.empty());
+
+  // Test 4: Erase from empty deque
+  dq.erase(dq.begin(), dq.end());
+  assert(dq.empty());
+
+  // Test 5: Erase from one element
+  dq.push_back(1);
+  dq.erase(dq.begin(), dq.begin() + 1);
+  assert(dq.empty());
+
+  // Test 6: Erase from one element to end
+  dq.push_back(1, 2);
+  dq.erase(dq.begin(), dq.end());
+  assert(dq.empty());
+
+  // Test 7: Erase from begin to end of one element
+  dq.push_back(1);
+  dq.erase(dq.begin());
+  assert(dq.empty());
+
+  // Test 9: Erase from begin to end of three elements
+  dq.push_back(1, 2, 3);
+  dq.erase(dq.begin(), dq.end());
+  assert(dq.empty());
+
+  // Test 10: Erase from begin to end of four elements
+  dq.push_back(1, 2, 3, 4);
+  dq.erase(dq.begin(), dq.end());
+  assert(dq.empty());
+
+  dq = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  dq.erase(dq.begin() + 2, dq.begin() + 5);
+  assert(dq.size() == 7);  // The size should now be 7.
+  }
 }
 
 int main() {
