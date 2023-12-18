@@ -721,7 +721,7 @@ constexpr auto find_if(auto&& c, auto pred)
   auto k(c.end());
 
   c.split(
-    [&](auto* i, decltype(i) const end) noexcept
+    [&](auto* i, decltype(i) const end) noexcept(noexcept(pred(*c.cbegin())))
     {
       if (!k)
       {
