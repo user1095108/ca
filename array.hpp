@@ -439,34 +439,33 @@ public:
   constexpr iterator erase(const_iterator const i)
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
-    if (iterator const j(this, i.n_), nxt(this, i.n_ + 1);
-      distance_(f_, j.n_) <= distance_(nxt.n_, l_))
-    {
-      f_ = std::move_backward(begin(), j, nxt).n_;
+    iterator a{this, i.n_}, b(std::next(a));
 
-      return nxt; // *nxt is not moved
-    }
-    else
-    {
-      l_ = std::move(nxt, end(), j).n_;
-
-      return j; // *nxt is moved to *j
-    }
+    return distance_(f_, a.n_) <= distance_(b.n_, l_) ?
+      f_ = std::move_backward(begin(), a, b).n_, b:
+      (l_ = std::move(b, end(), a).n_, a);
   }
 
   constexpr iterator erase(const_iterator const i, const_iterator const j)
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
-    auto const n1(distance_(f_, i.n_)), n3(distance_(j.n_, l_));
+    if (i == j) [[unlikely]]
+    {
+      return {this, i.n_};
+    }
+    else [[likely]]
+    {
+      auto const n1(distance_(f_, i.n_)), n3(distance_(j.n_, l_));
 
-    return iterator{
-        this,
-        n1 <= n3 ?
-          (f_ = std::move_backward(begin(), iterator{this, i.n_},
-          iterator{this, j.n_}).n_) + n1 :
-          (l_ = std::move(iterator{this, j.n_}, end(),
-          iterator{this, i.n_}).n_) - n3
-      };
+      return iterator{
+          this,
+          n1 <= n3 ?
+            (f_ = std::move_backward(begin(), iterator{this, i.n_},
+            iterator{this, j.n_}).n_) + n1 :
+            (l_ = std::move(iterator{this, j.n_}, end(),
+            iterator{this, i.n_}).n_) - n3
+        };
+    }
   }
 
   //
