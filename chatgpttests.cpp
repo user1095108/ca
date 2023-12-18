@@ -1092,6 +1092,32 @@ void test1() {
   assert(deque1.empty());
   assert(!ca::find(deque1, 10));
   }
+
+  {
+  ca::array<int, 10> d{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  
+  // Use std::erase to remove all elements equal to 5
+  ca::erase(d, 5);
+  assert(std::find(d.begin(), d.end(), 5) == d.end());
+  assert(!ca::find(d, 5));
+
+  // Use std::erase_if to remove all even numbers
+  ca::erase_if(d, [](int n){ return n % 2 == 0; });
+  assert(std::none_of(d.begin(), d.end(), [](int n){ return n % 2 == 0; }));
+  assert(!ca::find_if(d, [](int n){ return n % 2 == 0; }));
+  }
+
+  {
+  ca::array<int, 10> d = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  ca::erase_if(d, [](int i){ return i % 2 == 0; });
+  assert(d.size() == 5);
+  assert((d == ca::array<int, 10>{1, 3, 5, 7, 9}));
+
+  d = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  ca::erase(d, 5);
+  assert(d.size() == 9);
+  assert((d == ca::array<int, 10>{1, 2, 3, 4, 6, 7, 8, 9, 10}));
+  }
 }
 
 int main() {
