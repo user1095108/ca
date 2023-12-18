@@ -724,7 +724,7 @@ constexpr auto find_if(auto&& c, auto pred)
   decltype(c.data()) k{};
 
   c.split(
-    [&](auto* i, decltype(i) j) noexcept(noexcept(pred(*c.cbegin())))
+    [&](auto i, decltype(i) j) noexcept(noexcept(pred(*c.cbegin())))
     {
       if (!k)
       {
