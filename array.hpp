@@ -715,7 +715,7 @@ constexpr auto erase(array<T, S, M>& c, T const k)
 }
 
 constexpr auto find_if(auto&& c, auto pred)
-  noexcept(noexcept(pred(*c.begin())))
+  noexcept(noexcept(pred(*c.cbegin())))
   requires(requires{std::remove_cvref_t<decltype(c)>::ca_array_tag;})
 {
   decltype(c.data()) k{};
