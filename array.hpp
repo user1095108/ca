@@ -439,32 +439,27 @@ public:
   constexpr iterator erase(const_iterator const i)
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
-    iterator a{this, i.n_}, b{this, next_(i.n_)};
+    iterator const ii{this, i.n_}, jj{this, next_(i.n_)};
 
-    return distance_(f_, a.n_) <= distance_(b.n_, l_) ?
-      f_ = std::move_backward(begin(), a, b).n_, b:
-      (l_ = std::move(b, end(), a).n_, a);
+    return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
+      f_ = std::move_backward(begin(), ii, jj).n_, jj:
+      (l_ = std::move(jj, end(), ii).n_, ii);
   }
 
   constexpr iterator erase(const_iterator const i, const_iterator const j)
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
-    if (i == j) [[unlikely]]
+    if (iterator const ii{this, i.n_}; i == j) [[unlikely]]
     {
-      return {this, i.n_};
+      return ii;
     }
     else [[likely]]
     {
-      auto const n1(distance_(f_, i.n_)), n3(distance_(j.n_, l_));
+      decltype(ii) jj{this, j.n_};
 
-      return iterator{
-          this,
-          n1 <= n3 ?
-            next_(f_ = std::move_backward(begin(), iterator{this, i.n_},
-              iterator{this, j.n_}).n_, n1) :
-            prev_(l_ = std::move(iterator{this, j.n_}, end(),
-              iterator{this, i.n_}).n_, n3)
-        };
+      return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
+          f_ = std::move_backward(begin(), ii, jj).n_, jj :
+          (l_ = std::move(jj, end(), ii).n_, ii);
     }
   }
 
