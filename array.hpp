@@ -682,8 +682,8 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
   c.split(
-    [&](auto* i, decltype(i) j)
-      noexcept(noexcept(pred(*i), c.erase({&c, i})))
+    [&](auto i, decltype(i) j)
+      noexcept(noexcept(pred(std::as_const(*i)), c.erase({&c, i})))
     {
       for (--j; (i != j) &&
         (i != (pred(std::as_const(*j)) ? ++r, j = &*--c.erase({&c, j}) :--j));
