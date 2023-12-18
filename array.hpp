@@ -725,9 +725,7 @@ constexpr auto find_if(auto&& c, auto pred)
     {
       if (!k)
       {
-        auto j(end);
-
-        for (; (i != j) && (i != --j); ++i)
+        for (auto j(end); (i != j) && (i != --j); ++i)
           if (pred(std::as_const(*i))) { k = i; return; }
           else if (pred(std::as_const(*j))) { k = j; return; }
 
