@@ -1170,6 +1170,37 @@ void test1() {
   dq.erase(dq.begin() + 2, dq.begin() + 5);
   assert(dq.size() == 7);  // The size should now be 7.
   }
+
+  {
+  ca::array<int, 10> dq{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  // Test 1: Erase a range of elements from the deque
+  dq.erase(dq.begin() + 2, dq.begin() + 5);
+  assert((dq == decltype(dq){1, 2, 6, 7, 8, 9, 10}));
+
+  // Test 2: Erase the entire deque
+  dq.erase(dq.begin(), dq.end());
+  assert(dq.empty());
+
+  // Test 3: Erase a single element from the deque
+  dq = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  dq.erase(dq.begin() + 4); // Erase '5'
+  assert((dq == decltype(dq){1, 2, 3, 4, 6, 7, 8, 9, 10}));
+
+  // Test 4: Erase a range with the same start and end iterator
+  auto it = dq.begin() + 3;
+  dq.erase(it, it);
+  assert((dq == decltype(dq){1, 2, 3, 4, 6, 7, 8, 9, 10}));
+
+  // Test 5: Erase a range that encompasses the entire deque
+  dq.erase(dq.begin(), dq.end());
+  assert(dq.empty());
+
+  // Test 6: Erase an empty range from the deque
+  dq = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  dq.erase(dq.end(), dq.end());
+  assert((dq == decltype(dq){1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+  }
 }
 
 int main() {
