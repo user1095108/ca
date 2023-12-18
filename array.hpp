@@ -721,15 +721,13 @@ constexpr auto find_if(auto&& c, auto pred)
   decltype(c.data()) k{};
 
   c.split(
-    [&](auto* i, decltype(i) const end) noexcept(noexcept(pred(*c.cbegin())))
+    [&](auto* i, decltype(i) j) noexcept(noexcept(pred(*c.cbegin())))
     {
       if (!k)
       {
-        for (auto j(end); (i != j) && (i != --j); ++i)
+        for (; i <= --j; ++i)
           if (pred(std::as_const(*i))) { k = i; return; }
           else if (pred(std::as_const(*j))) { k = j; return; }
-
-        if ((end != i) && pred(std::as_const(*i))) k = i;
       }
     }
   );
