@@ -439,7 +439,7 @@ public:
   constexpr iterator erase(const_iterator const i)
     noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
   {
-    iterator b{this, i.n_}, a(b++);
+    iterator a{this, i.n_}, b{this, next_(i.n_)};
 
     return distance_(f_, a.n_) <= distance_(b.n_, l_) ?
       f_ = std::move_backward(begin(), a, b).n_, b:
