@@ -459,16 +459,13 @@ public:
   {
     auto const n1(distance_(f_, i.n_)), n3(distance_(j.n_, l_));
 
-    return n1 <= n3 ?
-      iterator{
+    return iterator{
         this,
-        (f_ = std::move_backward(begin(), iterator{this, i.n_},
-        iterator{this, j.n_}).n_) + n1
-      } :
-      iterator{
-        this,
-        (l_ = std::move(iterator{this, j.n_}, end(),
-        iterator{this, i.n_}).n_) - n3
+        n1 <= n3 ?
+          (f_ = std::move_backward(begin(), iterator{this, i.n_},
+          iterator{this, j.n_}).n_) + n1 :
+          (l_ = std::move(iterator{this, j.n_}, end(),
+          iterator{this, i.n_}).n_) - n3
       };
   }
 
