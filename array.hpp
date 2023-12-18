@@ -686,7 +686,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
       noexcept(noexcept(pred(std::as_const(*i)), c.erase({&c, i})))
     {
       for (--j; (i != j) &&
-        (i != (pred(std::as_const(*j)) ? ++r, j = &*--c.erase({&c, j}) :--j));
+        (i != (pred(std::as_const(*j)) ? ++r, --(j=&*c.erase({&c, j})): --j));
         pred(std::as_const(*i)) ? ++r, i = &*c.erase({&c, i}) : ++i);
 
       if (pred(*i)) ++r, c.erase({&c, i});
