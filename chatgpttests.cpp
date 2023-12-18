@@ -1087,8 +1087,10 @@ void test1() {
   assert(deque1.size() == 2);
   assert(deque1[0] == 5);
   assert(deque1[1] == 10);
+  assert(ca::find(deque1, 10));
   assert(ca::erase(deque1, 5, 10));
   assert(deque1.empty());
+  assert(!ca::find(deque1, 10));
   }
 }
 
