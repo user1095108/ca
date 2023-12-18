@@ -718,7 +718,7 @@ constexpr auto find_if(auto&& c, auto pred)
   noexcept(noexcept(pred(*c.begin())))
   requires(requires{std::remove_cvref_t<decltype(c)>::ca_array_tag;})
 {
-  auto k(c.end());
+  decltype(c.data()) k{};
 
   c.split(
     [&](auto* i, decltype(i) const end) noexcept(noexcept(pred(*c.cbegin())))
@@ -728,23 +728,15 @@ constexpr auto find_if(auto&& c, auto pred)
         auto j(end);
 
         for (; (i != j) && (i != --j); ++i)
-        {
-          if (pred(std::as_const(*i)))
-          {
-            k = decltype(k){&c, i}; return;
-          }
-          else if (pred(std::as_const(*j)))
-          {
-            k = decltype(k){&c, j}; return;
-          }
-        }
+          if (pred(std::as_const(*i))) { k = i; return; }
+          else if (pred(std::as_const(*j))) { k = j; return; }
 
-        if ((end != i) && pred(std::as_const(*i))) k = decltype(k){&c, i};
+        if ((end != i) && pred(std::as_const(*i))) k = i;
       }
     }
   );
 
-  return k;
+  return decltype(c.end()){&c, k ? k : c.last()};
 }
 
 template <int = 0>
