@@ -729,7 +729,7 @@ constexpr auto find_if(auto&& c, auto pred)
   c.split(
     [&](auto i, decltype(i) j) noexcept(noexcept(pred(*c.cbegin())))
     {
-      if (!k && (i < j))
+      if ((i < j) && !k)
       {
         for (; i < --j; ++i)
           if (pred(std::as_const(*i))) { k = i; return; }
