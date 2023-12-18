@@ -460,10 +460,10 @@ public:
       return iterator{
           this,
           n1 <= n3 ?
-            (f_ = std::move_backward(begin(), iterator{this, i.n_},
-            iterator{this, j.n_}).n_) + n1 :
-            (l_ = std::move(iterator{this, j.n_}, end(),
-            iterator{this, i.n_}).n_) - n3
+            next_(f_ = std::move_backward(begin(), iterator{this, i.n_},
+              iterator{this, j.n_}).n_, n1) :
+            prev_(l_ = std::move(iterator{this, j.n_}, end(),
+              iterator{this, i.n_}).n_, n3)
         };
     }
   }
