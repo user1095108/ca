@@ -638,10 +638,10 @@ public:
   constexpr void split(auto&& g)
     noexcept(noexcept(g(f_, f_)))
   { // split the [f_, l_) range into 1 or 2 contiguous ranges
-    if (auto const c(l_ <=> f_); c < 0) // f_ > l_ >= a_, f_ > a_
+    if (auto const c(f_ <=> l_); c > 0) // f_ > l_ >= a_, f_ > a_
     {
       g(f_, &a_[N]);
-      if (l_ < f_) g(&*a_, l_);
+      if (f_ > l_) g(&*a_, l_);
     }
     else if (c != 0)
     {
@@ -654,7 +654,7 @@ public:
   {
     using ptr_t = decltype(data());
 
-    if (auto const c(l_ <=> f_); c < 0)
+    if (auto const c(f_ <=> l_); c > 0)
     {
       g(ptr_t(f_), ptr_t(&a_[N])); g(ptr_t(a_), ptr_t(l_));
     }
