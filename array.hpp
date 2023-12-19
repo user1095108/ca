@@ -701,14 +701,14 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
 
 template <int = 0, typename T, std::size_t S, enum Method M>
 constexpr auto erase(array<T, S, M>& c, auto const& ...k)
-  noexcept(noexcept(c.erase({}), (std::equal_to<>()(*c.cbegin(), k), ...)))
-  requires(requires{(std::equal_to<>()(*c.cbegin(), k), ...);})
+  noexcept(noexcept(c.erase({}), ((*c.cbegin() == k), ...)))
+  requires(requires{((*c.cbegin() == k), ...);})
 {
   return erase_if(
       c,
-      [&k...](auto& a) noexcept(noexcept((std::equal_to<>()(a, k), ...)))
+      [&k...](auto& a) noexcept(noexcept(((a == k), ...)))
       {
-        return (std::equal_to<>()(a, k) || ...);
+        return ((a == k) || ...);
       }
     );
 }
@@ -745,15 +745,14 @@ constexpr auto find_if(auto&& c, auto pred)
 
 template <int = 0>
 constexpr auto find(auto&& c, auto const& ...k)
-  noexcept(noexcept((std::equal_to<>()(*c.cbegin(), k), ...)))
-  requires(requires{(std::equal_to<>()(*c.cbegin(), k), ...);})
+  noexcept(noexcept(((*c.cbegin() == k), ...)))
+  requires(requires{((*c.cbegin() == k), ...);})
 {
   return find_if(
       std::forward<decltype(c)>(c),
-      [&k...](auto const& a)
-        noexcept(noexcept((std::equal_to<>()(a, k), ...)))
+      [&k...](auto const& a) noexcept(noexcept(((a == k), ...)))
       {
-        return (std::equal_to<>()(a, k) || ...);
+        return ((a == k) || ...);
       }
     );
 }
