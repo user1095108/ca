@@ -645,7 +645,7 @@ public:
     }
     else if (c > 0)
     {
-      return {pair_t{f_, decltype(f_)(&a_[N])}, pair_t{decltype(f_)(a_), l_}};
+      return {pair_t{f_, (T*)(&a_[N])}, pair_t{(T*)(a_), l_}};
     }
     else
     {
