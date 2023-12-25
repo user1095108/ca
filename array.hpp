@@ -637,7 +637,7 @@ public:
   //
   constexpr std::array<std::array<T*, 2>, 2> split() const noexcept
   {
-    using pair_t = std::array<T*, 2>;
+    using pair_t = decltype(split())::value_type;
 
     if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
     {
