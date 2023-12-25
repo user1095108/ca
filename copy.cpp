@@ -11,8 +11,9 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
 {
   std::size_t r{};
 
-  s.split(
-    [&](auto const b, auto e) noexcept
+  for (auto&& [b, e]: s.split())
+  {
+    if (b)
     {
       auto const l(d.last());
 
@@ -30,7 +31,7 @@ auto copy(ca::array<T1, S1, M1> const& s, ca::array<T2, S2, M2>& d) noexcept
 
       std::copy(b, e, l);
     }
-  );
+  }
 
   return r;
 }
