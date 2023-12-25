@@ -458,8 +458,8 @@ public:
       decltype(ii) jj{this, j.n_};
 
       return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
-          f_ = std::move_backward(begin(), ii, jj).n_, jj :
-          (l_ = std::move(jj, end(), ii).n_, ii);
+        f_ = std::move_backward(begin(), ii, jj).n_, jj :
+        (l_ = std::move(jj, end(), ii).n_, ii);
     }
   }
 
