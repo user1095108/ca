@@ -644,8 +644,7 @@ public:
     }
     else if (c > 0)
     {
-      g(f_, &a_[N]);
-      if (f_ > l_) g(&*a_, l_);
+      g(f_, &a_[N]); if (f_ > l_) g(&*a_, l_);
     }
   }
 
