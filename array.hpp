@@ -715,14 +715,13 @@ constexpr auto find_if(auto&& c, auto pred)
 {
   for (auto&& [i, j]: c.split())
   {
-    if (i)
-    {
-      for (; i < --j; ++i)
-        if (pred(std::as_const(*i))) return {&c, i};
-        else if (pred(std::as_const(*j))) return {&c, j};
+    if (!i) break;
 
+    for (; i < --j; ++i)
       if (pred(std::as_const(*i))) return {&c, i};
-    }
+      else if (pred(std::as_const(*j))) return {&c, j};
+
+    if (pred(std::as_const(*i))) return {&c, i};
   }
 
   return c.end();
