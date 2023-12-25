@@ -635,6 +635,26 @@ public:
   }
 
   //
+  constexpr auto split() const noexcept
+  {
+    using ptr_t = decltype(f_);
+    using pair_t = std::pair<ptr_t, ptr_t>;
+    using r_t = std::array<pair_t, 2>;
+
+    if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
+    {
+      return r_t{pair_t(f_, l_)};
+    }
+    else if (c > 0)
+    {
+      return r_t{pair_t{f_, ptr_t(&a_[N])}, pair_t{ptr_t(&*a_), l_}};
+    }
+    else
+    {
+      return r_t{};
+    }
+  }
+
   constexpr void split(auto&& g)
     noexcept(noexcept(g(f_, f_)))
   { // split the [f_, l_) range into 1 or 2 contiguous ranges
@@ -723,23 +743,21 @@ constexpr auto find_if(auto&& c, auto pred)
   noexcept(noexcept(pred(*c.cbegin())))
   requires(requires{std::remove_cvref_t<decltype(c)>::ca_array_tag;})
 {
-  decltype(c.data()) k{};
+  using iter_t = decltype(c.end());
 
-  c.split(
-    [&](auto i, decltype(i) j) noexcept(noexcept(pred(*c.cbegin())))
+  for (auto&& [i, j]: c.split())
+  {
+    if (i)
     {
-      if (!k)
-      {
-        for (; i < --j; ++i)
-          if (pred(std::as_const(*i))) { k = i; return; }
-          else if (pred(std::as_const(*j))) { k = j; return; }
+      for (; i < --j; ++i)
+        if (pred(std::as_const(*i))) return iter_t{&c, i};
+        else if (pred(std::as_const(*j))) return iter_t{&c, j};
 
-        if (pred(std::as_const(*i))) k = i;
-      }
+      if (pred(std::as_const(*i))) return iter_t{&c, i};
     }
-  );
+  }
 
-  return decltype(c.end()){&c, k ? k : c.last()};
+  return c.end();
 }
 
 template <int = 0>
