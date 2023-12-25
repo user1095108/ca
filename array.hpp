@@ -641,11 +641,17 @@ public:
     using pair_t = std::pair<decltype(f_), decltype(f_)>;
 
     if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
+    {
       return {pair_t{f_, l_}};
+    }
     else if (c > 0)
+    {
       return {pair_t{f_, decltype(f_)(&a_[N])}, pair_t{decltype(f_)(a_), l_}};
+    }
     else
+    {
       return {};
+    }
   }
 
   //
