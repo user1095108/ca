@@ -740,20 +740,19 @@ constexpr auto erase(array<T, S, M>& c, T const k)
 }
 
 constexpr auto find_if(auto&& c, auto pred)
-  noexcept(noexcept(pred(*c.cbegin())))
+  noexcept(noexcept(pred(*c.cbegin()))) ->
+  decltype(c.end())
   requires(requires{std::remove_cvref_t<decltype(c)>::ca_array_tag;})
 {
-  using iter_t = decltype(c.end());
-
   for (auto&& [i, j]: c.split())
   {
     if (i)
     {
       for (; i < --j; ++i)
-        if (pred(std::as_const(*i))) return iter_t{&c, i};
-        else if (pred(std::as_const(*j))) return iter_t{&c, j};
+        if (pred(std::as_const(*i))) return {&c, i};
+        else if (pred(std::as_const(*j))) return {&c, j};
 
-      if (pred(std::as_const(*i))) return iter_t{&c, i};
+      if (pred(std::as_const(*i))) return {&c, i};
     }
   }
 
