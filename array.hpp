@@ -678,8 +678,8 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
 
   for (auto&& [i, j]: c.split())
   {
-    for (; (i != j) && (i != c.last());
-      pred(std::as_const(*i)) ? ++r, i = &*c.erase({&c, i}) : ++i);
+    for (; (i != j) && (i != c.last()); pred(std::as_const(*i)) ?
+      ++r, i = std::addressof(*c.erase({&c, i})) : ++i);
 
     if (c.first() <= c.last()) break;
   }
