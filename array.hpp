@@ -635,10 +635,9 @@ public:
   }
 
   //
-  constexpr auto split() const noexcept ->
-    std::array<std::pair<decltype(f_), decltype(f_)>, 2>
+  constexpr std::array<std::pair<T*, T*>, 2> split() const noexcept
   {
-    using pair_t = std::pair<decltype(f_), decltype(f_)>;
+    using pair_t = std::pair<T*, T*>;
 
     if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
     {
