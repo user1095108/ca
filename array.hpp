@@ -641,45 +641,31 @@ public:
     using pair_t = std::pair<decltype(f_), decltype(f_)>;
 
     if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
-    {
       return {pair_t{f_, l_}};
-    }
     else if (c > 0)
-    {
       return {pair_t{f_, decltype(f_)(&a_[N])}, pair_t{decltype(f_)(a_), l_}};
-    }
     else
-    {
       return {};
-    }
   }
 
-  constexpr void split(auto&& g)
-    noexcept(noexcept(g(f_, f_)))
+  constexpr void split(auto&& g) noexcept(noexcept(g(f_, f_)))
   { // split the [f_, l_) range into 1 or 2 contiguous ranges
     if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
-    {
       g(f_, l_);
-    }
     else if (c > 0)
     {
       g(f_, &a_[N]); if (f_ > l_) g(&*a_, l_);
     }
   }
 
-  constexpr void split(auto&& g) const
-    noexcept(noexcept(g(f_, f_)))
+  constexpr void split(auto&& g) const noexcept(noexcept(g(f_, f_)))
   {
     using ptr_t = decltype(data());
 
     if (auto const c(f_ <=> l_); c < 0)
-    {
       g(ptr_t(f_), ptr_t(l_));
-    }
     else if (c > 0)
-    {
       g(ptr_t(f_), ptr_t(&a_[N])); g(ptr_t(a_), ptr_t(l_));
-    }
   }
 
   //
@@ -705,14 +691,13 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  c.split(
-    [&](auto i, decltype(i) const j)
-      noexcept(noexcept(pred(std::as_const(*i)), c.erase({&c, i})))
-    {
-      for (; (i != j) && (i != c.last());
-        pred(std::as_const(*i)) ? ++r, i = &*c.erase({&c, i}) : ++i);
-    }
-  );
+  for (auto&& [i, j]: c.split())
+  {
+    for (; (i != j) && (i != c.last());
+      pred(std::as_const(*i)) ? ++r, i = &*c.erase({&c, i}) : ++i);
+
+    if (c.first() <= c.last()) break;
+  }
 
   return r;
 }
