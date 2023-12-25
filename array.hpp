@@ -635,13 +635,13 @@ public:
   }
 
   //
-  constexpr std::array<std::pair<T*, T*>, 2> split() const noexcept
+  constexpr std::array<std::array<T*, 2>, 2> split() const noexcept
   {
-    using pair_t = std::pair<T*, T*>;
+    using pair_t = std::array<T*, 2>;
 
     if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
     {
-      return {pair_t{f_, l_}};
+      return {{f_, l_}};
     }
     else if (c > 0)
     {
