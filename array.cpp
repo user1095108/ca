@@ -24,12 +24,8 @@ int main()
   std::cout << "size: " << ca.size() << std::endl;
   std::cout << "full: " << ca.full() << std::endl;
 
-  ca.split(
-    [](auto const b, auto const e)
-    {
-      std::copy(b, e, std::ostream_iterator<int>(std::cout, "\n"));
-    }
-  );
+  for (auto&& [b, e]: ca.split())
+    std::copy(b, e, std::ostream_iterator<int>(std::cout, "\n"));
 
   ca.erase(std::next(ca.cbegin()));
 
