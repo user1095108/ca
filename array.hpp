@@ -641,7 +641,7 @@ public:
 
     if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
     {
-      return {{f_, l_}};
+      return {pair_t{f_, l_}};
     }
     else if (c > 0)
     {
