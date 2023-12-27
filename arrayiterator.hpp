@@ -79,6 +79,9 @@ public:
     a_ = o.a_; n_ = o.n_; return *this;
   }
 
+  // conversion to bool
+  constexpr explicit operator bool() const noexcept { return n_ != a_->l_; }
+
   // increment, decrement
   constexpr auto& operator++() noexcept { n_ = a_->next_(n_); return *this; }
   constexpr auto& operator--() noexcept { n_ = a_->prev_(n_); return *this; }
@@ -148,9 +151,6 @@ public:
   {
     return *std::add_pointer_t<T>(n_);
   }
-
-  //
-  constexpr explicit operator bool() const noexcept { return n_ != a_->l_; }
 };
 
 //////////////////////////////////////////////////////////////////////////////
