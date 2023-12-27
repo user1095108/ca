@@ -99,7 +99,7 @@ public:
   // arithmetic
   constexpr auto operator-(arrayiterator const& o) const noexcept
   {
-    decltype(n_) const f(a_->f_);
+    auto const f(a_->f_);
     return difference_type(CA::distance_(f, n_) - CA::distance_(f, o.n_));
   }
 
