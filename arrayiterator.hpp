@@ -100,8 +100,7 @@ public:
   constexpr auto operator-(arrayiterator const& o) const noexcept
   {
     decltype(n_) const f(a_->f_);
-    return difference_type(CA::distance_(f, n_)) -
-      difference_type(CA::distance_(f, o.n_));
+    return difference_type(CA::distance_(f, n_) - CA::distance_(f, o.n_));
   }
 
   constexpr arrayiterator operator+(difference_type const n) const noexcept
