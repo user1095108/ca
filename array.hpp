@@ -266,8 +266,8 @@ public:
   constexpr const_iterator begin() const noexcept { return {this, f_}; }
   constexpr const_iterator end() const noexcept { return {this, l_}; }
 
-  constexpr const_iterator cbegin() const noexcept { return {this, f_}; }
-  constexpr const_iterator cend() const noexcept { return {this, l_}; }
+  constexpr auto cbegin() const noexcept { return begin(); }
+  constexpr auto cend() const noexcept { return end(); }
 
   // reverse iterators
   constexpr reverse_iterator rbegin() noexcept
@@ -280,16 +280,18 @@ public:
     return reverse_iterator{iterator(this, f_)};
   }
 
-  // const reverse iterators
-  constexpr const_reverse_iterator crbegin() const noexcept
+  constexpr const_reverse_iterator rbegin() const noexcept
   {
     return const_reverse_iterator{const_iterator(this, l_)};
   }
 
-  constexpr const_reverse_iterator crend() const noexcept
+  constexpr const_reverse_iterator rend() const noexcept
   {
     return const_reverse_iterator{const_iterator{this, f_}};
   }
+
+  constexpr auto crbegin() const noexcept { return rbegin(); }
+  constexpr auto crend() const noexcept { return rend(); }
 
   // CAP = N - 1, N = CAP + 1
   static constexpr size_type capacity() noexcept { return CAP; }
