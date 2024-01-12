@@ -635,7 +635,7 @@ public:
   }
 
   //
-  constexpr std::array<std::array<T*, 2>, 2> split() const noexcept
+  constexpr std::array<std::array<T*, 2>, 2> split() noexcept
   {
     using pair_t = decltype(split())::value_type;
 
@@ -652,6 +652,26 @@ public:
       return {};
     }
   }
+
+  constexpr std::array<std::array<T const*, 2>, 2> split() const noexcept
+  {
+    using pair_t = decltype(split())::value_type;
+
+    if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
+    {
+      return {pair_t{f_, l_}};
+    }
+    else if (c > 0)
+    {
+      return {pair_t{f_, (T const*)(&a_[N])}, pair_t{(T const*)(a_), l_}};
+    }
+    else
+    {
+      return {};
+    }
+  }
+
+  auto csplit() const noexcept { return split(); }
 
   //
   constexpr void swap(array& o)
@@ -676,11 +696,11 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  for (auto&& [i, j]: c.split())
+  for (auto&& [i, j]: c.csplit())
   {
     if (!i) break;
 
-    for (; (i != j) && (i != c.last()); pred(std::as_const(*i)) ?
+    for (; (i != j) && (i != c.last()); pred(*i) ?
       ++r, i = std::addressof(*c.erase({&c, i})) : ++i);
 
     if (c.first() <= c.last()) break;
