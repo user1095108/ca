@@ -647,7 +647,7 @@ public:
     {
       return {pair_t{f_, (T*)(&a_[N])}, pair_t{(T*)(a_), l_}};
     }
-    else
+    else [[unlikely]]
     {
       return {};
     }
@@ -665,7 +665,7 @@ public:
     {
       return {pair_t{f_, (T const*)(&a_[N])}, pair_t{(T const*)(a_), l_}};
     }
-    else
+    else [[unlikely]]
     {
       return {};
     }
