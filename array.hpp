@@ -5,7 +5,7 @@
 #include <cstdint> // PTRDIFF_MAX
 #include <algorithm> // std::move()
 #include <compare> // std::three_way_comparable
-#include <execution> // std::execution::unseq
+#include <execution> // std::execution::seq
 #include <initializer_list>
 #include <ranges>
 
