@@ -640,7 +640,7 @@ public:
     sz = std::min(sz, capacity() - size());
 
     auto const nc(std::min(size_type(
-      (f_ <= l_ ? &a_[N] - l_ : f_ - l_) - 1), sz));
+      f_ <= l_ ? &a_[N - 1] - l_ : f_ - l_ - 1), sz));
 
     std::copy(p, p + nc, l_);
     std::copy(p, sz - nc + p, a_);
