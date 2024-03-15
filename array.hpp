@@ -635,19 +635,19 @@ public:
   }
 
   //
-  constexpr auto append(T const* const p, size_type sz) noexcept
+  constexpr auto append(T const* const p, size_type cnt) noexcept
   { // appends to container from a memory region
-    sz = std::min(sz, capacity() - size());
+    cnt = std::min(cnt, capacity() - size());
 
     auto const nc(std::min(size_type(
-      f_ <= l_ ? &a_[N - 1] - l_ : f_ - l_ - 1), sz));
+      f_ <= l_ ? &a_[N - 1] - l_ : f_ - l_ - 1), cnt));
 
     std::copy(p, p + nc, l_);
-    std::copy(p, sz - nc + p, a_);
+    std::copy(p, cnt - nc + p, a_);
 
-    l_ = next_(l_, sz);
+    l_ = next_(l_, cnt);
 
-    return sz;
+    return cnt;
   }
 
   constexpr void copy(T* p) const noexcept
