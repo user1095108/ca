@@ -710,6 +710,8 @@ public:
     }
   }
 
+  auto csplit() const noexcept { return split(); }
+
   //
   constexpr void swap(array& o)
     noexcept(noexcept(std::swap(*this, o)))
@@ -733,7 +735,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  for (auto&& [i, j]: c.split())
+  for (auto&& [i, j]: c.csplit())
   {
     if (!i) break;
 
