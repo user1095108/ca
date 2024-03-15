@@ -655,7 +655,7 @@ public:
   template <auto exec = std::execution::seq>
   constexpr void copy(T* p) const noexcept
   { // copies from container to a memory region
-    for (auto&& [i, j]: split())
+    for (auto const& [i, j]: split())
     {
       if (!i) break;
 
@@ -667,7 +667,7 @@ public:
   template <auto exec = std::execution::seq>
   constexpr void copy(T* p, size_type sz) const noexcept
   { // copies from container to a memory region
-    for (auto&& [i, j]: split())
+    for (auto const& [i, j]: split())
     {
       if (!i) break;
 
