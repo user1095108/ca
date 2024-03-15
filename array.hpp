@@ -5,6 +5,7 @@
 #include <cstdint> // PTRDIFF_MAX
 #include <algorithm> // std::move()
 #include <compare> // std::three_way_comparable
+#include <execution> // std::execution::unseq
 #include <initializer_list>
 #include <ranges>
 
@@ -642,8 +643,8 @@ public:
     auto const nc(std::min(f_ <= l_ ? size_type(&a_[N - 1] - l_) + 1 :
       size_type(f_ - l_ - 1), cnt));
 
-    std::copy(p, p + nc, l_);
-    std::copy(p, cnt - nc + p, a_);
+    std::copy(std::execution::unseq, p, p + nc, l_);
+    std::copy(std::execution::unseq, p, cnt - nc + p, a_);
 
     l_ = next_(l_, cnt);
 
@@ -656,7 +657,7 @@ public:
     {
       if (!i) break;
 
-      std::copy(i, j, p);
+      std::copy(std::execution::unseq, i, j, p);
       p += distance_(i, j);
     }
   }
@@ -668,7 +669,7 @@ public:
       if (!i) break;
 
       auto const nc(std::min(distance_(i, j), sz));
-      std::copy(i, j, p, p + nc);
+      std::copy(std::execution::unseq, i, j, p, p + nc);
       p += nc;
       sz -= nc;
     }
