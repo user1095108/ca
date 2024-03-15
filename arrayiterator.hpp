@@ -31,9 +31,9 @@ class arrayiterator
     requires(
       !std::is_reference_v<U> &&
       !std::is_const_v<U> &&
-      std::is_default_constructible_v<U>
-//    (CAP > 0) && (CAP <= PTRDIFF_MAX)
-//    (std::is_copy_assignable_v<U> || std::is_move_assignable_v<U>)
+      std::is_default_constructible_v<U> &&
+      (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
+      (std::is_copy_assignable_v<U> || std::is_move_assignable_v<U>)
     )
   friend class array;
 
