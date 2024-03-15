@@ -660,7 +660,7 @@ public:
       if (!i) break;
 
       std::copy(exec, i, j, p);
-      p += distance_(i, j);
+      p += j - i;
     }
   }
 
@@ -671,7 +671,7 @@ public:
     {
       if (!i) break;
 
-      auto const nc(std::min(distance_(i, j), sz));
+      auto const nc(std::min(size_type(j - i), sz));
       std::copy(exec, i, j, p, p + nc);
       p += nc;
       sz -= nc;
