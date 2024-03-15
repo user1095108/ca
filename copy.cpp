@@ -13,7 +13,6 @@ int main()
 
   d.append(s.data(), s.size());
   assert(s == d);
-  std::copy(d.crbegin(), d.crend(), std::ostream_iterator<int>(std::cout, "\n"));
 
   s.copy(d.data());
   assert(s == d);
