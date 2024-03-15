@@ -635,6 +635,45 @@ public:
   }
 
   //
+  constexpr auto append(T const* const p, size_type sz) noexcept
+  { // appends to container from a memory region
+    sz = std::min(sz, capacity() - size());
+
+    auto const nc(std::min(f_ <= l_ ? size_type(&a_[N] - l_ - 1) :
+      size_type(f_ - l_ - 1), sz));
+
+    std::copy(p, p + nc, l_);
+    std::copy(p, sz - nc + p, a_);
+
+    l_ = next_(l_, sz);
+
+    return sz;
+  }
+
+  constexpr void copy(T* p) const noexcept
+  { // copies from container to a memory region
+    for (auto&& [i, j]: split())
+    {
+      if (!i) break;
+
+      std::copy(i, j, p);
+      p += distance_(i, j);
+    }
+  }
+
+  constexpr void copy(T* p, size_type sz) const noexcept
+  { // copies from container to a memory region
+    for (auto&& [i, j]: split())
+    {
+      if (!i) break;
+
+      auto const nc(std::min(distance_(i, j), sz));
+      std::copy(i, j, p, p + nc);
+      p += nc;
+      sz -= nc;
+    }
+  }
+
   constexpr std::array<std::array<T*, 2>, 2> split() noexcept
   {
     using pair_t = decltype(split())::value_type;
@@ -671,8 +710,6 @@ public:
     }
   }
 
-  auto csplit() const noexcept { return split(); }
-
   //
   constexpr void swap(array& o)
     noexcept(noexcept(std::swap(*this, o)))
@@ -696,7 +733,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
 
-  for (auto&& [i, j]: c.csplit())
+  for (auto&& [i, j]: c.split())
   {
     if (!i) break;
 
