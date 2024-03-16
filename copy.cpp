@@ -6,13 +6,13 @@
 
 #include "array.hpp"
 
-void randomize(auto& ...d) noexcept
+void randomize(auto& ...a) noexcept
 {
   (
     [&]() noexcept
     {
-      d.resize(rand() % d.capacity() + 1);
-      d.clear();
+      a.resize(std::rand() % a.capacity() + 1);
+      a.clear();
     }(),
     ...
   );
