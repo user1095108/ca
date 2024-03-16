@@ -1,8 +1,8 @@
 #include <cassert>
 #include <cstdlib>
-#include <ctime>
 #include <iostream>
 #include <numeric>
+#include <random>
 
 #include "array.hpp"
 
@@ -20,7 +20,7 @@ void randomize(auto& ...d) noexcept
 
 int main()
 {
-  std::srand(time(0));
+  std::srand(std::random_device{}());
 
   ca::array<int, 100> s, d;
 
