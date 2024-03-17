@@ -707,7 +707,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename T, std::size_t S, enum Method M>
+template <typename T, auto S, auto M>
 constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
   noexcept(noexcept(c.erase(c.cbegin()), pred(*c.cbegin())))
 {
@@ -726,7 +726,7 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
   return r;
 }
 
-template <int = 0, typename T, std::size_t S, enum Method M>
+template <int = 0, typename T, auto S, auto M>
 constexpr auto erase(array<T, S, M>& c, auto const& ...k)
   noexcept(noexcept(c.erase({}), ((*c.cbegin() == k), ...)))
   requires(requires{((*c.cbegin() == k), ...);})
@@ -740,7 +740,7 @@ constexpr auto erase(array<T, S, M>& c, auto const& ...k)
     );
 }
 
-template <typename T, std::size_t S, enum Method M>
+template <typename T, auto S, auto M>
 constexpr auto erase(array<T, S, M>& c, T const k)
   noexcept(noexcept(erase<0>(c, k)))
 {
@@ -780,14 +780,14 @@ constexpr auto find(auto&& c, auto const& ...k)
     );
 }
 
-template <typename T, std::size_t S, enum Method M>
+template <typename T, auto S, auto M>
 constexpr auto find(array<T, S, M>& c, T const k)
   noexcept(noexcept(find<0>(c, k)))
 {
   return find<0>(c, k);
 }
 
-template <typename T, std::size_t S, enum Method M>
+template <typename T, auto S, auto M>
 constexpr auto find(array<T, S, M> const& c, T const k)
   noexcept(noexcept(find<0>(c, k)))
 {
@@ -795,8 +795,7 @@ constexpr auto find(array<T, S, M> const& c, T const k)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename T1, std::size_t S1, enum Method M1,
-  typename T2, std::size_t S2, enum Method M2>
+template <typename T1, auto S1, auto M1, typename T2, auto S2, auto M2>
 constexpr bool operator==(array<T1, S1, M1> const& l,
   array<T2, S2, M2> const& r)
   noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
@@ -804,8 +803,7 @@ constexpr bool operator==(array<T1, S1, M1> const& l,
   return std::equal(l.begin(), l.end(), r.begin(), r.end());
 }
 
-template <typename T1, std::size_t S1, enum Method M1,
-  typename T2, std::size_t S2, enum Method M2>
+template <typename T1, auto S1, auto M1, typename T2, auto S2, auto M2>
 constexpr auto operator<=>(array<T1, S1, M1> const& l,
   array<T2, S2, M2> const& r)
   noexcept(noexcept(std::lexicographical_compare_three_way(
@@ -815,7 +813,7 @@ constexpr auto operator<=>(array<T1, S1, M1> const& l,
     l.begin(), l.end(), r.begin(), r.end());
 }
 
-template <auto exec = std::execution::seq, typename T, auto S, enum Method M>
+template <auto exec = std::execution::seq, typename T, auto S, auto M>
 constexpr void copy(array<T, S, M> const& a, T* p) noexcept
 { // copies from container to a memory region
   for (auto const& [i, j]: a.split())
@@ -827,7 +825,7 @@ constexpr void copy(array<T, S, M> const& a, T* p) noexcept
   }
 }
 
-template <auto exec = std::execution::seq, typename T, auto S, enum Method M>
+template <auto exec = std::execution::seq, typename T, auto S, auto M>
 constexpr void copy(array<T, S, M> const& a, T* p,
   typename std::remove_cvref_t<decltype(a)>::size_type sz) noexcept
 { // copies from container to a memory region
@@ -842,7 +840,7 @@ constexpr void copy(array<T, S, M> const& a, T* p,
   }
 }
 
-template <typename T, std::size_t S, enum Method M>
+template <typename T, auto S, auto M>
 constexpr void swap(array<T, S, M>& l, decltype(l) r) noexcept { l.swap(r); }
 
 }
