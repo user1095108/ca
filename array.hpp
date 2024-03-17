@@ -636,6 +636,21 @@ public:
   }
 
   //
+  constexpr void swap(array& o)
+    noexcept(noexcept(std::swap(*this, o)))
+    requires(MEMBER == M)
+  {
+    std::swap(*this, o);
+  }
+
+  constexpr void swap(array& o) noexcept
+    requires((NEW == M) || (USER == M))
+  { // swap state
+    detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
+      (o.f_, o.l_, o.a_, f_, l_, a_);
+  }
+
+  //
   template <auto exec = std::execution::seq>
   constexpr auto append(T const* const p, size_type cnt) noexcept
   { // appends to container from a memory region
@@ -650,32 +665,6 @@ public:
     l_ = next_(l_, cnt);
 
     return cnt;
-  }
-
-  template <auto exec = std::execution::seq>
-  constexpr void copy(T* p) const noexcept
-  { // copies from container to a memory region
-    for (auto const& [i, j]: split())
-    {
-      if (!i) break;
-
-      std::copy(exec, i, j, p);
-      p += j - i;
-    }
-  }
-
-  template <auto exec = std::execution::seq>
-  constexpr void copy(T* p, size_type sz) const noexcept
-  { // copies from container to a memory region
-    for (auto const& [i, j]: split())
-    {
-      if (!i) break;
-
-      auto const nc(std::min(size_type(j - i), sz));
-      std::copy(exec, i, j, p, p + nc);
-      p += nc;
-      sz -= nc;
-    }
   }
 
   constexpr std::array<std::array<T*, 2>, 2> split() noexcept
@@ -715,21 +704,6 @@ public:
   }
 
   auto csplit() const noexcept { return split(); }
-
-  //
-  constexpr void swap(array& o)
-    noexcept(noexcept(std::swap(*this, o)))
-    requires(MEMBER == M)
-  {
-    std::swap(*this, o);
-  }
-
-  constexpr void swap(array& o) noexcept
-    requires((NEW == M) || (USER == M))
-  { // swap state
-    detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
-      (o.f_, o.l_, o.a_, f_, l_, a_);
-  }
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -839,6 +813,33 @@ constexpr auto operator<=>(array<T1, S1, M1> const& l,
 {
   return std::lexicographical_compare_three_way(
     l.begin(), l.end(), r.begin(), r.end());
+}
+
+template <auto exec = std::execution::seq, typename T, auto S, enum Method M>
+constexpr void copy(array<T, S, M> const& a, T* p) noexcept
+{ // copies from container to a memory region
+  for (auto const& [i, j]: a.split())
+  {
+    if (!i) break;
+
+    std::copy(exec, i, j, p);
+    p += j - i;
+  }
+}
+
+template <auto exec = std::execution::seq, typename T, auto S, enum Method M>
+constexpr void copy(array<T, S, M> const& a, T* p,
+  typename std::remove_cvref_t<decltype(a)>::size_type sz) noexcept
+{ // copies from container to a memory region
+  for (auto const& [i, j]: a.split())
+  {
+    if (!i) break;
+
+    auto const nc(std::min(size_type(j - i), sz));
+    std::copy(exec, i, j, p, p + nc);
+    p += nc;
+    sz -= nc;
+  }
 }
 
 template <typename T, std::size_t S, enum Method M>
