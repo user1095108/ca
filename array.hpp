@@ -660,8 +660,8 @@ public:
       size_type(size_type(&a_[N - 1] - l_) + 1) :
       size_type(f_ - l_ - 1), cnt));
 
-    std::copy(exec, p, p + nc, l_);
-    std::copy(exec, p, cnt - nc + p, a_);
+    std::copy_n(exec, p, nc, l_);
+    std::copy_n(exec, p, cnt - nc, a_);
 
     l_ = next_(l_, cnt);
 
