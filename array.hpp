@@ -834,7 +834,7 @@ constexpr void copy(array<T, S, M> const& a, T* p,
   {
     if (!i) break;
 
-    auto const nc(std::min(decltype(sz)(j - 1 - i + 1), sz));
+    auto const nc(std::min(decltype(sz)(decltype(sz)(j - 1 - i) + 1), sz));
     std::copy_n(exec, i, nc, p);
     p += nc;
     sz -= nc;
