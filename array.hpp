@@ -827,7 +827,7 @@ constexpr void copy(array<T, S, M> const& a, T* p) noexcept
 
 template <auto exec = std::execution::seq, typename T, auto S, auto M>
 constexpr void copy(array<T, S, M> const& a, T* p,
-  typename std::remove_cvref_t<decltype(a)>::size_type sz) noexcept
+  typename array<T, S, M>::size_type sz) noexcept
 { // copies from container to a memory region
   for (auto const& [i, j]: a.split())
   {
