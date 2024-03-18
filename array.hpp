@@ -656,8 +656,7 @@ public:
   { // appends to container from a memory region
     cnt = std::min(cnt, capacity() - size());
 
-    auto const nc(std::min(f_ <= l_ ? size_type(&a_[N] - l_) :
-      size_type(f_ - l_ - 1), cnt));
+    size_type const nc(std::min(f_ <= l_ ? &a_[N] - l_ : f_ - l_ - 1, cnt));
 
     std::copy_n(exec, p, nc, l_);
     std::copy_n(exec, p, cnt - nc, a_);
