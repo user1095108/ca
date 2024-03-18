@@ -25,9 +25,9 @@ requires(
   !std::is_reference_v<T> &&
   !std::is_const_v<T> &&
   std::is_default_constructible_v<T> &&
-  (CAP > 0) && (CAP <= PTRDIFF_MAX) &&
+  (CAP > 0) && (CAP + 1 <= PTRDIFF_MAX) &&
   (std::is_copy_assignable_v<T> || std::is_move_assignable_v<T>)
-) // CAP = N - 1
+) // N = CAP + 1 <= PTRDIFF_MAX
 class array
 {
   friend class arrayiterator<T, array>;
@@ -90,7 +90,7 @@ public:
 
   static constexpr size_type distance_(auto const a, decltype(a) b) noexcept
   {
-    auto const n(b - a); // N - 1 = CAP <= PTRDIFF_MAX
+    auto const n(b - a); // N = CAP + 1 <= PTRDIFF_MAX
     return n < decltype(n){} ? N + n : n;
   }
 
@@ -294,7 +294,7 @@ public:
   constexpr auto crbegin() const noexcept { return rbegin(); }
   constexpr auto crend() const noexcept { return rend(); }
 
-  // CAP = N - 1, N = CAP + 1
+  // N = CAP + 1 <= PTRDIFF_MAX
   static constexpr size_type capacity() noexcept { return CAP; }
   static constexpr size_type max_size() noexcept { return PTRDIFF_MAX; }
 
@@ -656,7 +656,7 @@ public:
   { // appends to container from a memory region
     cnt = std::min(cnt, capacity() - size());
 
-    auto const nc(std::min(f_ <= l_ ? size_type(&a_[N - 1] - l_) + 1 :
+    auto const nc(std::min(f_ <= l_ ? size_type(&a_[N] - l_) :
       size_type(f_ - l_ - 1), cnt));
 
     std::copy_n(exec, p, nc, l_);
@@ -833,7 +833,7 @@ constexpr void copy(array<T, S, M> const& a, T* p,
   {
     if (!i) break;
 
-    auto const nc(std::min(decltype(sz)(j - 1 - i) + 1, sz));
+    auto const nc(std::min(decltype(sz)(j - i), sz));
     std::copy_n(exec, i, nc, p);
     p += nc;
     sz -= nc;
