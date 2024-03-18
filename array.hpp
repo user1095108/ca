@@ -25,7 +25,7 @@ requires(
   !std::is_reference_v<T> &&
   !std::is_const_v<T> &&
   std::is_default_constructible_v<T> &&
-  (CAP > 0) && (CAP + 1 <= PTRDIFF_MAX) &&
+  (CAP > 0) && (CAP < PTRDIFF_MAX) &&
   (std::is_copy_assignable_v<T> || std::is_move_assignable_v<T>)
 ) // N = CAP + 1 <= PTRDIFF_MAX
 class array
