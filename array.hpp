@@ -656,7 +656,8 @@ public:
   { // appends to container from a memory region
     cnt = std::min(cnt, capacity() - size());
 
-    auto const nc(std::min(f_ <= l_ ? size_type(-size_type(l_ - &a_[N])) :
+    auto const nc(std::min(f_ <= l_ ?
+      size_type(size_type(&a_[N - 1] - l_) + 1) :
       size_type(f_ - l_ - 1), cnt));
 
     std::copy(exec, p, p + nc, l_);
@@ -833,8 +834,8 @@ constexpr void copy(array<T, S, M> const& a, T* p,
   {
     if (!i) break;
 
-    auto const nc(std::min(size_type(-size_type(i - j)), sz));
-    std::copy(exec, i, j, p, p + nc);
+    auto const nc(std::min(decltype(sz)(j - 1 - i + 1), sz));
+    std::copy_n(exec, i, nc, p);
     p += nc;
     sz -= nc;
   }
