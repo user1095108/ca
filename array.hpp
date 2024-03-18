@@ -833,7 +833,7 @@ constexpr void copy(array<T, S, M> const& a, T* p,
   {
     if (!i) break;
 
-    auto const nc(std::min(size_type(j - i), sz));
+    auto const nc(std::min(size_type(-size_type(i - j)), sz));
     std::copy(exec, i, j, p, p + nc);
     p += nc;
     sz -= nc;
