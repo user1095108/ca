@@ -816,7 +816,7 @@ constexpr auto operator<=>(array<T1, S1, M1> const& l,
 template <auto exec = std::execution::seq, typename T, auto S, auto M>
 constexpr void copy(array<T, S, M> const& a, T* p) noexcept
 { // copies from container to a memory region
-  for (auto const& [i, j]: a.split())
+  for (auto& [i, j]: a.split())
   {
     if (!i) break;
 
@@ -829,7 +829,7 @@ template <auto exec = std::execution::seq, typename T, auto S, auto M>
 constexpr void copy(array<T, S, M> const& a, T* p,
   typename array<T, S, M>::size_type sz) noexcept
 { // copies from container to a memory region
-  for (auto const& [i, j]: a.split())
+  for (auto& [i, j]: a.split())
   {
     if (!i) break;
 
