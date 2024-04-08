@@ -123,10 +123,12 @@ public:
 
   constexpr array(array const& o)
     noexcept(noexcept(array(o.begin(), o.end())))
-    requires(std::is_copy_assignable_v<value_type>):
+    requires((USER != M) && std::is_copy_assignable_v<value_type>):
     array(o.begin(), o.end())
   {
   }
+
+  constexpr array(array const& o) requires(USER == M) = default;
 
   constexpr array(array&& o)
     noexcept(noexcept(o.clear(), std::move(std::execution::unseq,
@@ -153,7 +155,8 @@ public:
   }
 
   constexpr array(multi_t, auto&& ...a)
-    noexcept(noexcept(push_back(std::forward<decltype(a)>(a)...))):
+    noexcept(noexcept(push_back(std::forward<decltype(a)>(a)...)))
+    requires(USER != M):
     array()
   {
     push_back(std::forward<decltype(a)>(a)...);
@@ -161,20 +164,23 @@ public:
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
     noexcept(noexcept(std::copy(std::execution::unseq, i, j,
-      std::back_inserter(*this)))):
+      std::back_inserter(*this))))
+    requires(USER != M):
     array()
   {
     std::copy(std::execution::unseq, i, j, std::back_inserter(*this));
   }
 
   constexpr array(std::initializer_list<value_type> l)
-    noexcept(noexcept(array(l.begin(), l.end()))):
+    noexcept(noexcept(array(l.begin(), l.end())))
+    requires(USER != M):
     array(l.begin(), l.end())
   {
   }
  
   constexpr explicit array(size_type const c)
-    noexcept(noexcept(array(), resize(c))):
+    noexcept(noexcept(array(), resize(c)))
+    requires(USER != M):
     array()
   {
     resize(c);
@@ -182,20 +188,22 @@ public:
 
   constexpr explicit array(size_type const c, auto const& v, int = 0)
     noexcept(noexcept(array(c), std::fill(std::execution::unseq, f_, l_, v)))
-    requires(std::is_assignable_v<value_type&, decltype(v)>):
+    requires((USER != M) && std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
   {
     std::fill(std::execution::unseq, f_, l_, v);
   }
 
   constexpr explicit array(size_type const c, value_type const v)
-    noexcept(noexcept(array(c, v, 0))):
+    noexcept(noexcept(array(c, v, 0)))
+    requires(USER != M):
     array(c, v, 0)
   {
   }
 
   constexpr array(from_range_t, std::ranges::input_range auto&& rg)
-    noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg)))):
+    noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg))))
+    requires(USER != M):
     array(std::ranges::begin(rg), std::ranges::end(rg))
   {
   }
