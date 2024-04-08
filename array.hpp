@@ -5,8 +5,8 @@
 #include <cstdint> // PTRDIFF_MAX
 #include <algorithm> // std::move()
 #include <compare> // std::three_way_comparable
-#include <execution> // std::execution::seq
-#include <initializer_list>
+#include <execution> // std::execution
+#include <initializer_list> // std::initializer_list
 #include <ranges>
 
 #include "arrayiterator.hpp"
