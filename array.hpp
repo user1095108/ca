@@ -129,12 +129,13 @@ public:
   }
 
   constexpr array(array&& o)
-    noexcept(noexcept(
-      o.clear(), std::move(o.begin(), o.end(), std::back_inserter(*this))))
+    noexcept(noexcept(o.clear(), std::move(std::execution::unseq,
+      o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M):
     array()
   {
-    std::move(o.begin(), o.end(), std::back_inserter(*this));
+    std::move(std::execution::unseq, o.begin(), o.end(),
+      std::back_inserter(*this));
     o.clear();
   }
 
@@ -159,10 +160,11 @@ public:
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(std::copy(i, j, std::back_inserter(*this)))):
+    noexcept(noexcept(std::copy(std::execution::unseq, i, j,
+      std::back_inserter(*this)))):
     array()
   {
-    std::copy(i, j, std::back_inserter(*this));
+    std::copy(std::execution::unseq, i, j, std::back_inserter(*this));
   }
 
   constexpr array(std::initializer_list<value_type> l)
@@ -179,11 +181,11 @@ public:
   }
 
   constexpr explicit array(size_type const c, auto const& v, int = 0)
-    noexcept(noexcept(array(c), std::fill(f_, l_, v)))
+    noexcept(noexcept(array(c), std::fill(std::execution::unseq, f_, l_, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
   {
-    std::fill(f_, l_, v);
+    std::fill(std::execution::unseq, f_, l_, v);
   }
 
   constexpr explicit array(size_type const c, value_type const v)
@@ -207,21 +209,25 @@ public:
 
   //
   constexpr array& operator=(array const& o)
-    noexcept(noexcept(
-      std::copy(o.begin(), o.end(), std::back_inserter(*this))))
+    noexcept(noexcept(std::copy(std::execution::unseq,
+      o.begin(), o.end(), std::back_inserter(*this))))
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
-    clear(); std::copy(o.begin(), o.end(), std::back_inserter(*this));
+    clear();
+    std::copy(std::execution::unseq, o.begin(), o.end(),
+      std::back_inserter(*this));
 
     return *this;
   }
 
   constexpr array& operator=(array&& o)
-    noexcept(noexcept(o.clear(),
-      std::move(o.begin(), o.end(), std::back_inserter(*this))))
+    noexcept(noexcept(o.clear(), std::move(std::execution::unseq,
+      o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M)
   {
-    clear(); std::move(o.begin(), o.end(), std::back_inserter(*this));
+    clear();
+    std::move(std::execution::unseq, o.begin(), o.end(),
+      std::back_inserter(*this));
     o.clear();
 
     return *this;
@@ -340,9 +346,11 @@ public:
   }
 
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(clear(), std::copy(i, j, std::back_inserter(*this))))
+    noexcept(noexcept(clear(), std::copy(std::execution::unseq,
+      i, j, std::back_inserter(*this))))
   {
-    clear(); std::copy(i, j, std::back_inserter(*this));
+    clear();
+    std::copy(std::execution::unseq, i, j, std::back_inserter(*this));
   }
 
   constexpr void assign(std::initializer_list<value_type> l)
@@ -440,17 +448,19 @@ public:
 
   //
   constexpr iterator erase(const_iterator const i)
-    noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
+    noexcept(noexcept(std::move(std::execution::unseq, i, i, i),
+      std::move_backward(i, i, i)))
   {
     iterator const ii{this, i.n_}, jj{this, next_(i.n_)};
 
     return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
       f_ = std::move_backward(begin(), ii, jj).n_, jj:
-      (l_ = std::move(jj, end(), ii).n_, ii);
+      (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
   }
 
   constexpr iterator erase(const_iterator const i, const_iterator const j)
-    noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
+    noexcept(noexcept(std::move(std::execution::unseq, i, i, i),
+      std::move_backward(i, i, i)))
   {
     if (iterator const ii{this, i.n_}; i == j) [[unlikely]]
     {
@@ -461,15 +471,16 @@ public:
       decltype(ii) jj{this, j.n_};
 
       return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
-        f_ = std::move_backward(begin(), ii, jj).n_, jj :
-        (l_ = std::move(jj, end(), ii).n_, ii);
+        f_ = std::move_backward(begin(), ii, jj).n_,jj:
+        (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
     }
   }
 
   //
   template <int = 0>
   constexpr iterator insert(const_iterator const i, auto&& a)
-    noexcept(noexcept(std::move(i, i, i), std::move_backward(i, i, i)))
+    noexcept(noexcept(std::move(std::execution::unseq, i, i, i),
+      std::move_backward(i, i, i)))
     requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     if (full()) [[unlikely]] pop_front();
@@ -478,18 +489,18 @@ public:
     iterator j(this, i.n_);
 
     if (distance_(f_, i.n_) <= distance_(i.n_, l_))
-    {
+    { // [f, j) is moved
       auto const f(f_);
       f_ = prev_(f);
 
-      j = std::move({this, f}, j, begin()); // [f, j) is moved
+      j = std::move(std::execution::unseq, {this, f}, j, begin());
     }
     else
-    {
+    { // [j, l) is moved
       auto const l(l_);
       l_ = next_(l);
 
-      std::move_backward(j, {this, l}, end()); // [j, l) is moved
+      std::move_backward(j, {this, l}, end());
     }
 
     //
@@ -521,7 +532,8 @@ public:
 
   template <int = 0>
   constexpr iterator insert(const_iterator i, size_type const count,
-    auto const& v) noexcept(noexcept(insert(i, v)))
+    auto const& v)
+    noexcept(noexcept(insert(i, v)))
     requires(std::is_assignable_v<value_type&, decltype(v)>)
   {
     for (auto n(count); n; --n, ++(i = insert(i, v)));
@@ -545,8 +557,8 @@ public:
     std::for_each(
       j,
       k,
-      [&](auto&& v)
-        noexcept(noexcept(insert(i, std::forward<decltype(v)>(v))))
+      [&](auto&& v) noexcept(noexcept(
+        insert(i, std::forward<decltype(v)>(v))))
       {
         ++n, ++(i = insert(i, std::forward<decltype(v)>(v)));
       }
@@ -565,24 +577,27 @@ public:
   //
   constexpr auto insert_range(const_iterator const pos,
     std::ranges::input_range auto&& rg)
-    noexcept(noexcept(
-      insert(pos, std::ranges::begin(rg), std::ranges::end(rg))))
+    noexcept(noexcept(insert(pos, std::ranges::begin(rg),
+      std::ranges::end(rg))))
   {
     return insert(pos, std::ranges::begin(rg), std::ranges::end(rg));
   }
 
   constexpr void append_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(std::ranges::copy(rg, std::back_inserter(*this))))
+    noexcept(noexcept(std::copy(std::execution::unseq, std::ranges::begin(rg),
+      std::ranges::end(rg), std::back_inserter(*this))))
   {
-    std::ranges::copy(rg, std::back_inserter(*this));
+    std::copy(std::execution::unseq, std::ranges::begin(rg),
+      std::ranges::end(rg), std::back_inserter(*this));
   }
 
   constexpr void prepend_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(std::ranges::copy(std::ranges::views::reverse(rg),
+    noexcept(noexcept(std::copy(std::execution::unseq,
+      std::ranges::rbegin(rg), std::ranges::rend(rg),
       std::front_inserter(*this))))
   {
-    std::ranges::copy(std::ranges::views::reverse(rg),
-      std::front_inserter(*this));
+    std::copy(std::execution::unseq, std::ranges::rbegin(rg),
+      std::ranges::rend(rg), std::front_inserter(*this));
   }
 
   //
