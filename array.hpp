@@ -456,19 +456,19 @@ public:
 
   //
   constexpr iterator erase(const_iterator const i)
-    noexcept(noexcept(std::move(std::execution::unseq, i, i, i),
-      std::move_backward(i, i, i)))
+    noexcept(noexcept(std::move(std::execution::unseq, i, i, i)))
   {
     iterator const ii{this, i.n_}, jj{this, next_(i.n_)};
 
     return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
-      f_ = std::move_backward(begin(), ii, jj).n_, jj:
+      //f_ = std::move_backward(begin(), ii, jj).n_, jj:
+      f_ = std::move(std::execution::unseq, std::make_reverse_iterator(ii),
+        rend(), std::make_reverse_iterator(jj)).base().n_, jj:
       (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
   }
 
   constexpr iterator erase(const_iterator const i, const_iterator const j)
-    noexcept(noexcept(std::move(std::execution::unseq, i, i, i),
-      std::move_backward(i, i, i)))
+    noexcept(noexcept(std::move(std::execution::unseq, i, i, i)))
   {
     if (iterator const ii{this, i.n_}; i == j) [[unlikely]]
     {
@@ -479,7 +479,8 @@ public:
       decltype(ii) jj{this, j.n_};
 
       return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
-        f_ = std::move_backward(begin(), ii, jj).n_,jj:
+        f_ = std::move(std::execution::unseq, std::make_reverse_iterator(ii),
+          rend(), std::make_reverse_iterator(jj)).base().n_, jj:
         (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
     }
   }
@@ -487,28 +488,30 @@ public:
   //
   template <int = 0>
   constexpr iterator insert(const_iterator const i, auto&& a)
-    noexcept(noexcept(std::move(std::execution::unseq, i, i, i),
-      std::move_backward(i, i, i)))
+    noexcept(noexcept(std::move(std::execution::unseq, i, i, i)))
     requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     if (full()) [[unlikely]] pop_front();
 
     //
-    iterator j(this, i.n_);
+    iterator j{this, i.n_};
 
     if (distance_(f_, i.n_) <= distance_(i.n_, l_))
-    { // [f, j) is moved
+    { // [f, i) is moved backwards
       auto const f(f_);
       f_ = prev_(f);
 
       j = std::move(std::execution::unseq, {this, f}, j, begin());
     }
     else
-    { // [j, l) is moved
+    { // [j, l) is moved forwards
       auto const l(l_);
       l_ = next_(l);
 
-      std::move_backward(j, {this, l}, end());
+      //std::move_backward(j, {this, l}, end());
+      std::move(std::execution::unseq,
+        std::make_reverse_iterator(iterator{this, l}),
+        std::make_reverse_iterator(j), rbegin());
     }
 
     //
