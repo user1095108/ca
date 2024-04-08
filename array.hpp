@@ -651,7 +651,7 @@ public:
   }
 
   //
-  template <auto exec = std::execution::seq>
+  template <auto exec = std::execution::unseq>
   constexpr auto append(T const* const p, size_type cnt) noexcept
   { // appends to container from a memory region
     cnt = std::min(cnt, capacity() - size());
@@ -813,7 +813,7 @@ constexpr auto operator<=>(array<T1, S1, M1> const& l,
     l.begin(), l.end(), r.begin(), r.end());
 }
 
-template <auto exec = std::execution::seq, typename T, auto S, auto M>
+template <auto exec = std::execution::unseq, typename T, auto S, auto M>
 constexpr void copy(array<T, S, M> const& a, T* p) noexcept
 { // copies from container to a memory region
   for (auto const [i, j]: a.split()) // !!!
@@ -825,7 +825,7 @@ constexpr void copy(array<T, S, M> const& a, T* p) noexcept
   }
 }
 
-template <auto exec = std::execution::seq, typename T, auto S, auto M>
+template <auto exec = std::execution::unseq, typename T, auto S, auto M>
 constexpr void copy(array<T, S, M> const& a, T* p,
   typename array<T, S, M>::size_type sz) noexcept
 { // copies from container to a memory region
