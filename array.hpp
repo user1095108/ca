@@ -128,7 +128,7 @@ public:
   {
   }
 
-  constexpr array(array const& o) requires(USER == M) = default;
+  constexpr array(array const& o) requires(USER == M) = delete;
 
   constexpr array(array&& o)
     noexcept(noexcept(o.clear(), std::move(std::execution::unseq,
