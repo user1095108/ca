@@ -52,7 +52,13 @@ public:
 public:
   arrayiterator() = default;
 
-  constexpr arrayiterator(CA const* const a, T* const n = {}) noexcept:
+  constexpr explicit arrayiterator(CA const* const a) noexcept:
+    a_(a)
+  {
+    if (std::is_constant_evaluated()) n_ = {};
+  }
+
+  constexpr arrayiterator(CA const* const a, T* const n) noexcept:
     a_(a),
     n_(decltype(n_)(n))
   {
