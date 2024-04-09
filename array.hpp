@@ -494,21 +494,22 @@ public:
     if (full()) [[unlikely]] pop_front();
 
     //
-    iterator j{this, i.n_};
+    iterator j;
 
     if (distance_(f_, i.n_) <= distance_(i.n_, l_))
     { // [f, i) is moved backwards
       auto const f(f_); f_ = prev_(f);
 
-      j = std::move(std::execution::unseq, {this, f}, j, begin());
+      j = std::move(std::execution::unseq, {this, f}, i, begin());
     }
     else
     { // [j, l) is moved forwards
-      auto const l(l_); l_ = next_(l);
+      auto const l(l_); l_ = next_(l); j = {this, i.n_};
 
       //std::move_backward(j, {this, l}, end());
-      std::move(std::execution::unseq, reverse_iterator(iterator{this, l}),
-        reverse_iterator(j), rbegin());
+      std::move(std::execution::unseq,
+        const_reverse_iterator(const_iterator{this, l}),
+        const_reverse_iterator(i), rbegin());
     }
 
     //

@@ -52,7 +52,7 @@ public:
 public:
   arrayiterator() = default;
 
-  constexpr arrayiterator(CA const* const a, T* const n) noexcept:
+  constexpr arrayiterator(CA const* const a, T* const n = {}) noexcept:
     a_(a),
     n_(decltype(n_)(n))
   {
