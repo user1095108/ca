@@ -462,8 +462,8 @@ public:
 
     return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
       //f_ = std::move_backward(begin(), ii, jj).n_, jj:
-      f_ = std::move(std::execution::unseq, std::make_reverse_iterator(ii),
-        rend(), std::make_reverse_iterator(jj)).base().n_, jj:
+      f_ = std::move(std::execution::unseq, reverse_iterator(ii), rend(),
+        reverse_iterator(jj)).base().n_, jj:
       (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
   }
 
@@ -479,8 +479,8 @@ public:
       decltype(ii) jj{this, j.n_};
 
       return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
-        f_ = std::move(std::execution::unseq, std::make_reverse_iterator(ii),
-          rend(), std::make_reverse_iterator(jj)).base().n_, jj:
+        f_ = std::move(std::execution::unseq, reverse_iterator(ii), rend(),
+          reverse_iterator(jj)).base().n_, jj:
         (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
     }
   }
@@ -509,9 +509,8 @@ public:
       l_ = next_(l);
 
       //std::move_backward(j, {this, l}, end());
-      std::move(std::execution::unseq,
-        std::make_reverse_iterator(iterator{this, l}),
-        std::make_reverse_iterator(j), rbegin());
+      std::move(std::execution::unseq, reverse_iterator(iterator{this, l}),
+        reverse_iterator(j), rbegin());
     }
 
     //
