@@ -498,15 +498,13 @@ public:
 
     if (distance_(f_, i.n_) <= distance_(i.n_, l_))
     { // [f, i) is moved backwards
-      auto const f(f_);
-      f_ = prev_(f);
+      auto const f(f_); f_ = prev_(f);
 
       j = std::move(std::execution::unseq, {this, f}, j, begin());
     }
     else
     { // [j, l) is moved forwards
-      auto const l(l_);
-      l_ = next_(l);
+      auto const l(l_); l_ = next_(l);
 
       //std::move_backward(j, {this, l}, end());
       std::move(std::execution::unseq, reverse_iterator(iterator{this, l}),
@@ -514,8 +512,7 @@ public:
     }
 
     //
-    *j = std::forward<decltype(a)>(a);
-    return j;
+    *j = std::forward<decltype(a)>(a); return j;
   }
 
   constexpr auto insert(const_iterator const i, value_type v)
