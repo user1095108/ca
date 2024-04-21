@@ -833,14 +833,14 @@ constexpr auto operator<=>(array<T1, S1, M1, E1> const& l,
     l.begin(), l.end(), r.begin(), r.end());
 }
 
-template <typename T, auto S, auto M, auto E>
+template <auto EX = std::execution::unseq, typename T, auto S, auto M, auto E>
 constexpr void copy(array<T, S, M, E> const& a, T* p) noexcept
 { // copies from container to a memory region
   for (auto const [i, j]: a.split()) // !!!
   {
     if (!i) break;
 
-    std::copy(E, i, j, p);
+    std::copy(EX, i, j, p);
     p += j - i;
   }
 }
