@@ -20,7 +20,8 @@ inline constexpr from_range_t from_range{};
 struct multi_t { explicit multi_t() = default; };
 inline constexpr multi_t multi{};
 
-template <typename T, std::size_t CAP, enum Method M = MEMBER>
+template <typename T, std::size_t CAP, enum Method M = MEMBER,
+  auto E = std::execution::unseq>
 requires(
   !std::is_reference_v<T> &&
   !std::is_const_v<T> &&
@@ -131,13 +132,12 @@ public:
   constexpr array(array const& o) requires(USER == M) = delete;
 
   constexpr array(array&& o)
-    noexcept(noexcept(o.clear(), std::move(std::execution::unseq,
-      o.begin(), o.end(), std::back_inserter(*this))))
+    noexcept(noexcept(o.clear(),
+      std::move(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M):
     array()
   {
-    std::move(std::execution::unseq, o.begin(), o.end(),
-      std::back_inserter(*this));
+    std::move(E, o.begin(), o.end(), std::back_inserter(*this));
     o.clear();
   }
 
@@ -163,12 +163,11 @@ public:
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(std::copy(std::execution::unseq, i, j,
-      std::back_inserter(*this))))
+    noexcept(noexcept(std::copy(E, i, j, std::back_inserter(*this))))
     requires(USER != M):
     array()
   {
-    std::copy(std::execution::unseq, i, j, std::back_inserter(*this));
+    std::copy(E, i, j, std::back_inserter(*this));
   }
 
   constexpr array(std::initializer_list<value_type> l)
@@ -187,11 +186,11 @@ public:
   }
 
   constexpr explicit array(size_type const c, auto const& v, int = 0)
-    noexcept(noexcept(array(c), std::fill(std::execution::unseq, f_, l_, v)))
+    noexcept(noexcept(array(c), std::fill(E, f_, l_, v)))
     requires((USER != M) && std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
   {
-    std::fill(std::execution::unseq, f_, l_, v);
+    std::fill(E, f_, l_, v);
   }
 
   constexpr explicit array(size_type const c, value_type const v)
@@ -217,25 +216,23 @@ public:
 
   //
   constexpr array& operator=(array const& o)
-    noexcept(noexcept(std::copy(std::execution::unseq,
-      o.begin(), o.end(), std::back_inserter(*this))))
+    noexcept(noexcept(
+      std::copy(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(std::is_copy_assignable_v<value_type>)
   { // self-assign neglected
     clear();
-    std::copy(std::execution::unseq, o.begin(), o.end(),
-      std::back_inserter(*this));
+    std::copy(E, o.begin(), o.end(), std::back_inserter(*this));
 
     return *this;
   }
 
   constexpr array& operator=(array&& o)
-    noexcept(noexcept(o.clear(), std::move(std::execution::unseq,
-      o.begin(), o.end(), std::back_inserter(*this))))
+    noexcept(noexcept(o.clear(),
+      std::move(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M)
   {
     clear();
-    std::move(std::execution::unseq, o.begin(), o.end(),
-      std::back_inserter(*this));
+    std::move(E, o.begin(), o.end(), std::back_inserter(*this));
     o.clear();
 
     return *this;
@@ -353,13 +350,12 @@ public:
     assign<0>(count, v);
   }
 
-  template <auto exec = std::execution::unseq>
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(clear(), std::copy(exec, i, j,
-      std::back_inserter(*this))))
+    noexcept(noexcept(clear(),
+      std::copy(E, i, j, std::back_inserter(*this))))
   {
     clear();
-    std::copy(exec, i, j, std::back_inserter(*this));
+    std::copy(E, i, j, std::back_inserter(*this));
   }
 
   constexpr void assign(std::initializer_list<value_type> l)
@@ -456,22 +452,20 @@ public:
   }
 
   //
-  template <auto exec = std::execution::unseq>
   constexpr iterator erase(const_iterator const i)
-    noexcept(noexcept(std::move(exec, i, i, i)))
+    noexcept(noexcept(std::move(E, i, i, i)))
   {
     iterator const ii{this, i.n_}, jj{this, next_(i.n_)};
 
     return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
       //f_ = std::move_backward(begin(), ii, jj).n_, jj:
-      f_ = std::move(exec, reverse_iterator(ii), rend(),
+      f_ = std::move(E, reverse_iterator(ii), rend(),
         reverse_iterator(jj)).base().n_, jj:
-      (l_ = std::move(exec, jj, end(), ii).n_, ii);
+      (l_ = std::move(E, jj, end(), ii).n_, ii);
   }
 
-  template <auto exec = std::execution::unseq>
   constexpr iterator erase(const_iterator const i, const_iterator const j)
-    noexcept(noexcept(std::move(exec, i, i, i)))
+    noexcept(noexcept(std::move(E, i, i, i)))
   {
     if (iterator const ii{this, i.n_}; i == j) [[unlikely]]
     {
@@ -482,16 +476,16 @@ public:
       decltype(ii) jj{this, j.n_};
 
       return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
-        f_ = std::move(exec, reverse_iterator(ii), rend(),
+        f_ = std::move(E, reverse_iterator(ii), rend(),
           reverse_iterator(jj)).base().n_, jj:
-        (l_ = std::move(exec, jj, end(), ii).n_, ii);
+        (l_ = std::move(E, jj, end(), ii).n_, ii);
     }
   }
 
   //
-  template <auto exec = std::execution::unseq, int = 0>
+  template <int = 0>
   constexpr iterator insert(const_iterator const i, auto&& a)
-    noexcept(noexcept(std::move(exec, i, i, i)))
+    noexcept(noexcept(std::move(E, i, i, i)))
     requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     if (full()) [[unlikely]] pop_front();
@@ -503,14 +497,14 @@ public:
     { // [f, i) is moved backwards
       auto const f(f_); f_ = prev_(f);
 
-      j.n_ = std::move(exec, {this, f}, i, begin()).n_;
+      j.n_ = std::move(E, {this, f}, i, begin()).n_;
     }
     else
     { // [j, l) is moved forwards
       j.n_ = i.n_; auto const l(l_); l_ = next_(l); 
 
       //std::move_backward(j, {this, l}, end());
-      std::move(exec,
+      std::move(E,
         const_reverse_iterator(const_iterator{this, l}),
         const_reverse_iterator(i), rbegin());
     }
@@ -519,11 +513,10 @@ public:
     *j = std::forward<decltype(a)>(a); return j;
   }
 
-  template <auto exec = std::execution::unseq>
   constexpr auto insert(const_iterator const i, value_type v)
-    noexcept(noexcept(insert<exec, 0>(i, std::move(v))))
+    noexcept(noexcept(insert<0>(i, std::move(v))))
   {
-    return insert<exec, 0>(i, std::move(v));
+    return insert<0>(i, std::move(v));
   }
 
   template <int = 0>
@@ -595,21 +588,19 @@ public:
     return insert(pos, std::ranges::begin(rg), std::ranges::end(rg));
   }
 
-  template <auto exec = std::execution::unseq>
   constexpr void append_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(std::copy(exec, std::ranges::begin(rg),
+    noexcept(noexcept(std::copy(E, std::ranges::begin(rg),
       std::ranges::end(rg), std::back_inserter(*this))))
   {
-    std::copy(exec, std::ranges::begin(rg),
-      std::ranges::end(rg), std::back_inserter(*this));
+    std::copy(E, std::ranges::begin(rg), std::ranges::end(rg),
+      std::back_inserter(*this));
   }
 
-  template <auto exec = std::execution::unseq>
   constexpr void prepend_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(std::copy(exec, std::ranges::rbegin(rg),
+    noexcept(noexcept(std::copy(E, std::ranges::rbegin(rg),
       std::ranges::rend(rg), std::front_inserter(*this))))
   {
-    std::copy(exec, std::ranges::rbegin(rg),
+    std::copy(E, std::ranges::rbegin(rg),
       std::ranges::rend(rg), std::front_inserter(*this));
   }
 
@@ -679,7 +670,6 @@ public:
   }
 
   //
-  template <auto exec = std::execution::unseq>
   constexpr auto append(T const* const p, size_type cnt) noexcept
   { // appends to container from a memory region
     cnt = std::min(cnt, capacity() - size());
@@ -687,8 +677,8 @@ public:
     auto const nc(std::min(size_type(
       f_ <= l_ ? &a_[N] - l_ : f_ - l_ - 1), cnt));
 
-    std::copy_n(exec, p, nc, l_);
-    std::copy_n(exec, p, cnt - nc, a_);
+    std::copy_n(E, p, nc, l_);
+    std::copy_n(E, p, cnt - nc, a_);
 
     l_ = next_(l_, cnt);
 
@@ -735,8 +725,8 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename T, auto S, auto M>
-constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
+template <typename T, auto S, auto M, auto E>
+constexpr auto erase_if(array<T, S, M, E>& c, auto&& pred)
   noexcept(noexcept(c.erase(c.cbegin()), pred(*c.cbegin())))
 {
   typename std::remove_reference_t<decltype(c)>::size_type r{};
@@ -754,8 +744,8 @@ constexpr auto erase_if(array<T, S, M>& c, auto&& pred)
   return r;
 }
 
-template <int = 0, typename T, auto S, auto M>
-constexpr auto erase(array<T, S, M>& c, auto const& ...k)
+template <int = 0, typename T, auto S, auto M, auto E>
+constexpr auto erase(array<T, S, M, E>& c, auto const& ...k)
   noexcept(noexcept(c.erase({}), ((*c.cbegin() == k), ...)))
   requires(requires{((*c.cbegin() == k), ...);})
 {
@@ -768,8 +758,8 @@ constexpr auto erase(array<T, S, M>& c, auto const& ...k)
     );
 }
 
-template <typename T, auto S, auto M>
-constexpr auto erase(array<T, S, M>& c, T const k)
+template <typename T, auto S, auto M, auto E>
+constexpr auto erase(array<T, S, M, E>& c, T const k)
   noexcept(noexcept(erase<0>(c, k)))
 {
   return erase<0>(c, k);
@@ -808,22 +798,23 @@ constexpr auto find(auto&& c, auto const& ...k)
     );
 }
 
-template <typename T, auto S, auto M>
-constexpr auto find(array<T, S, M>& c, T const k)
+template <typename T, auto S, auto M, auto E>
+constexpr auto find(array<T, S, M, E>& c, T const k)
   noexcept(noexcept(find<0>(c, k)))
 {
   return find<0>(c, k);
 }
 
-template <typename T, auto S, auto M>
-constexpr auto find(array<T, S, M> const& c, T const k)
+template <typename T, auto S, auto M, auto E>
+constexpr auto find(array<T, S, M, E> const& c, T const k)
   noexcept(noexcept(find<0>(c, k)))
 {
   return find<0>(c, k);
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename T1, auto S1, auto M1, typename T2, auto S2, auto M2>
+template <typename T1, auto S1, auto M1, auto E1,
+  typename T2, auto S2, auto M2, auto E2>
 constexpr bool operator==(array<T1, S1, M1> const& l,
   array<T2, S2, M2> const& r)
   noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
@@ -831,9 +822,10 @@ constexpr bool operator==(array<T1, S1, M1> const& l,
   return std::equal(l.begin(), l.end(), r.begin(), r.end());
 }
 
-template <typename T1, auto S1, auto M1, typename T2, auto S2, auto M2>
-constexpr auto operator<=>(array<T1, S1, M1> const& l,
-  array<T2, S2, M2> const& r)
+template <typename T1, auto S1, auto M1, auto E1,
+  typename T2, auto S2, auto M2, auto E2>
+constexpr auto operator<=>(array<T1, S1, M1, E1> const& l,
+  array<T2, S2, M2, E2> const& r)
   noexcept(noexcept(std::lexicographical_compare_three_way(
     l.begin(), l.end(), r.begin(), r.end())))
 {
@@ -841,21 +833,21 @@ constexpr auto operator<=>(array<T1, S1, M1> const& l,
     l.begin(), l.end(), r.begin(), r.end());
 }
 
-template <auto exec = std::execution::unseq, typename T, auto S, auto M>
-constexpr void copy(array<T, S, M> const& a, T* p) noexcept
+template <typename T, auto S, auto M, auto E>
+constexpr void copy(array<T, S, M, E> const& a, T* p) noexcept
 { // copies from container to a memory region
   for (auto const [i, j]: a.split()) // !!!
   {
     if (!i) break;
 
-    std::copy(exec, i, j, p);
+    std::copy(E, i, j, p);
     p += j - i;
   }
 }
 
-template <auto exec = std::execution::unseq, typename T, auto S, auto M>
-constexpr void copy(array<T, S, M> const& a, T* p,
-  typename array<T, S, M>::size_type sz) noexcept
+template <auto EX = std::execution::unseq, typename T, auto S, auto M, auto E>
+constexpr void copy(array<T, S, M, E> const& a, T* p,
+  typename array<T, S, M, E>::size_type sz) noexcept
 { // copies from container to a memory region
   for (auto const [i, j]: a.split()) // !!!
   {
@@ -863,7 +855,7 @@ constexpr void copy(array<T, S, M> const& a, T* p,
 
     auto const nc(std::min(decltype(sz)(j - i), sz));
     sz -= nc;
-    std::copy_n(exec, i, nc, p);
+    std::copy_n(EX, i, nc, p);
     p += nc;
   }
 }

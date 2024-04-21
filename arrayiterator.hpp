@@ -27,7 +27,7 @@ class arrayiterator
   using iterator_t = arrayiterator<std::remove_const_t<T>, CA>;
   friend arrayiterator<T const, CA>;
 
-  template <typename U, std::size_t CAP, enum Method>
+  template <typename U, std::size_t CAP, enum Method, auto E>
     requires(
       !std::is_reference_v<U> &&
       !std::is_const_v<U> &&
