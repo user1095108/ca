@@ -815,8 +815,8 @@ constexpr auto find(array<T, S, M, E> const& c, T const k)
 //////////////////////////////////////////////////////////////////////////////
 template <typename T1, auto S1, auto M1, auto E1,
   typename T2, auto S2, auto M2, auto E2>
-constexpr bool operator==(array<T1, S1, M1> const& l,
-  array<T2, S2, M2> const& r)
+constexpr bool operator==(array<T1, S1, M1, E1> const& l,
+  array<T2, S2, M2, E2> const& r)
   noexcept(noexcept(std::equal(l.begin(), l.end(), r.begin(), r.end())))
 {
   return std::equal(l.begin(), l.end(), r.begin(), r.end());
