@@ -353,12 +353,13 @@ public:
     assign<0>(count, v);
   }
 
+  template <auto exec = std::execution::unseq>
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(clear(), std::copy(std::execution::unseq,
-      i, j, std::back_inserter(*this))))
+    noexcept(noexcept(clear(), std::copy(exec, i, j,
+      std::back_inserter(*this))))
   {
     clear();
-    std::copy(std::execution::unseq, i, j, std::back_inserter(*this));
+    std::copy(exec, i, j, std::back_inserter(*this));
   }
 
   constexpr void assign(std::initializer_list<value_type> l)
@@ -455,20 +456,22 @@ public:
   }
 
   //
+  template <auto exec = std::execution::unseq>
   constexpr iterator erase(const_iterator const i)
-    noexcept(noexcept(std::move(std::execution::unseq, i, i, i)))
+    noexcept(noexcept(std::move(exec, i, i, i)))
   {
     iterator const ii{this, i.n_}, jj{this, next_(i.n_)};
 
     return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
       //f_ = std::move_backward(begin(), ii, jj).n_, jj:
-      f_ = std::move(std::execution::unseq, reverse_iterator(ii), rend(),
+      f_ = std::move(exec, reverse_iterator(ii), rend(),
         reverse_iterator(jj)).base().n_, jj:
-      (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
+      (l_ = std::move(exec, jj, end(), ii).n_, ii);
   }
 
+  template <auto exec = std::execution::unseq>
   constexpr iterator erase(const_iterator const i, const_iterator const j)
-    noexcept(noexcept(std::move(std::execution::unseq, i, i, i)))
+    noexcept(noexcept(std::move(exec, i, i, i)))
   {
     if (iterator const ii{this, i.n_}; i == j) [[unlikely]]
     {
@@ -479,16 +482,16 @@ public:
       decltype(ii) jj{this, j.n_};
 
       return distance_(f_, ii.n_) <= distance_(jj.n_, l_) ?
-        f_ = std::move(std::execution::unseq, reverse_iterator(ii), rend(),
+        f_ = std::move(exec, reverse_iterator(ii), rend(),
           reverse_iterator(jj)).base().n_, jj:
-        (l_ = std::move(std::execution::unseq, jj, end(), ii).n_, ii);
+        (l_ = std::move(exec, jj, end(), ii).n_, ii);
     }
   }
 
   //
-  template <int = 0>
+  template <auto exec = std::execution::unseq, int = 0>
   constexpr iterator insert(const_iterator const i, auto&& a)
-    noexcept(noexcept(std::move(std::execution::unseq, i, i, i)))
+    noexcept(noexcept(std::move(exec, i, i, i)))
     requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     if (full()) [[unlikely]] pop_front();
@@ -500,14 +503,14 @@ public:
     { // [f, i) is moved backwards
       auto const f(f_); f_ = prev_(f);
 
-      j.n_ = std::move(std::execution::unseq, {this, f}, i, begin()).n_;
+      j.n_ = std::move(exec, {this, f}, i, begin()).n_;
     }
     else
     { // [j, l) is moved forwards
       j.n_ = i.n_; auto const l(l_); l_ = next_(l); 
 
       //std::move_backward(j, {this, l}, end());
-      std::move(std::execution::unseq,
+      std::move(exec,
         const_reverse_iterator(const_iterator{this, l}),
         const_reverse_iterator(i), rbegin());
     }
@@ -516,10 +519,11 @@ public:
     *j = std::forward<decltype(a)>(a); return j;
   }
 
+  template <auto exec = std::execution::unseq>
   constexpr auto insert(const_iterator const i, value_type v)
-    noexcept(noexcept(insert<0>(i, std::move(v))))
+    noexcept(noexcept(insert<exec, 0>(i, std::move(v))))
   {
-    return insert<0>(i, std::move(v));
+    return insert<exec, 0>(i, std::move(v));
   }
 
   template <int = 0>
@@ -591,20 +595,21 @@ public:
     return insert(pos, std::ranges::begin(rg), std::ranges::end(rg));
   }
 
+  template <auto exec = std::execution::unseq>
   constexpr void append_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(std::copy(std::execution::unseq, std::ranges::begin(rg),
+    noexcept(noexcept(std::copy(exec, std::ranges::begin(rg),
       std::ranges::end(rg), std::back_inserter(*this))))
   {
-    std::copy(std::execution::unseq, std::ranges::begin(rg),
+    std::copy(exec, std::ranges::begin(rg),
       std::ranges::end(rg), std::back_inserter(*this));
   }
 
+  template <auto exec = std::execution::unseq>
   constexpr void prepend_range(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(std::copy(std::execution::unseq,
-      std::ranges::rbegin(rg), std::ranges::rend(rg),
-      std::front_inserter(*this))))
+    noexcept(noexcept(std::copy(exec, std::ranges::rbegin(rg),
+      std::ranges::rend(rg), std::front_inserter(*this))))
   {
-    std::copy(std::execution::unseq, std::ranges::rbegin(rg),
+    std::copy(exec, std::ranges::rbegin(rg),
       std::ranges::rend(rg), std::front_inserter(*this));
   }
 
