@@ -132,7 +132,7 @@ public:
   constexpr array(array const& o) requires(USER == M) = delete;
 
   constexpr array(array&& o)
-    noexcept(noexcept(o.clear(),
+    noexcept(noexcept(array(), o.clear(),
       std::move(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M):
     array()
@@ -141,16 +141,16 @@ public:
     o.clear();
   }
 
-  constexpr array(array&& o) noexcept requires(NEW == M):
+  constexpr array(array&& o) noexcept(noexcept(array())) requires(NEW == M):
     array()
   { // swap & o.reset()
     detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
       (o.f_, o.l_, o.a_, a_, a_, a_);
   }
 
-  constexpr array(array&& o) noexcept requires(USER == M)
+  constexpr array(array&& o) noexcept(noexcept(o.clear())) requires(USER == M)
   {
-    f_ = o.f_; l_ = o.l_; a_ = o.a_; // o.a_ stays unchanged
+    detail::assign(f_, l_, a_)(o.f_, o.l_, o.a_);
     o.clear();
   }
 
@@ -201,18 +201,18 @@ public:
   }
 
   constexpr array(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg))))
+    noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
     requires((USER != M) &&
-      !std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>):
-    array(std::ranges::begin(rg), std::ranges::end(rg))
+      !std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
   {
+    assign_range(std::forward<decltype(rg)>(rg));
   }
 
   constexpr array(from_range_t, std::ranges::input_range auto&& rg)
-    noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg))))
-    requires(USER != M):
-    array(std::ranges::begin(rg), std::ranges::end(rg))
+    noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
+    requires(USER != M)
   {
+    assign_range(std::forward<decltype(rg)>(rg));
   }
 
   constexpr ~array() requires(NEW != M) = default;
@@ -224,39 +224,42 @@ public:
 
   //
   constexpr array& operator=(array const& o)
-    noexcept(noexcept(
+    noexcept(noexcept(clear(),
       std::copy(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(std::is_copy_assignable_v<value_type>)
-  { // self-assign neglected
-    clear();
-    std::copy(E, o.begin(), o.end(), std::back_inserter(*this));
+  {
+    if (this != &o)
+      clear(), std::copy(E, o.begin(), o.end(), std::back_inserter(*this));
 
     return *this;
   }
 
   constexpr array& operator=(array&& o)
-    noexcept(noexcept(o.clear(),
+    noexcept(noexcept(clear(), o.clear(),
       std::move(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M)
   {
-    clear();
-    std::move(E, o.begin(), o.end(), std::back_inserter(*this));
-    o.clear();
+    if (this != &o)
+      clear(), std::move(E, o.begin(), o.end(), std::back_inserter(*this)),
+      o.clear();
 
     return *this;
   }
 
   constexpr array& operator=(array&& o) noexcept requires(NEW == M)
   { // swap & o.reset()
-    detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
-      (o.f_, o.l_, o.a_, a_, a_, a_);
+    if (this != &o)
+      detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
+        (o.f_, o.l_, o.a_, a_, a_, a_);
 
     return *this;
   }
 
   constexpr array& operator=(array&& o) noexcept requires(USER == M)
   { // o.a_ stays unchanged
-    f_ = o.f_; l_ = o.l_; a_ = o.a_; o.clear(); return *this;
+    if (this != &o) detail::assign(f_, l_, a_)(o.f_, o.l_, o.a_), o.clear();
+
+    return *this;
   }
 
   constexpr array& operator=(std::initializer_list<value_type> l)
@@ -267,7 +270,6 @@ public:
 
   constexpr array& operator=(std::ranges::input_range auto&& rg)
     noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
-    requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
   {
     assign_range(std::forward<decltype(rg)>(rg)); return *this;
   }
@@ -360,11 +362,9 @@ public:
   }
 
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(clear(),
-      std::copy(E, i, j, std::back_inserter(*this))))
+    noexcept(noexcept(clear(), std::copy(E, i, j, std::back_inserter(*this))))
   {
-    clear();
-    std::copy(E, i, j, std::back_inserter(*this));
+    clear(); std::copy(E, i, j, std::back_inserter(*this));
   }
 
   constexpr void assign(std::initializer_list<value_type> l)
@@ -375,8 +375,16 @@ public:
 
   constexpr void assign_range(std::ranges::input_range auto&& rg)
     noexcept(noexcept(assign(std::ranges::begin(rg), std::ranges::end(rg))))
+    requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
   {
     assign(std::ranges::begin(rg), std::ranges::end(rg));
+  }
+
+  constexpr void assign_range(std::ranges::input_range auto&& rg)
+    noexcept(noexcept(assign(std::ranges::begin(rg), std::ranges::end(rg))))
+    requires(std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
+  {
+    if (this != &rg) assign(std::ranges::begin(rg), std::ranges::end(rg));
   }
 
   //
