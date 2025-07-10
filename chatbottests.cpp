@@ -1201,6 +1201,11 @@ void test1() {
   dq.erase(dq.end(), dq.end());
   assert((dq == decltype(dq){1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
   }
+
+  {
+    int const a[10]{};
+    assert(std::ranges::equal(a, ca::array<int, 10>(a)));
+  }
 }
 
 int main() {
