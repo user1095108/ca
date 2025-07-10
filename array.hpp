@@ -270,6 +270,7 @@ public:
 
   constexpr array& operator=(std::ranges::input_range auto&& rg)
     noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
+    requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
   {
     assign_range(std::forward<decltype(rg)>(rg)); return *this;
   }
