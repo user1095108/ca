@@ -200,6 +200,14 @@ public:
   {
   }
 
+  constexpr array(std::ranges::input_range auto&& rg)
+    noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg))))
+    requires((USER != M) &&
+      !std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>):
+    array(std::ranges::begin(rg), std::ranges::end(rg))
+  {
+  }
+
   constexpr array(from_range_t, std::ranges::input_range auto&& rg)
     noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg))))
     requires(USER != M):
