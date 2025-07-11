@@ -418,7 +418,7 @@ public:
 
   constexpr void emplace_back(auto&& ...a)
     noexcept(noexcept(push_back(std::declval<T>())))
-    requires(std::is_constructible_v<T, decltype(a)...>)
+    requires(std::is_constructible_v<T, decltype(a)...> && (sizeof...(a) > 1))
   {
     push_back(T(std::forward<decltype(a)>(a)...));
   }
@@ -438,7 +438,7 @@ public:
 
   constexpr void emplace_front(auto&& ...a)
     noexcept(noexcept(push_front(std::declval<T>())))
-    requires(std::is_constructible_v<T, decltype(a)...>)
+    requires(std::is_constructible_v<T, decltype(a)...> && (sizeof...(a) > 1))
   {
     push_front(T(std::forward<decltype(a)>(a)...));
   }
@@ -458,7 +458,7 @@ public:
 
   constexpr auto emplace(const_iterator const i, auto&& ...a)
     noexcept(noexcept(insert(i, std::declval<T>())))
-    requires(std::is_constructible_v<T, decltype(a)...>)
+    requires(std::is_constructible_v<T, decltype(a)...> && (sizeof...(a) > 1))
   {
     return insert(i, T(std::forward<decltype(a)>(a)...));
   }
