@@ -640,7 +640,7 @@ public:
 
   constexpr void push_back(auto&& ...a)
     noexcept(noexcept((push_back<0>(std::forward<decltype(a)>(a)), ...)))
-    requires(sizeof...(a) > 0)
+    requires(sizeof...(a) > 1)
   {
     (push_back<0>(std::forward<decltype(a)>(a)), ...);
   }
@@ -661,7 +661,7 @@ public:
 
   constexpr void push_front(auto&& ...a)
     noexcept(noexcept((push_front<0>(std::forward<decltype(a)>(a)), ...)))
-    requires(sizeof...(a) > 0)
+    requires(sizeof...(a) > 1)
   {
     (push_front<0>(std::forward<decltype(a)>(a)), ...);
   }
