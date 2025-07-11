@@ -156,7 +156,7 @@ public:
 
   constexpr array(multi_t, auto&& ...a)
     noexcept(noexcept(push_back(std::forward<decltype(a)>(a)...)))
-    requires((USER != M) && (sizeof...(a) > 0)):
+    requires((USER != M) && !!sizeof...(a)):
     array()
   {
     push_back(std::forward<decltype(a)>(a)...);
