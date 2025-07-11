@@ -739,7 +739,7 @@ public:
     }
   }
 
-  auto csplit() const noexcept { return split(); }
+  constexpr auto csplit() const noexcept { return split(); }
 };
 
 //////////////////////////////////////////////////////////////////////////////
