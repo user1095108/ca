@@ -409,16 +409,9 @@ public:
   }
 
   // emplacing is a bad idea in this container, avoid if possible
-  constexpr void emplace_back(auto&& a)
-    noexcept(noexcept(push_back(std::forward<decltype(a)>(a))))
-    requires(std::is_assignable_v<value_type&, decltype(a)>)
-  {
-    push_back(std::forward<decltype(a)>(a));
-  }
-
   constexpr void emplace_back(auto&& ...a)
     noexcept(noexcept(push_back(std::declval<T>())))
-    requires(std::is_constructible_v<T, decltype(a)...> && (sizeof...(a) > 1))
+    requires(std::is_constructible_v<T, decltype(a)...>)
   {
     push_back(T(std::forward<decltype(a)>(a)...));
   }
@@ -429,16 +422,9 @@ public:
     push_back(std::move(a));
   }
 
-  constexpr void emplace_front(auto&& a)
-    noexcept(noexcept(push_front(std::forward<decltype(a)>(a))))
-    requires(std::is_assignable_v<value_type&, decltype(a)>)
-  {
-    push_front(std::forward<decltype(a)>(a));
-  }
-
   constexpr void emplace_front(auto&& ...a)
     noexcept(noexcept(push_front(std::declval<T>())))
-    requires(std::is_constructible_v<T, decltype(a)...> && (sizeof...(a) > 1))
+    requires(std::is_constructible_v<T, decltype(a)...>)
   {
     push_front(T(std::forward<decltype(a)>(a)...));
   }
@@ -449,16 +435,9 @@ public:
     push_front(std::move(a));
   }
 
-  constexpr auto emplace(const_iterator const i, auto&& a)
-    noexcept(noexcept(insert(i, std::forward<decltype(a)>(a))))
-    requires(std::is_assignable_v<value_type&, decltype(a)>)
-  {
-    return insert(i, std::forward<decltype(a)>(a));
-  }
-
   constexpr auto emplace(const_iterator const i, auto&& ...a)
     noexcept(noexcept(insert(i, std::declval<T>())))
-    requires(std::is_constructible_v<T, decltype(a)...> && (sizeof...(a) > 1))
+    requires(std::is_constructible_v<T, decltype(a)...>)
   {
     return insert(i, T(std::forward<decltype(a)>(a)...));
   }
