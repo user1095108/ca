@@ -156,7 +156,7 @@ public:
 
   constexpr array(multi_t, auto&& ...a)
     noexcept(noexcept(push_back(std::forward<decltype(a)>(a)...)))
-    requires(USER != M):
+    requires((USER != M) && (sizeof...(a) > 0)):
     array()
   {
     push_back(std::forward<decltype(a)>(a)...);
@@ -395,7 +395,7 @@ public:
 
   template <int = 0>
   constexpr void resize(size_type const c, auto const& a)
-    noexcept(noexcept(push_back(a)))
+    noexcept(noexcept(push_back(a), resize(c)))
     requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
     for (auto sz(size()); c > sz; ++sz, push_back(a));
@@ -531,44 +531,38 @@ public:
     *j = std::forward<decltype(a)>(a); return j;
   }
 
-  constexpr auto insert(const_iterator const i, value_type v)
-    noexcept(noexcept(insert<0>(i, std::move(v))))
-  {
-    return insert<0>(i, std::move(v));
-  }
-
   template <int = 0>
-  constexpr iterator insert(multi_t, const_iterator i, auto&& ...a)
+  constexpr iterator insert(const_iterator i, auto&& ...a)
     noexcept(noexcept((insert(i, std::forward<decltype(a)>(a)), ...)))
-    requires(requires{(insert(i, std::forward<decltype(a)>(a)), ...);})
+    requires(sizeof...(a) > 1)
   {
     (++(i = insert(i, std::forward<decltype(a)>(a))), ...);
 
     return {this, prev(i.n_, sizeof...(a))};
   }
 
-  constexpr auto insert(multi_t, const_iterator const i, value_type a)
-    noexcept(noexcept(insert<0>(multi_t{}, i, std::move(a))))
+  constexpr auto insert(const_iterator const i, value_type a)
+    noexcept(noexcept(insert<0>(i, std::move(a))))
   {
-    return insert<0>(multi, i, std::move(a));
+    return insert<0>(i, std::move(a));
   }
 
   template <int = 0>
   constexpr iterator insert(const_iterator i, size_type const count,
-    auto const& v)
-    noexcept(noexcept(insert(i, v)))
-    requires(std::is_assignable_v<value_type&, decltype(v)>)
+    auto const& a)
+    noexcept(noexcept(insert(i, a)))
+    requires(std::is_assignable_v<value_type&, decltype(a)>)
   {
-    for (auto n(count); n; --n, ++(i = insert(i, v)));
+    for (auto n(count); n; --n, ++(i = insert(i, a)));
 
     return {this, prev(i.n_, count)};
   }
 
   constexpr auto insert(const_iterator const i, size_type const count,
-    value_type const v)
-    noexcept(noexcept(insert<0>(i, count, v)))
+    value_type const a)
+    noexcept(noexcept(insert<0>(i, count, a)))
   {
-    return insert<0>(i, count, v);
+    return insert<0>(i, count, a);
   }
 
   constexpr iterator insert(const_iterator i,
@@ -640,7 +634,7 @@ public:
 
   constexpr void push_back(auto&& ...a)
     noexcept(noexcept((push_back<0>(std::forward<decltype(a)>(a)), ...)))
-    requires(requires{(push_back<0>(std::forward<decltype(a)>(a)), ...);})
+    requires(sizeof...(a) > 0)
   {
     (push_back<0>(std::forward<decltype(a)>(a)), ...);
   }
@@ -661,7 +655,7 @@ public:
 
   constexpr void push_front(auto&& ...a)
     noexcept(noexcept((push_front<0>(std::forward<decltype(a)>(a)), ...)))
-    requires(requires{(push_front<0>(std::forward<decltype(a)>(a)), ...);})
+    requires(sizeof...(a) > 0)
   {
     (push_front<0>(std::forward<decltype(a)>(a)), ...);
   }
