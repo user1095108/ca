@@ -531,8 +531,14 @@ public:
     *j = std::forward<decltype(a)>(a); return j;
   }
 
+  constexpr auto insert(const_iterator const i, value_type a)
+    noexcept(noexcept(insert<0>(i, std::move(a))))
+  {
+    return insert<0>(i, std::move(a));
+  }
+
   template <int = 0>
-  constexpr iterator insert(const_iterator i, auto&& ...a)
+  constexpr iterator insert(multi_t, const_iterator i, auto&& ...a)
     noexcept(noexcept((insert(i, std::forward<decltype(a)>(a)), ...)))
     requires(sizeof...(a) > 1)
   {
@@ -541,7 +547,7 @@ public:
     return {this, prev(i.n_, sizeof...(a))};
   }
 
-  constexpr auto insert(const_iterator const i, value_type a)
+  constexpr auto insert(multi_t, const_iterator const i, value_type a)
     noexcept(noexcept(insert<0>(i, std::move(a))))
   {
     return insert<0>(i, std::move(a));
