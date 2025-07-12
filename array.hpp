@@ -744,7 +744,7 @@ constexpr auto erase_if(array<T, S, M, E>& c, auto&& pred)
 template <int = 0, typename T, auto S, auto M, auto E>
 constexpr auto erase(array<T, S, M, E>& c, auto const& ...k)
   noexcept(noexcept(c.erase({}), ((*c.cbegin() == k), ...)))
-  requires(requires{((*c.cbegin() == k), ...);})
+  requires(!!sizeof...(k))
 {
   return erase_if(
       c,
