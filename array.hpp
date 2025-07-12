@@ -784,7 +784,7 @@ constexpr auto find_if(auto&& c, auto pred)
 template <int = 0>
 constexpr auto find(auto&& c, auto const& ...k)
   noexcept(noexcept(((*c.cbegin() == k), ...)))
-  requires(requires{((*c.cbegin() == k), ...);})
+  requires(!!sizeof...(k))
 {
   return find_if(
       std::forward<decltype(c)>(c),
