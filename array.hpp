@@ -57,12 +57,14 @@ public:
 
   constexpr auto next_(auto const p) const noexcept
   {
-    return const_cast<decltype(p)>(p == &a_[N - 1] ? a_ : p + 1);
+    return const_cast<decltype(p)>(p == std::addressof(a_[N - 1]) ?
+      a_ : p + 1);
   }
 
   constexpr auto prev_(auto const p) const noexcept
   {
-    return const_cast<decltype(p)>(p == a_ ? &a_[N - 1] : p - 1);
+    return const_cast<decltype(p)>(p == a_ ?
+      std::addressof(a_[N - 1]) : p - 1);
   }
 
   constexpr auto next_(auto const p, difference_type const n) const noexcept
