@@ -684,38 +684,20 @@ public:
 
   constexpr std::array<std::array<T*, 2>, 2> split() noexcept
   {
-    using pair_t = decltype(split())::value_type;
+    using res_t = decltype(split());
+    using pair_t = res_t::value_type;
 
-    if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
-    {
-      return {pair_t{f_, l_}};
-    }
-    else if (c > 0)
-    {
-      return {pair_t{f_, (T*)(&a_[N])}, pair_t{(T*)(a_), l_}};
-    }
-    else [[unlikely]]
-    {
-      return {};
-    }
+    return f_ <= l_ ? res_t{pair_t{f_, l_}} :
+      res_t{pair_t{f_, &a_[N]}, pair_t{a_, l_}};
   }
 
   constexpr std::array<std::array<T const*, 2>, 2> split() const noexcept
   {
-    using pair_t = decltype(split())::value_type;
+    using res_t = decltype(split());
+    using pair_t = res_t::value_type;
 
-    if (auto const c(f_ <=> l_); c < 0) // f_ > l_ >= a_, f_ > a_
-    {
-      return {pair_t{f_, l_}};
-    }
-    else if (c > 0)
-    {
-      return {pair_t{f_, (T const*)(&a_[N])}, pair_t{(T const*)(a_), l_}};
-    }
-    else [[unlikely]]
-    {
-      return {};
-    }
+    return f_ <= l_ ? res_t{pair_t{f_, l_}} :
+      res_t{pair_t{f_, &a_[N]}, pair_t{a_, l_}};
   }
 
   constexpr auto csplit() const noexcept { return split(); }
@@ -730,7 +712,7 @@ constexpr auto erase_if(array<T, S, M, E>& c, auto&& pred)
 
   for (auto&& [i, j]: c.csplit())
   {
-    if (!i) break;
+    if (i == j) break;
 
     for (; (i != j) && (i != c.last());
       pred(*i) ? ++r, i = std::addressof(*c.erase({&c, i})) : ++i);
@@ -769,7 +751,7 @@ constexpr auto find_if(auto&& c, auto pred)
 {
   for (auto [i, j]: c.split())
   {
-    if (!i) break;
+    if (i == j) break;
 
     for (; i < --j; ++i)
       if (pred(std::as_const(*i))) return {&c, i};
@@ -835,7 +817,7 @@ constexpr void copy(array<T, S, M, E> const& a, T* p) noexcept
 { // copies from container to a memory region
   for (auto const [i, j]: a.split()) // !!!
   {
-    if (!i) break;
+    if (i == j) break;
 
     std::copy(EX, i, j, p);
     p += j - i;
@@ -848,7 +830,7 @@ constexpr void copy(array<T, S, M, E> const& a, T* p,
 { // copies from container to a memory region
   for (auto const [i, j]: a.split()) // !!!
   {
-    if (!i) break;
+    if (i == j) break;
 
     auto const nc(std::min(decltype(sz)(j - i), sz));
     sz -= nc;
