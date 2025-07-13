@@ -688,7 +688,7 @@ public:
     using pair_t = res_t::value_type;
 
     return f_ <= l_ ? res_t{pair_t{f_, l_}} :
-      res_t{pair_t{f_, &a_[N]}, pair_t{a_, l_}};
+      res_t{pair_t{f_, std::addressof(a_[N])}, pair_t{a_, l_}};
   }
 
   constexpr std::array<std::array<T const*, 2>, 2> split() const noexcept
@@ -697,7 +697,7 @@ public:
     using pair_t = res_t::value_type;
 
     return f_ <= l_ ? res_t{pair_t{f_, l_}} :
-      res_t{pair_t{f_, &a_[N]}, pair_t{a_, l_}};
+      res_t{pair_t{f_, std::addressof(a_[N])}, pair_t{a_, l_}};
   }
 
   constexpr auto csplit() const noexcept { return split(); }
