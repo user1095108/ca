@@ -169,7 +169,10 @@ public:
     requires(USER != M):
     array()
   {
-    std::copy(E, i, j, std::back_inserter(*this));
+    if (std::is_constant_evaluated())
+      std::copy(i, j, std::back_inserter(*this));
+    else
+      std::copy(E, i, j, std::back_inserter(*this));
   }
 
   constexpr array(std::initializer_list<value_type> l)
