@@ -92,6 +92,7 @@ public:
   }
 
   static constexpr size_type distance_(auto const a, decltype(a) b) noexcept
+    requires(std::is_pointer_v<decltype(a)>)
   {
     auto const n(b - a); // N = CAP + 1 <= PTRDIFF_MAX
     return n < decltype(n){} ? N + n : n;
@@ -207,7 +208,7 @@ public:
     assign_range(std::forward<decltype(rg)>(rg));
   }
 
-  constexpr ~array() requires(NEW != M) = default;
+  ~array() requires(NEW != M) = default;
 
   constexpr ~array() noexcept(noexcept(delete [] a_)) requires(NEW == M)
   {
@@ -598,16 +599,24 @@ public:
     noexcept(noexcept(std::copy(E, std::ranges::begin(rg),
       std::ranges::end(rg), std::back_inserter(*this))))
   {
-    std::copy(E, std::ranges::begin(rg), std::ranges::end(rg),
-      std::back_inserter(*this));
+    if (std::is_constant_evaluated())
+      std::copy(std::ranges::begin(rg), std::ranges::end(rg),
+        std::back_inserter(*this));
+    else
+      std::copy(E, std::ranges::begin(rg), std::ranges::end(rg),
+        std::back_inserter(*this));
   }
 
   constexpr void prepend_range(std::ranges::input_range auto&& rg)
     noexcept(noexcept(std::copy(E, std::ranges::rbegin(rg),
       std::ranges::rend(rg), std::front_inserter(*this))))
   {
-    std::copy(E, std::ranges::rbegin(rg),
-      std::ranges::rend(rg), std::front_inserter(*this));
+    if (std::is_constant_evaluated())
+      std::copy(std::ranges::rbegin(rg),
+        std::ranges::rend(rg), std::front_inserter(*this));
+    else
+      std::copy(E, std::ranges::rbegin(rg),
+        std::ranges::rend(rg), std::front_inserter(*this));
   }
 
   //
