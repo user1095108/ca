@@ -680,7 +680,7 @@ public:
   }
 
   //
-  constexpr void append(T const* const p, size_type cnt) noexcept
+  constexpr auto append(T const* const p, size_type cnt) noexcept
   { // appends to container from a memory region
     cnt = std::min(cnt, capacity() - size());
 
@@ -693,6 +693,8 @@ public:
       std::copy_n(E, p, nc, l_), std::copy_n(E, p + nc, cnt - nc, a_);
 
     l_ = next_(l_, cnt);
+
+    return cnt;
   }
 
   constexpr std::array<std::array<T*, 2>, 2> split() noexcept
