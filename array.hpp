@@ -139,7 +139,10 @@ public:
     requires(MEMBER == M):
     array()
   {
-    std::move(E, o.begin(), o.end(), std::back_inserter(*this));
+    if (std::is_constant_evaluated())
+      std::move(o.begin(), o.end(), std::back_inserter(*this));
+    else
+      std::move(E, o.begin(), o.end(), std::back_inserter(*this));
     o.clear();
   }
 
@@ -195,7 +198,10 @@ public:
     requires((USER != M) && std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
   {
-    std::fill(E, f_, l_, v);
+    if (std::is_constant_evaluated())
+      std::fill(f_, l_, v);
+    else
+      std::fill(E, f_, l_, v);
   }
 
   constexpr explicit array(size_type const c, value_type const v)
