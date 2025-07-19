@@ -119,19 +119,12 @@ public:
     f_ = l_ = a_ = new T[N];
   }
 
-  constexpr explicit array(T* const a) noexcept requires(USER == M)
-  {
-    f_ = l_ = a_ = a;
-  }
-
   constexpr array(array const& o)
     noexcept(noexcept(array(o.begin(), o.end())))
-    requires((USER != M) && std::is_copy_assignable_v<value_type>):
+    requires(std::is_copy_assignable_v<value_type>):
     array(o.begin(), o.end())
   {
   }
-
-  constexpr array(array const& o) requires(USER == M) = delete;
 
   constexpr array(array&& o)
     noexcept(noexcept(array(), o.clear(),
@@ -153,23 +146,16 @@ public:
       (o.f_, o.l_, o.a_, a_, a_, a_);
   }
 
-  constexpr array(array&& o) noexcept(noexcept(o.clear())) requires(USER == M)
-  {
-    detail::assign(f_, l_, a_)(o.f_, o.l_, o.a_);
-    o.clear();
-  }
-
   constexpr array(multi_t, auto&& ...a)
     noexcept(noexcept(push_back(std::forward<decltype(a)>(a)...)))
-    requires((USER != M) && !!sizeof...(a)):
+    requires(!!sizeof...(a)):
     array()
   {
     push_back(std::forward<decltype(a)>(a)...);
   }
 
   constexpr array(std::input_iterator auto const i, decltype(i) j)
-    noexcept(noexcept(std::copy(E, i, j, std::back_inserter(*this))))
-    requires(USER != M):
+    noexcept(noexcept(std::copy(E, i, j, std::back_inserter(*this)))):
     array()
   {
     if (std::is_constant_evaluated())
@@ -179,15 +165,13 @@ public:
   }
 
   constexpr array(std::initializer_list<value_type> l)
-    noexcept(noexcept(array(l.begin(), l.end())))
-    requires(USER != M):
+    noexcept(noexcept(array(l.begin(), l.end()))):
     array(l.begin(), l.end())
   {
   }
  
   constexpr explicit array(size_type const c)
-    noexcept(noexcept(array(), resize(c)))
-    requires(USER != M):
+    noexcept(noexcept(array(), resize(c))):
     array()
   {
     resize(c);
@@ -195,7 +179,7 @@ public:
 
   constexpr explicit array(size_type const c, auto const& v, int = 0)
     noexcept(noexcept(array(c), std::fill(E, f_, l_, v)))
-    requires((USER != M) && std::is_assignable_v<value_type&, decltype(v)>):
+    requires(std::is_assignable_v<value_type&, decltype(v)>):
     array(c)
   {
     if (std::is_constant_evaluated())
@@ -205,23 +189,20 @@ public:
   }
 
   constexpr explicit array(size_type const c, value_type const v)
-    noexcept(noexcept(array(c, v, 0)))
-    requires(USER != M):
+    noexcept(noexcept(array(c, v, 0))):
     array(c, v, 0)
   {
   }
 
   constexpr array(std::ranges::input_range auto&& rg)
     noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
-    requires((USER != M) &&
-      !std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
+    requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
   {
     assign_range(std::forward<decltype(rg)>(rg));
   }
 
   constexpr array(from_range_t, std::ranges::input_range auto&& rg)
     noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
-    requires(USER != M)
   {
     assign_range(std::forward<decltype(rg)>(rg));
   }
@@ -239,8 +220,18 @@ public:
       std::copy(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(std::is_copy_assignable_v<value_type>)
   {
-    if (this != &o)
-      clear(), std::copy(E, o.begin(), o.end(), std::back_inserter(*this));
+    if (std::is_constant_evaluated())
+    {
+      if (this != &o)
+        clear(),
+        std::copy(o.begin(), o.end(), std::back_inserter(*this));
+    }
+    else
+    {
+      if (this != &o)
+        clear(),
+        std::copy(E, o.begin(), o.end(), std::back_inserter(*this));
+    }
 
     return *this;
   }
@@ -250,9 +241,20 @@ public:
       std::move(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M)
   {
-    if (this != &o)
-      clear(), std::move(E, o.begin(), o.end(), std::back_inserter(*this)),
-      o.clear();
+    if (std::is_constant_evaluated())
+    {
+      if (this != &o)
+        clear(),
+        std::move(o.begin(), o.end(), std::back_inserter(*this)),
+        o.clear();
+    }
+    else
+    {
+      if (this != &o)
+        clear(),
+        std::move(E, o.begin(), o.end(), std::back_inserter(*this)),
+        o.clear();
+    }
 
     return *this;
   }
@@ -262,13 +264,6 @@ public:
     if (this != &o)
       detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
         (o.f_, o.l_, o.a_, a_, a_, a_);
-
-    return *this;
-  }
-
-  constexpr array& operator=(array&& o) noexcept requires(USER == M)
-  { // o.a_ stays unchanged
-    if (this != &o) detail::assign(f_, l_, a_)(o.f_, o.l_, o.a_), o.clear();
 
     return *this;
   }
@@ -671,7 +666,7 @@ public:
   }
 
   constexpr void swap(array& o) noexcept
-    requires((NEW == M) || (USER == M))
+    requires(NEW == M)
   { // swap state
     detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
       (o.f_, o.l_, o.a_, f_, l_, a_);

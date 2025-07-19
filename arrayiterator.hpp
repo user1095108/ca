@@ -9,7 +9,7 @@
 namespace ca
 {
 
-enum Method { MEMBER, NEW, USER };
+enum Method { MEMBER, NEW };
 
 namespace detail
 {
