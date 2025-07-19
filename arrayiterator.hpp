@@ -50,7 +50,10 @@ public:
   using reference = value_type&;
 
 public:
-  arrayiterator() = default;
+  constexpr arrayiterator() noexcept
+  {
+    if (std::is_constant_evaluated()) a_= {}, n_ = {};
+  }
 
   constexpr explicit arrayiterator(CA const* const a) noexcept:
     a_(a)
