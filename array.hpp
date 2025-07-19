@@ -833,7 +833,11 @@ constexpr void copy(array<T, S, M, E> const& a, T* p) noexcept
   {
     if (i == j) break;
 
-    std::copy(EX, i, j, p);
+    if (std::is_constant_evaluated())
+      std::copy(i, j, p);
+    else
+      std::copy(EX, i, j, p);
+
     p += j - i;
   }
 }
@@ -848,7 +852,10 @@ constexpr void copy(array<T, S, M, E> const& a, T* p,
 
     auto const nc(std::min(decltype(sz)(j - i), sz));
     sz -= nc;
-    std::copy_n(EX, i, nc, p);
+    if (std::is_constant_evaluated())
+      std::copy_n(i, nc, p);
+    else
+      std::copy_n(EX, i, nc, p);
     p += nc;
   }
 }
