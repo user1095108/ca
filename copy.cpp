@@ -29,7 +29,7 @@ int main()
   s.resize(s.capacity());
   std::iota(s.begin(), s.end(), 0);
 
-  int tmp[s.capacity()];
+  int tmp[s.capacity() + 100];
   ca::copy(s, tmp);
 
   d.append(tmp, std::size(tmp));
