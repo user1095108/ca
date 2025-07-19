@@ -371,7 +371,10 @@ public:
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
     noexcept(noexcept(clear(), std::copy(E, i, j, std::back_inserter(*this))))
   {
-    clear(); std::copy(E, i, j, std::back_inserter(*this));
+    if (std::is_constant_evaluated())
+      clear(), std::copy(i, j, std::back_inserter(*this));
+    else
+      clear(), std::copy(E, i, j, std::back_inserter(*this));
   }
 
   constexpr void assign(std::initializer_list<value_type> l)
