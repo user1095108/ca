@@ -133,11 +133,14 @@ public:
     requires(MEMBER == M):
     array()
   {
-    if (std::is_constant_evaluated())
-      std::move(o.begin(), o.end(), std::back_inserter(*this));
-    else
-      std::move(E, o.begin(), o.end(), std::back_inserter(*this));
-    o.clear();
+    if (this != &o)
+    {
+      if (std::is_constant_evaluated())
+        std::move(o.begin(), o.end(), std::back_inserter(*this));
+      else
+        std::move(E, o.begin(), o.end(), std::back_inserter(*this));
+      o.clear();
+    }
   }
 
   constexpr array(array&& o) noexcept(noexcept(array())) requires(NEW == M):
@@ -221,16 +224,12 @@ public:
       std::copy(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(std::is_copy_assignable_v<value_type>)
   {
-    if (std::is_constant_evaluated())
+    if (this != &o)
     {
-      if (this != &o)
-        clear(),
+      clear();
+      if (std::is_constant_evaluated())
         std::copy(o.begin(), o.end(), std::back_inserter(*this));
-    }
-    else
-    {
-      if (this != &o)
-        clear(),
+      else
         std::copy(E, o.begin(), o.end(), std::back_inserter(*this));
     }
 
@@ -242,19 +241,14 @@ public:
       std::move(E, o.begin(), o.end(), std::back_inserter(*this))))
     requires(MEMBER == M)
   {
-    if (std::is_constant_evaluated())
+    if (this != &o)
     {
-      if (this != &o)
-        clear(),
-        std::move(o.begin(), o.end(), std::back_inserter(*this)),
-        o.clear();
-    }
-    else
-    {
-      if (this != &o)
-        clear(),
-        std::move(E, o.begin(), o.end(), std::back_inserter(*this)),
-        o.clear();
+      clear();
+      if (std::is_constant_evaluated())
+        std::move(o.begin(), o.end(), std::back_inserter(*this));
+      else
+        std::move(E, o.begin(), o.end(), std::back_inserter(*this));
+      o.clear();
     }
 
     return *this;
@@ -372,10 +366,11 @@ public:
   constexpr void assign(std::input_iterator auto const i, decltype(i) j)
     noexcept(noexcept(clear(), std::copy(E, i, j, std::back_inserter(*this))))
   {
+    clear();
     if (std::is_constant_evaluated())
-      clear(), std::copy(i, j, std::back_inserter(*this));
+      std::copy(i, j, std::back_inserter(*this));
     else
-      clear(), std::copy(E, i, j, std::back_inserter(*this));
+      std::copy(E, i, j, std::back_inserter(*this));
   }
 
   constexpr void assign(std::initializer_list<value_type> l)
