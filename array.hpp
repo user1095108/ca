@@ -688,9 +688,9 @@ public:
       f_ <= l_ ? &a_[N] - l_ : f_ - l_ - 1), cnt));
 
     if (std::is_constant_evaluated())
-      std::copy_n(p, nc, l_), std::copy_n(p, cnt - nc, a_);
+      std::copy_n(p, nc, l_), std::copy_n(p + nc, cnt - nc, a_);
     else
-      std::copy_n(E, p, nc, l_), std::copy_n(E, p, cnt - nc, a_);
+      std::copy_n(E, p, nc, l_), std::copy_n(E, p + nc, cnt - nc, a_);
 
     l_ = next_(l_, cnt);
 
