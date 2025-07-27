@@ -196,7 +196,7 @@ public:
   {
   }
 
-  constexpr array(std::ranges::input_range auto&& rg)
+  constexpr explicit array(std::ranges::input_range auto&& rg)
     noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg))))
     requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>):
     array(std::ranges::begin(rg), std::ranges::end(rg))
