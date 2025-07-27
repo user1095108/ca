@@ -133,14 +133,12 @@ public:
     requires(MEMBER == M):
     array()
   {
-    if (this != &o)
-    {
-      if (std::is_constant_evaluated())
-        std::move(o.begin(), o.end(), std::back_inserter(*this));
-      else
-        std::move(E, o.begin(), o.end(), std::back_inserter(*this));
-      o.clear();
-    }
+    if (std::is_constant_evaluated())
+      std::move(o.begin(), o.end(), std::back_inserter(*this));
+    else
+      std::move(E, o.begin(), o.end(), std::back_inserter(*this));
+
+    o.clear();
   }
 
   constexpr array(array&& o) noexcept(noexcept(array())) requires(NEW == M):
@@ -199,18 +197,16 @@ public:
   }
 
   constexpr array(std::ranges::input_range auto&& rg)
-    noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
+    noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg))))
     requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>):
-    array()
+    array(std::ranges::begin(rg), std::ranges::end(rg))
   {
-    assign_range(std::forward<decltype(rg)>(rg));
   }
 
   constexpr array(from_range_t, std::ranges::input_range auto&& rg)
-    noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg)))):
-    array()
+    noexcept(noexcept(array(std::ranges::begin(rg), std::ranges::end(rg)))):
+    array(std::ranges::begin(rg), std::ranges::end(rg))
   {
-    assign_range(std::forward<decltype(rg)>(rg));
   }
 
   ~array() requires(NEW != M) = default;
@@ -229,6 +225,7 @@ public:
     if (this != &o)
     {
       clear();
+
       if (std::is_constant_evaluated())
         std::copy(o.begin(), o.end(), std::back_inserter(*this));
       else
@@ -246,10 +243,12 @@ public:
     if (this != &o)
     {
       clear();
+
       if (std::is_constant_evaluated())
         std::move(o.begin(), o.end(), std::back_inserter(*this));
       else
         std::move(E, o.begin(), o.end(), std::back_inserter(*this));
+
       o.clear();
     }
 
@@ -369,6 +368,7 @@ public:
     noexcept(noexcept(clear(), std::copy(E, i, j, std::back_inserter(*this))))
   {
     clear();
+
     if (std::is_constant_evaluated())
       std::copy(i, j, std::back_inserter(*this));
     else
