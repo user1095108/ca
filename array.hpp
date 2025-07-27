@@ -200,13 +200,15 @@ public:
 
   constexpr array(std::ranges::input_range auto&& rg)
     noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
-    requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>)
+    requires(!std::is_same_v<std::remove_cvref_t<decltype(rg)>, array>):
+    array()
   {
     assign_range(std::forward<decltype(rg)>(rg));
   }
 
   constexpr array(from_range_t, std::ranges::input_range auto&& rg)
-    noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg))))
+    noexcept(noexcept(assign_range(std::forward<decltype(rg)>(rg)))):
+    array()
   {
     assign_range(std::forward<decltype(rg)>(rg));
   }
