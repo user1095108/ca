@@ -171,20 +171,13 @@ public:
     array(l.begin(), l.end())
   {
   }
- 
-  constexpr explicit array(size_type const c)
-    noexcept(noexcept(array(), resize(c))):
+
+  template <typename V = value_type>
+  constexpr explicit array(size_type const c, V const& v = {}, int = 0)
+    noexcept(noexcept(array(), std::fill(E, f_, l_, v))):
     array()
   {
-    resize(c);
-  }
-
-  constexpr explicit array(size_type const c, auto const& v, int = 0)
-    noexcept(noexcept(array(c), std::fill(E, f_, l_, v)))
-    requires(std::is_assignable_v<value_type&, decltype(v)>):
-    array(c)
-  {
-    if (std::is_constant_evaluated())
+    if (resize(c); std::is_constant_evaluated())
       std::fill(f_, l_, v);
     else
       std::fill(E, f_, l_, v);
