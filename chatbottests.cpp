@@ -1589,9 +1589,9 @@ void test1() {
     // Test heterogeneous lookup with std::string_view
     dq::array<std::string, 5> dq = {"apple", "banana", "cherry"};
     auto it = dq::find(dq, "banana");
-    assert(it != dq.end() && *it == "banana");
+    assert(it && *it == "banana");
     it = dq::find(dq, std::string_view("cherry"));
-    assert(it != dq.end() && *it == "cherry");
+    assert(it && *it == "cherry");
   }
 }
 
