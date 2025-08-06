@@ -1565,6 +1565,12 @@ void test1() {
 
     {
       dq::array<Counter, 10> dq;
+      dq.push_back(1);
+      dq.push_back(2);
+      assert(count == 11);
+      dq.pop_back();
+      assert(count == 11);
+      dq.clear();
       assert(count == 11);
     }
     assert(count == 0);
