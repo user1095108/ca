@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <thread>
 #include <vector>
 
 #include "array.hpp" // Replace with the actual container header
@@ -1205,6 +1206,268 @@ void test1() {
   {
     int const a[10]{};
     assert(std::ranges::equal(a, dq::array<int, 10>(a)));
+  }
+
+  { // test_ranges
+    dq::array<int, 20> dq = {3, 1, 4, 1, 5};
+
+    // ranges::sort works with our iterator/sentinel pair
+    std::ranges::sort(dq);
+    assert(std::ranges::is_sorted(dq));
+    assert(std::ranges::equal(dq, std::array{1, 1, 3, 4, 5}));
+
+    // ranges::contains
+    assert(std::ranges::find(dq, 3) != dq.end());
+    assert(std::ranges::count(dq, 1) == 2);
+  }
+
+  { // test_move_only
+    dq::array<std::unique_ptr<int>, 10> dq;
+    dq.emplace_back(std::make_unique<int>(7));
+    dq.emplace_front(std::make_unique<int>(9));
+
+    assert(*dq.front() == 9);
+    assert(*dq.back()  == 7);
+
+    // erase in the middle
+    dq.erase(dq.begin()); // destroy the 9
+    assert(dq.size() == 1);
+    assert(*dq.front() == 7);
+  }
+
+  { // test_capacity_edge
+    dq::array<int, 4> dq{0, 1, 2, 3};
+
+    assert(dq.full());
+    assert(dq.size() == 4);
+
+    // push_back when full -> oldest element (0) must be overwritten
+    dq.push_back(42);
+    assert(dq.full());
+    assert(dq.size() == 4);
+    assert(dq.back()  == 42);
+    assert(dq.front() == 1);        // 0 has been popped
+
+    // push_front when full
+    dq.push_front(99);
+    assert(dq.full());
+    assert(dq.front() == 99);
+    assert(dq.back()  == 42);
+  }
+
+  { // test_heterogeneous_lookup
+    dq::array<std::string, 10> dq = {"apple", "banana", "pear"};
+    // transparent operator== via std::string_view
+    assert(std::ranges::find(dq, std::string_view("banana")) != dq.end());
+    assert(std::ranges::find(dq, std::string_view("grape")) == dq.end());
+  }
+
+  { // test_iterator_stability
+    dq::array<int, 20> dq = {0,1,2,3,4,5};
+    auto it = dq.begin() + 3; // points at 3
+    auto dist = std::distance(dq.begin(), it);
+
+    dq.insert(it, 42);        // invalidate it
+    it = dq.begin() + dist;   // rebuild
+    assert(*it == 42);
+
+    it = dq.erase(it);        // erase returns iterator *after* the removed one
+    assert(*it == 3);
+  }
+
+  { // test_stress
+    constexpr int N = 1'000;
+    dq::array<int, N> dq;
+    std::mt19937 rng{std::random_device{}()};
+    std::uniform_int_distribution<int> op(0, 3); // 0-push_back, 1-push_front, 2-pop_back, 3-pop_front
+
+    for (int i = 0; i < 10 * N; ++i)
+    {
+      switch (op(rng))
+      {
+        case 0: dq.push_back(i); break;
+        case 1: dq.push_front(i); break;
+        case 2: if (!dq.empty()) dq.pop_back(); break;
+        case 3: if (!dq.empty()) dq.pop_front(); break;
+      }
+      assert(dq.size() <= N);
+    }
+  }
+
+  { // test_ranges_projection
+    struct Point { int x, y; };
+    dq::array<Point, 10> dq = {{5,6}, {1,2}, {3,4}};
+
+    // sort by y-coordinate via projection
+    std::ranges::sort(dq, std::less<>{}, &Point::y);
+    assert(dq[0].y == 2 && dq[2].y == 6);
+  }
+
+  { // test_const_iterators
+    const dq::array<int, 5> dq = {10,20,30};
+    static_assert(std::same_as<decltype(dq.begin()), dq::array<int,5>::const_iterator>);
+    assert(std::accumulate(dq.begin(), dq.end(), 0) == 60);
+  }
+
+  { // test_resize_value_init
+    dq::array<int, 10> dq = {1,2,3};
+    dq.resize(6, 42);        // expand with value
+    assert(dq.size() == 6);
+    assert(dq[3] == 42 && dq[5] == 42);
+
+    dq.resize(2);            // shrink
+    assert(dq.size() == 2);
+  }
+
+  { // test_self_swap
+    dq::array<int, 5> dq = {1,2,3};
+    dq.swap(dq);             // must be no-op
+    assert(dq.size() == 3 && dq[0] == 1);
+  }
+
+  { // test_reverse_ranges
+    dq::array<int, 10> dq = {1,2,3,2,1};
+    auto rfirst = dq.rbegin(), rlast = dq.rend();
+    assert(std::ranges::count(rfirst, rlast, 2) == 2);
+  }
+
+  { // test_erase_if_capture
+    dq::array<int, 10> dq = {1,2,3,4,5,6};
+    int threshold = 4;
+    dq::erase_if(dq, [threshold](int x){ return x > threshold; });
+    assert((dq == dq::array<int,10>{1,2,3,4}));
+  }
+
+  { // test_spsc
+    dq::array<int, 10> buffer;
+    std::atomic<bool> done{};
+    int consumed{};
+
+    std::thread producer([&]{
+      for (int i = 0; i < 1000; ++i)
+      {
+        while (buffer.full()) std::this_thread::yield();
+        buffer.push_back(i);
+      }
+      done = true;
+    });
+
+    std::thread consumer([&]{
+      while (!done || !buffer.empty())
+      {
+        while (buffer.empty()) std::this_thread::yield();
+        consumed += buffer.front();
+        buffer.pop_front();
+      }
+    });
+
+    producer.join();
+    consumer.join();
+
+    assert(consumed == 999*1000/2); // 0+1+...+999
+  }
+
+  { // test_insert_raw_array
+    int raw[] = {9,8,7};
+    dq::array<int, 10> dq = {1,2,3};
+    dq.insert(dq.begin()+1, std::begin(raw), std::end(raw));
+    assert((dq == dq::array<int,10>{1,9,8,7,2,3}));
+  }
+
+  { // test_assign_init_list
+    dq::array<int, 10> dq;
+    dq.assign({10,20,30});
+    assert((dq == dq::array<int,10>{10,20,30}));
+    assert(dq.size() == 3);
+  }
+
+  { // test_std_swap
+    dq::array<std::string, 5> a = {"a","b"};
+    dq::array<std::string, 5> b = {"x","y","z"};
+    std::swap(a,b);
+    assert((a == dq::array<std::string,5>{"x","y","z"}));
+    assert((b == dq::array<std::string,5>{"a","b"}));
+  }
+
+  { // test_inner_product
+    dq::array<int, 5> a = {1,2,3};
+    dq::array<int, 5> b = {4,5,6};
+    int dot = std::inner_product(a.begin(), a.end(), b.begin(), 0);
+    assert(dot == 32); // 1*4 + 2*5 + 3*6
+  }
+
+  {
+    // test_reverse_exact
+    dq::array<int, 6> dq = {0,1,2,3,4,5};
+    std::vector<int> expected = {5,4,3,2,1,0};
+    std::vector<int> actual;
+    std::copy(dq.rbegin(), dq.rend(), std::back_inserter(actual));
+    assert(actual == expected);
+  }
+
+  { // test_lex_compare
+    dq::array<int, 20> dq = {1,2,3};
+    dq::array<int, 10> v = {1,2,3,4};
+
+    assert(dq < v);
+    assert(v > dq);
+    assert(dq <= dq);
+  }
+
+  { // test_fill_then_modify
+    dq::array<int, 10> dq(7, 42);
+    assert(dq.size() == 7);
+    assert(std::all_of(dq.begin(), dq.end(), [](int x){ return x==42; }));
+
+    dq[3] = 99;
+    assert(dq[3] == 99);
+    assert(std::count(dq.begin(), dq.end(), 42) == 6);
+  }
+
+  { // test_front_back_mirror
+    dq::array<char, 4> dq;
+    for (char c = 'a'; c <= 'z'; ++c)
+    {
+      dq.push_back(c);
+      if (dq.size() > 1)
+        assert(dq.front() == char('a' + (c - 'a') - (dq.size() - 1)));
+    }
+  }
+
+  { // test_shrink
+    dq::array<int, 100> dq(std::ranges::iota_view{0, 50});
+    dq.resize(10); // downsize
+    assert(dq.size() == 10);
+    assert(dq.front() == 0 && dq.back() == 9);
+  }
+
+  { // test_ranges_accumulate
+    dq::array<int, 10> dq = {1,2,3,4,5};
+    int sum = std::reduce(std::execution::unseq, dq.begin(), dq.end(), 0);
+    assert(sum == 15);
+  }
+
+  { // test_back_forth_equivalence
+    dq::array<int, 8> a = {1,2,3,4,5,6};
+    auto b = a;
+
+    // push_front / pop_back 6 times must restore original order
+    for (unsigned i = 0; i < 6; ++i)
+    {
+      auto const t(b.back());
+      b.pop_back();
+      b.push_front(t);
+    }
+    assert(a == b);
+  }
+
+  { // test_rotate
+    dq::array<int, 10> dq = {1,2,3,4,5};
+    std::rotate(dq.begin(), dq.begin()+2, dq.end()); // 3,4,5,1,2
+    assert((dq == dq::array<int,10>{3,4,5,1,2}));
+
+    std::rotate(dq.rbegin(), dq.rbegin()+2, dq.rend()); // reverse rotate
+    assert((dq == dq::array<int,10>{1,2,3,4,5}));
   }
 }
 
