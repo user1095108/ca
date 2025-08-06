@@ -128,7 +128,7 @@ public:
 
   constexpr array(array&& o) noexcept(noexcept(array())) requires(NEW == M):
     array()
-  { // swap & o.reset()
+  { // swap & reset
     detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
       (o.f_, o.l_, o.a_, a_, a_, a_);
   }
@@ -234,7 +234,7 @@ public:
   }
 
   constexpr array& operator=(array&& o) noexcept requires(NEW == M)
-  { // swap & o.reset()
+  { // swap & reset
     if (this != &o)
       detail::assign(f_, l_, a_, o.f_, o.l_, o.a_)
         (o.f_, o.l_, o.a_, a_, a_, a_);
@@ -375,7 +375,6 @@ public:
 
   //
   constexpr void clear() noexcept { l_ = f_; }
-  constexpr void reset() noexcept { l_ = f_ = a_; }
   constexpr void resize(size_type const c) noexcept { l_ = next_(f_, c); }
 
   template <int = 0>
