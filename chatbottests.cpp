@@ -1407,11 +1407,11 @@ void test1() {
 
   { // test_lex_compare
     dq::array<int, 20> dq = {1,2,3};
-    dq::array<int, 10> v = {1,2,3,4};
+    std::vector<int> v = {1,2,3,4};
 
-    assert(dq < v);
-    assert(v > dq);
-    assert(dq <= dq);
+    assert(std::ranges::lexicographical_compare(dq, v)); // < 0
+    assert(!std::ranges::lexicographical_compare(v, dq)); // > 0
+    assert(!std::ranges::lexicographical_compare(dq, dq)); // == 0
   }
 
   { // test_fill_then_modify
