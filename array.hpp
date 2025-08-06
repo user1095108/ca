@@ -1,5 +1,5 @@
-#ifndef CA_ARRAY_HPP
-# define CA_ARRAY_HPP
+#ifndef DQ_ARRAY_HPP
+# define DQ_ARRAY_HPP
 # pragma once
 
 #include <cstdint> // PTRDIFF_MAX
@@ -846,4 +846,4 @@ constexpr void swap(array<T, S, M>& l, decltype(l) r) noexcept { l.swap(r); }
 
 }
 
-#endif // CA_ARRAY_HPP
+#endif // DQ_ARRAY_HPP
