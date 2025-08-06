@@ -1592,6 +1592,8 @@ void test1() {
     assert(it && *it == "banana");
     it = dq::find(dq, std::string_view("cherry"));
     assert(it && *it == "cherry");
+    dq::erase(dq, "apple", "banana", "cherry");
+    assert(dq.empty());
   }
 }
 
