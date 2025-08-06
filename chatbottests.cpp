@@ -1469,6 +1469,130 @@ void test1() {
     std::rotate(dq.rbegin(), dq.rbegin()+2, dq.rend()); // reverse rotate
     assert((dq == dq::array<int,10>{1,2,3,4,5}));
   }
+
+  {
+    // Test with std::string (non-trivial type) and full capacity overwrite
+    dq::array<std::string, 5> dq;
+    dq.push_back("hello");
+    dq.push_back("world");
+    dq.push_front("start");
+    assert(dq.size() == 3);
+    assert(dq[0] == "start");
+    assert(dq[1] == "hello");
+    assert(dq[2] == "world");
+
+    dq.pop_front();
+    assert(dq.front() == "hello");
+
+    // Test full capacity with push_back
+    dq = {"a", "b", "c", "d", "e"};
+    assert(dq.full());
+    dq.push_back("f"); // should remove "a"
+    assert(dq.size() == 5);
+    assert(dq[0] == "b");
+    assert(dq[4] == "f");
+
+    // Test full capacity with push_front
+    dq = {"a", "b", "c", "d", "e"};
+    dq.push_front("f"); // should remove "e"
+    assert(dq.size() == 5);
+    assert(dq[0] == "f");
+    assert(dq[4] == "e");
+  }
+
+  {
+    // Test with std::unique_ptr (move-only type)
+    dq::array<std::unique_ptr<int>, 3> dq;
+    dq.push_back(std::make_unique<int>(1));
+    dq.push_back(std::make_unique<int>(2));
+    dq.push_front(std::make_unique<int>(3));
+
+    assert(*dq[0] == 3);
+    assert(*dq[1] == 1);
+    assert(*dq[2] == 2);
+
+    // Move out an element and test container behavior
+    auto p = std::move(dq[1]);
+    assert(*p == 1);
+    assert(!dq[1]);
+    dq.pop_back();
+    assert(dq.size() == 2);
+    dq.pop_back();
+    assert(dq.size() == 1);
+    assert(*dq[0] == 3);
+  }
+
+  {
+    // Test self-assignment
+    dq::array<int, 5> dq = {1, 2, 3};
+    auto& dq_ref = dq;
+    dq = dq_ref;
+    assert(dq.size() == 3);
+    assert(dq[0] == 1);
+  }
+
+  {
+    // Test self-swap
+    dq::array<int, 5, dq::NEW> dq = {1, 2, 3};
+    dq.swap(dq);
+    assert(dq.size() == 3);
+    assert(dq[0] == 1);
+  }
+
+  {
+    // Test range assignment
+    std::vector<int> v = {10, 20, 30, 40};
+    dq::array<int, 10> dq;
+    dq.assign(v.begin(), v.end());
+    assert(dq.size() == 4);
+    assert(dq[0] == 10);
+    assert(dq[3] == 40);
+  }
+
+  {
+    // Test for memory leaks using a counter type
+    static int count;
+    struct Counter {
+      int x;
+      Counter() { ++count; }
+      Counter(int x_) : x(x_) { ++count; }
+      ~Counter() { --count; }
+      Counter(const Counter& other) : x(other.x) { ++count; }
+      Counter(Counter&& other) : x(other.x) { ++count; }
+      Counter& operator=(const Counter&) = default;
+      Counter& operator=(Counter&&) = default;
+    };
+
+    {
+      dq::array<Counter, 10> dq;
+      assert(count == 11);
+    }
+    assert(count == 0);
+  }
+
+  {
+    // Stress test with mixed operations
+    dq::array<int, 100> dq;
+    for (int i = 0; i < 10000; ++i) {
+      switch (i % 5) {
+        case 0: dq.push_back(i); break;
+        case 1: dq.push_front(i); break;
+        case 2: if (!dq.empty()) dq.pop_back(); break;
+        case 3: if (!dq.empty()) dq.pop_front(); break;
+        case 4: if (!dq.empty()) dq.erase(dq.begin() + (i % dq.size())); break;
+      }
+    }
+    assert(dq.size() <= 100);
+  }
+
+  {
+    // Test heterogeneous lookup with std::string_view
+    dq::array<std::string, 5> dq = {"apple", "banana", "cherry"};
+    auto it = dq::find(dq, "banana");
+    assert(it != dq.end() && *it == "banana");
+    it = dq::find(dq, std::string_view("cherry"));
+    assert(it != dq.end() && *it == "cherry");
+  }
 }
 
 int main() {
