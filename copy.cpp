@@ -22,7 +22,7 @@ int main()
 {
   std::srand(std::random_device{}());
 
-  ca::array<int, 100> s, d;
+  dq::array<int, 100> s, d;
 
   randomize(s, d);
 
@@ -30,7 +30,7 @@ int main()
   std::iota(s.begin(), s.end(), 0);
 
   int tmp[s.capacity() + 100];
-  ca::copy(s, tmp);
+  dq::copy(s, tmp);
 
   d.append(tmp, std::size(tmp));
   assert(s == d);

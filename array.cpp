@@ -4,7 +4,7 @@
 
 int main()
 {
-  ca::array<int, 3> ca;
+  dq::array<int, 3> ca;
 
   *ca.end() = {}; // end() is not constant and is always dereferencable
 

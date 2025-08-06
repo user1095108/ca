@@ -11,7 +11,7 @@
 
 #include "arrayiterator.hpp"
 
-namespace ca
+namespace dq
 {
 
 struct from_range_t { explicit from_range_t() = default; };
@@ -57,45 +57,30 @@ public:
 
   constexpr auto next_(auto const p) const noexcept
   {
-    return const_cast<decltype(p)>(p == std::addressof(a_[N - 1]) ?
-      a_ : p + 1);
+    return p == std::addressof(a_[N - 1]) ?
+      decltype(p)(a_) : p + difference_type(1);
   }
 
   constexpr auto prev_(auto const p) const noexcept
   {
-    return const_cast<decltype(p)>(p == a_ ?
-      std::addressof(a_[N - 1]) : p - 1);
+    return p == a_ ?
+      decltype(p)(std::addressof(a_[N - 1])) : p - difference_type(1);
   }
 
   constexpr auto next_(auto const p, difference_type const n) const noexcept
-  { // 0 <= n < N, N is the period
-    auto const u(N - n);
-    return const_cast<decltype(p)>(size_type(p - a_) < u ? p + n : p - u);
+  { // 0 <= n < N
+    auto const u(difference_type(N) - n); return p - a_ < u ? p + n : p - u;
   }
 
   constexpr auto prev_(auto const p, difference_type const n) const noexcept
   { // 0 <= n < N
-    return const_cast<decltype(p)>(p - a_ < n ? p + (N - n) : p - n);
+    return p - a_ < n ? p + (difference_type(N) - n) : p - n;
   }
 
-  constexpr auto adv_(auto const p, difference_type const n) const noexcept
-  { // -N < n < N
-    if (size_type const o(p - a_); difference_type(o) < -n)
-    {
-      return const_cast<decltype(p)>(p + (N + n));
-    }
-    else
-    {
-      auto const u(N - n);
-      return const_cast<decltype(p)>(o < u ? p + n : p - u);
-    }
-  }
-
-  static constexpr size_type distance_(auto const a, decltype(a) b) noexcept
-    requires(std::is_pointer_v<decltype(a)>)
-  {
-    auto const n(b - a); // N = CAP + 1 <= PTRDIFF_MAX
-    return n < decltype(n){} ? N + n : n;
+  static constexpr auto distance_(auto const a, decltype(a) b) noexcept
+  { // N = CAP + 1 <= PTRDIFF_MAX
+    auto const n(b - a);
+    return n < difference_type{} ? difference_type(N) + n : n;
   }
 
 public:

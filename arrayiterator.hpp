@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace ca
+namespace dq
 {
 
 enum Method { MEMBER, NEW };
@@ -106,27 +106,27 @@ public:
   constexpr auto operator-(arrayiterator const& o) const noexcept
   {
     auto const f(a_->f_);
-    return difference_type(CA::distance_(f, n_) - CA::distance_(f, o.n_));
+    return CA::distance_(f, n_) - CA::distance_(f, o.n_);
   }
 
   constexpr arrayiterator operator+(difference_type const n) const noexcept
   {
-    return {a_, a_->adv_(n_, n)};
+    return {a_, a_->next_(n_, n)};
   }
 
   constexpr arrayiterator operator-(difference_type const n) const noexcept
   {
-    return {a_, a_->adv_(n_, -n)};
+    return {a_, a_->prev_(n_, n)};
   }
 
   constexpr auto& operator+=(difference_type const n) noexcept
   {
-    n_ = a_->adv_(n_, n); return *this;
+    n_ = a_->next_(n_, n); return *this;
   }
 
   constexpr auto& operator-=(difference_type const n) noexcept
   {
-    n_ = a_->adv_(n_, -n); return *this;
+    n_ = a_->prev_(n_, n); return *this;
   }
 
   // comparison
@@ -144,7 +144,7 @@ public:
   // member access
   constexpr auto& operator[](difference_type const n) const noexcept
   {
-    return *a_->adv_(n_, n);
+    return *a_->next_(n_, n);
   }
 
   constexpr auto operator->() const noexcept
