@@ -1341,23 +1341,24 @@ void test1() {
   { // test_spsc
     dq::array<int, 10> buffer;
     std::atomic<bool> done{};
+    std::mutex m;
     int consumed{};
 
     std::thread producer([&]{
-      for (int i = 0; i < 1000; ++i)
+      for (int i = 0; i < 1000;)
       {
-        while (buffer.full()) std::this_thread::yield();
-        buffer.push_back(i);
+        if (std::lock_guard l(m); !buffer.full())
+          buffer.push_back(i++);
       }
       done = true;
     });
 
     std::thread consumer([&]{
-      while (!done || !buffer.empty())
+      for (;;)
       {
-        while (buffer.empty()) std::this_thread::yield();
-        consumed += buffer.front();
-        buffer.pop_front();
+        if (std::lock_guard l(m); !buffer.empty())
+          consumed += buffer.front(), buffer.pop_front();
+        else if (done) break;
       }
     });
 

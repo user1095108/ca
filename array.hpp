@@ -92,9 +92,13 @@ public:
     if (std::is_constant_evaluated()) for (auto& a: a_) a = T{};
   }
 
-  constexpr array() noexcept(noexcept(new T[N])) requires(NEW == M)
+  constexpr array()
+    noexcept(noexcept(new T[N], T{}))
+    requires(NEW == M)
   {
     f_ = l_ = a_ = new T[N];
+    if (std::is_constant_evaluated()) std::ranges::generate(
+      *this, []() noexcept(noexcept(T{})) { return T{}; });
   }
 
   constexpr array(array const& o)
