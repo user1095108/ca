@@ -329,7 +329,7 @@ public:
     noexcept(noexcept(clear(), push_back(v)))
     requires(std::is_constructible_v<value_type, decltype(v)>)
   {
-    clear(); while (count--) push_back(v);
+    clear(); while (count) --count, push_back(v);
   }
 
   constexpr void assign(size_type const count, value_type const v)
