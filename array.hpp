@@ -69,7 +69,9 @@ public:
 
   constexpr auto next_(auto const p, difference_type const n) const noexcept
   { // 0 <= n < N
-    auto const u(difference_type(N) - n); return p - a_ < u ? p + n : p - u;
+    //auto const u(difference_type(N) - n); return p - a_ < u ? p + n : p - u;
+    return std::addressof(a_[N]) - p > n ?
+      p + n : p - (difference_type(N) - n);
   }
 
   constexpr auto prev_(auto const p, difference_type const n) const noexcept
