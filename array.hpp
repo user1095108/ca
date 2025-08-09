@@ -69,21 +69,21 @@ public:
 
   constexpr auto next_(auto const p, difference_type const n) const noexcept
   { // 0 <= n < N
-    assert((n >= 0) && (n < difference_type(N)));
-    //auto const u(difference_type(N) - n); return p - a_ < u ? p + n : p - u;
+    // assert((n >= 0) && (n < difference_type(N)));
+    // auto const u(difference_type(N) - n); return p - a_ < u ? p + n : p - u;
     return std::addressof(a_[N]) - p > n ?
       p + n : p - (difference_type(N) - n);
   }
 
   constexpr auto prev_(auto const p, difference_type const n) const noexcept
   { // 0 <= n < N
-    assert((n >= 0) && (n < difference_type(N)));
+    // assert((n >= 0) && (n < difference_type(N)));
     return p - a_ < n ? p + (difference_type(N) - n) : p - n;
   }
 
   constexpr auto adv_(auto const p, difference_type const n) const noexcept
   { // -N < n < N
-    assert(-difference_type(N) < n); assert(n < difference_type(N));
+    // assert(-difference_type(N) < n); assert(n < difference_type(N));
     return std::addressof(a_[N]) - p <= n ? // p + n >= &a_[N]
       p - (difference_type(N) - n) :
       a_ - p > n ? // p + n < a_
