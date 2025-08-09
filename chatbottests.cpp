@@ -1602,6 +1602,47 @@ void test1() {
     dq::erase(dq, "apple", "banana", "cherry");
     assert(dq.empty());
   }
+
+  { // test_iterator_navigation
+    dq::array<int, 20> dq = { 10, 20, 30, 40, 50, 60, 70 };
+
+    auto it = dq.begin();
+
+    /* ---------- std::advance ---------- */
+    std::advance(it, 3);              // positive
+    assert(*it == 40);
+
+    std::advance(it, -2);             // negative
+    assert(*it == 20);
+
+    std::advance(it, 0);              // zero
+    assert(*it == 20);
+
+    /* ---------- std::next ------------- */
+    assert(*std::next(it, 4)  == 60); // positive
+    assert(*std::next(it, -1) == 10); // negative
+    assert(*std::next(it, 0)  == 20); // zero
+
+    /* ---------- std::prev ------------- */
+    it = dq.end();
+    assert(*std::prev(it, 1)  == 70); // positive
+    assert(*std::prev(it, 3)  == 50); // positive
+    assert(*std::next(it, -2) == 60); // negative
+    assert(*std::next(it, -1)  == 70); // zero
+
+    /* ---------- edge cases ------------ */
+    // advance to end and back
+    it = dq.begin();
+    std::advance(it, static_cast<int>(dq.size()));
+    assert(it == dq.end());
+
+    std::advance(it, -static_cast<int>(dq.size()));
+    assert(it == dq.begin());
+
+    // next/prev on rbegin/rend
+    assert(*std::next(dq.rbegin(), 2) == 50);
+    assert(*std::prev(dq.rend(), 3)   == 30);
+  }
 }
 
 int main() {

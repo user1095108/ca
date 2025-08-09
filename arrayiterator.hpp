@@ -144,7 +144,7 @@ public:
   // member access
   constexpr auto& operator[](difference_type const n) const noexcept
   {
-    return *a_->next_(n_, n);
+    return *a_->adv_(n_, n);
   }
 
   constexpr auto operator->() const noexcept
