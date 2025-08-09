@@ -111,22 +111,22 @@ public:
 
   constexpr arrayiterator operator+(difference_type const n) const noexcept
   {
-    return {a_, a_->next_(n_, n)};
+    return {a_, a_->adv_(n_, n)};
   }
 
   constexpr arrayiterator operator-(difference_type const n) const noexcept
   {
-    return {a_, a_->prev_(n_, n)};
+    return {a_, a_->adv_(n_, -n)};
   }
 
   constexpr auto& operator+=(difference_type const n) noexcept
   {
-    n_ = a_->next_(n_, n); return *this;
+    n_ = a_->adv_(n_, n); return *this;
   }
 
   constexpr auto& operator-=(difference_type const n) noexcept
   {
-    n_ = a_->prev_(n_, n); return *this;
+    n_ = a_->adv_(n_, -n); return *this;
   }
 
   // comparison

@@ -79,6 +79,15 @@ public:
     return p - a_ < n ? p + (difference_type(N) - n) : p - n;
   }
 
+  constexpr auto adv_(auto const p, difference_type const n) const noexcept
+  { // -N < n < N
+    return std::addressof(a_[N]) - p <= n ? // p + n >= &a_[N]
+      p - (difference_type(N) - n) :
+      a_ - p > n ? // p + n < a_
+      p + (difference_type(N) + n) :
+      p + n;
+  }
+
   static constexpr auto distance_(auto const a, decltype(a) b) noexcept
   { // N = CAP + 1 <= PTRDIFF_MAX
     auto const n(b - a);
