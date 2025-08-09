@@ -116,7 +116,7 @@ public:
 
   constexpr arrayiterator operator-(difference_type const n) const noexcept
   {
-    return {a_, a_->adv_(n_, -n)};
+    return {a_, a_->bck_(n_, n)};
   }
 
   constexpr auto& operator+=(difference_type const n) noexcept
@@ -126,7 +126,7 @@ public:
 
   constexpr auto& operator-=(difference_type const n) noexcept
   {
-    n_ = a_->adv_(n_, -n); return *this;
+    n_ = a_->bck_(n_, n); return *this;
   }
 
   // comparison

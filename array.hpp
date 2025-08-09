@@ -91,6 +91,16 @@ public:
       p + n;
   }
 
+  constexpr auto bck_(auto const p, difference_type const n) const noexcept
+  { // -N < n < N
+    // assert(-difference_type(N) < n); assert(n < difference_type(N));
+    return p - std::addressof(a_[N]) >= n ? // p - n >= &a_[N]
+      p - (n + difference_type(N)) :
+      p - a_ < n ? // p - n < a_
+      p + (difference_type(N) - n) :
+      p - n;
+  }
+
   static constexpr auto distance_(auto const a, decltype(a) b) noexcept
   { // N = CAP + 1 <= PTRDIFF_MAX
     auto const n(b - a);
